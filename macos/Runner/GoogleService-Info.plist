@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyD3a0TbG7b1nl6Nd1rxhPlxWqwaRTtnIcs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>351109881477</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.reflectify</string>
+	<key>PROJECT_ID</key>
+	<string>reflectify-b3958</string>
+	<key>STORAGE_BUCKET</key>
+	<string>reflectify-b3958.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:351109881477:ios:e194453876257a8365d3ec</string>
+	<key>DATABASE_URL</key>
+	<string>https://reflectify-b3958-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

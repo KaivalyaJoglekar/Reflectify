@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "351109881477",
+    "firebase_url": "https://reflectify-b3958-default-rtdb.firebaseio.com",
+    "project_id": "reflectify-b3958",
+    "storage_bucket": "reflectify-b3958.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351109881477:android:00e01e951a29b63665d3ec",
+        "android_client_info": {
+          "package_name": "com.example.reflectify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3EIZu8Vj5jPhg3RedgAPIsYnnqKV2Vo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351109881477:android:f80a635b6b039ee765d3ec",
+        "android_client_info": {
+          "package_name": "com.kaivalyaj.reflectify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3EIZu8Vj5jPhg3RedgAPIsYnnqKV2Vo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
