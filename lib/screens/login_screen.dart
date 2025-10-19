@@ -1,87 +1,70 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:glass_kit/glass_kit.dart';
-import '../models/user_model.dart';
-import '../widgets/animated_gradient_background.dart';
-import 'dashboard_screen.dart';
-import 'signup_screen.dart';
+import 'package:reflectify/models/user_model.dart';
+import 'package:reflectify/screens/navigation_screen.dart';
+import 'package:reflectify/screens/signup_screen.dart';
+import 'package:reflectify/widgets/app_background.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  void _login(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final sampleUser = User(
       name: 'Kaivalya Joglekar',
       username: 'kaivalyajoglekar',
       email: 'kaivalya.j@example.com',
     );
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => DashboardScreen(user: sampleUser)),
-    );
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedGradientBackground(
+      body: AppBackground(
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              // FIX: Changed GlassContainer.clear() to the new constructor 'GlassContainer()'.
-              child: GlassContainer(
-                height: 550,
-                width: double.infinity,
-                blur: 10,
-                // FIX: Replaced deprecated withOpacity with direct hex color values.
-                color: const Color(0x0DFFFFFF), // 0.05 opacity
-                borderColor: const Color(0x33FFFFFF), // 0.2 opacity
-                borderRadius: BorderRadius.circular(24),
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Icon(
-                      Icons.auto_stories,
-                      size: 80,
-                      color: Color(0xFF8A5DF4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.book,
+                    size: 60,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Welcome Back',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Log in to your journal.',
+                    style: TextStyle(color: Colors.white70, fontSize: 18),
+                  ),
+                  const SizedBox(height: 50),
+                  _buildTextField(label: 'Email', icon: Icons.email_outlined),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    label: 'Password',
+                    icon: Icons.lock_outline_rounded,
+                    isObscure: true,
+                  ),
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (_) => NavigationScreen(user: sampleUser),
+                          ),
+                        );
+                      },
+                      child: const Text('Login'),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Welcome Back',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    Text(
-                      'Log in to your journal.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 40),
-                    _buildTextField(label: 'Email', icon: Icons.email_outlined),
-                    const SizedBox(height: 16),
-                    _buildTextField(
-                      label: 'Password',
-                      icon: Icons.lock_outline,
-                      isObscure: true,
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                      onPressed: () => _login(context),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const SignupScreen()),
-                      ),
-                      child: const Text("Don't have an account? Sign Up"),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSignUpLink(context),
+                ],
               ),
             ),
           ),
@@ -99,19 +82,36 @@ class LoginScreen extends StatelessWidget {
       obscureText: isObscure,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white54),
-        prefixIcon: Icon(icon, color: Colors.white70),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white24),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 12.0, right: 8.0),
+          child: Icon(icon),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white24),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF8A5DF4)),
+      ),
+    );
+  }
+
+  Widget _buildSignUpLink(BuildContext context) {
+    const primaryRed = Color(0xFFF92A2A);
+    return TextButton(
+      onPressed: () {
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const SignupScreen()));
+      },
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 15,
+            fontFamily: 'Lato',
+          ),
+          children: const [
+            TextSpan(text: "Don't have an account? "),
+            TextSpan(
+              text: 'Sign Up',
+              style: TextStyle(color: primaryRed, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     );

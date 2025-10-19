@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../screens/dashboard_screen.dart'; // To access the JournalEntry model
+import '../models/journal_entry.dart';
 
 class JournalCard extends StatelessWidget {
   final JournalEntry entry;
@@ -10,42 +10,38 @@ class JournalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            entry.title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: const Color(0xFF8A5DF4).withOpacity(0.9),
-              fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              entry.title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            // Format the date nicely (e.g., "Fri, Oct 17" or "Yesterday")
-            _formatEntryDate(entry.date),
-            style: const TextStyle(color: Colors.white54, fontSize: 12),
-          ),
-          const Divider(height: 24, color: Colors.white12),
-          Text(
-            entry.content,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              _formatEntryDate(entry.date),
+              style: const TextStyle(color: Colors.white54, fontSize: 12),
+            ),
+            const Divider(height: 24, color: Colors.white12),
+            Text(
+              entry.content,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // Helper function to format dates in a user-friendly way
   String _formatEntryDate(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

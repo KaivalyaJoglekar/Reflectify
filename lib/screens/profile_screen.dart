@@ -1,117 +1,167 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:glass_kit/glass_kit.dart';
-import '../models/user_model.dart';
-// FIX: Added the missing import for the background widget.
-import '../widgets/animated_gradient_background.dart';
-import 'dashboard_screen.dart';
-import 'signup_screen.dart';
+import 'package:reflectify/models/user_model.dart';
+import 'package:reflectify/screens/login_screen.dart';
+import 'package:reflectify/widgets/app_background.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class ProfileScreen extends StatelessWidget {
+  final User user;
 
-  void _login(BuildContext context) {
-    final sampleUser = User(
-      name: 'Kaivalya Joglekar',
-      username: 'kaivalyajoglekar',
-      email: 'kaivalya.j@example.com',
-    );
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => DashboardScreen(user: sampleUser)),
-    );
-  }
+  const ProfileScreen({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedGradientBackground(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text('Profile'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: AppBackground(
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              // FIX: Changed GlassContainer.clear() to the new constructor.
-              child: GlassContainer(
-                height: 550,
-                width: double.infinity,
-                blur: 10,
-                color: const Color(0x0DFFFFFF), // 0.05 opacity
-                borderColor: const Color(0x33FFFFFF), // 0.2 opacity
-                borderRadius: BorderRadius.circular(24),
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Icon(
-                      Icons.auto_stories,
-                      size: 80,
-                      color: Color(0xFF8A5DF4),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Welcome Back',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    Text(
-                      'Log in to your journal.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 40),
-                    _buildTextField(label: 'Email', icon: Icons.email_outlined),
-                    const SizedBox(height: 16),
-                    _buildTextField(
-                      label: 'Password',
-                      icon: Icons.lock_outline,
-                      isObscure: true,
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                      onPressed: () => _login(context),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const SignupScreen()),
-                      ),
-                      child: const Text("Don't have an account? Sign Up"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              _buildProfileHeader(context),
+              const SizedBox(height: 32),
+              _buildStatsCard(context),
+              const SizedBox(height: 24),
+              _buildActionsCard(context),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required IconData icon,
-    bool isObscure = false,
-  }) {
-    return TextField(
-      obscureText: isObscure,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.white54),
-        prefixIcon: Icon(icon, color: Colors.white70),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white24),
+  Widget _buildProfileHeader(BuildContext context) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 50,
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Text(
+            user.name.isNotEmpty ? user.name[0] : 'U',
+            style: const TextStyle(
+              fontSize: 48,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white24),
+        const SizedBox(height: 16),
+        Text(user.name, style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: 4),
+        Text(
+          '@${user.username}',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF8A5DF4)),
+      ],
+    );
+  }
+
+  Widget _buildStatsCard(BuildContext context) {
+    return _buildGlassCard(
+      child: Column(
+        children: [
+          _buildStatRow(
+            context,
+            Icons.edit_note_rounded,
+            'Total Entries',
+            '87',
+          ),
+          const Divider(color: Colors.white12),
+          _buildStatRow(
+            context,
+            Icons.local_fire_department_rounded,
+            'Longest Streak',
+            '23 days',
+          ),
+          const Divider(color: Colors.white12),
+          _buildStatRow(
+            context,
+            Icons.cake_rounded,
+            'Member Since',
+            'Oct 2025',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionsCard(BuildContext context) {
+    return _buildGlassCard(
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.settings_outlined),
+            title: const Text('Settings'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {},
+          ),
+          const Divider(color: Colors.white12),
+          ListTile(
+            leading: const Icon(Icons.help_outline_rounded),
+            title: const Text('Help & Support'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {},
+          ),
+          const Divider(color: Colors.white12),
+          ListTile(
+            leading: Icon(Icons.logout, color: const Color(0xFFF92A2A)),
+            title: const Text(
+              'Logout',
+              style: TextStyle(color: Color(0xFFF92A2A)),
+            ),
+            onTap: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white70),
+          const SizedBox(width: 16),
+          Text(label, style: const TextStyle(fontSize: 16)),
+          const Spacer(),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGlassCard({required Widget child}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
+          ),
+          child: child,
         ),
       ),
     );

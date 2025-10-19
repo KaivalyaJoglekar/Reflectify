@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/splash_screen.dart';
+import 'package:reflectify/screens/splash_screen.dart';
 
 void main() {
   runApp(const JournalApp());
@@ -10,60 +10,79 @@ class JournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryButtonColor = Color(0xFF8A5DF4);
+    const primaryAccent = Color(0xFF8A5DF4); // Vivid Purple
+    const primaryRed = Color(0xFFF92A2A); // Red highlight
 
     return MaterialApp(
-      title: 'Reflectify Journal',
+      title: 'Reflectify',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color.fromRGBO(
-          1,
-          1,
-          1,
-          1,
-        ), // Main background color
-        primaryColor: primaryButtonColor,
-        fontFamily: 'Inter',
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+        scaffoldBackgroundColor: Colors.black,
+        primaryColor: primaryAccent,
+
+        // --- SET THE DEFAULT FONT FAMILY ---
+        fontFamily: 'Lato', // Lato is now the default for all text
+
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.white24, width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: primaryAccent, width: 2),
+          ),
+          labelStyle: const TextStyle(
+            color: Colors.white54,
+            fontFamily: 'Lato',
+          ),
+          floatingLabelStyle: const TextStyle(color: primaryAccent),
         ),
+
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryButtonColor,
+            backgroundColor: const Color(0xFF1E1E1E),
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 18),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            textStyle: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BebasNeue', // Use BebasNeue for buttons
+              letterSpacing: 1.2,
+            ),
           ),
         ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: primaryButtonColor.withOpacity(0.8),
-          ),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: primaryButtonColor,
-          foregroundColor: Colors.white,
-        ),
+
+        // --- DEFINE THE CUSTOM TEXT THEME WITH NEW FONTS ---
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white70),
+          // For body text, UI elements, etc.
+          bodyMedium: TextStyle(
+            color: Colors.white70,
+            fontSize: 16,
+            fontFamily: 'Lato',
+          ),
+
+          // For major headings like "Welcome Back"
           headlineSmall: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
+            fontSize: 48,
+            fontFamily: 'BebasNeue', // Use BebasNeue for headings
+            letterSpacing: 1.5,
           ),
-          titleMedium: TextStyle(
+
+          // For section titles like "Recent Entries"
+          titleLarge: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.w600,
+            fontSize: 28,
+            fontFamily: 'BebasNeue',
+            letterSpacing: 1.2,
           ),
-          titleLarge: TextStyle(color: Colors.white),
         ),
-        colorScheme: ColorScheme.fromSwatch(
-          brightness: Brightness.dark,
-        ).copyWith(primary: primaryButtonColor, secondary: Colors.pinkAccent),
       ),
       home: const SplashScreen(),
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// FIX: Changed the import to the correct model file.
 import '../models/journal_entry.dart';
 
 class JournalScreen extends StatefulWidget {
@@ -24,7 +23,6 @@ class _JournalScreenState extends State<JournalScreen> {
 
   void _saveEntry() {
     if (_formKey.currentState!.validate()) {
-      // FIX: JournalEntry is now correctly recognized from the imported model.
       final newEntry = JournalEntry(
         title: _titleController.text,
         content: _contentController.text,

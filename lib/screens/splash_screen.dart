@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import 'package:reflectify/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -9,12 +9,28 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
-    // Navigate to the login screen after a delay
-    Timer(const Duration(seconds: 3), () {
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
+    _animation = Tween(
+      begin: 0.7,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _controller.repeat(reverse: true);
+
+    Timer(const Duration(seconds: 4), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -24,43 +40,55 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          color: Colors.black,
-          // Use the grainy background pattern
-          image: DecorationImage(
-            image: const AssetImage('assets/grain.png'),
-            fit: BoxFit.cover,
-            opacity: 0.05,
-          ),
-        ),
+        // The background is now pure black, with no texture.
+        color: Colors.black,
         child: Center(
-          child: Container(
-            width: 150,
-            height: 150,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.purple.withOpacity(0.5),
-                  blurRadius: 50.0,
-                  spreadRadius: 10.0,
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _animation.value,
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(
+                          0xFFE83D67,
+                        ).withOpacity(0.5), // Magenta
+                        blurRadius: 70.0,
+                        spreadRadius: 15.0,
+                      ),
+                      BoxShadow(
+                        color: const Color(
+                          0xFF9B59B6,
+                        ).withOpacity(0.4), // Vivid Purple
+                        blurRadius: 80.0,
+                        spreadRadius: 10.0,
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.auto_stories,
+                      color: Colors.white,
+                      size: 80,
+                    ),
+                  ),
                 ),
-                BoxShadow(
-                  color: Colors.red.withOpacity(0.3),
-                  blurRadius: 60.0,
-                  spreadRadius: 5.0,
-                ),
-              ],
-            ),
-            // Your App Logo
-            child: const Icon(
-              Icons.auto_stories,
-              color: Colors.white,
-              size: 80,
-            ),
+              );
+            },
           ),
         ),
       ),
