@@ -16,15 +16,16 @@ class SignupScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black, // Form area is black
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // TOP PART: Dark header with wave
+            // TOP PART: White header with abstract pattern
             ClipPath(
               clipper: BottomWaveClipper(),
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                // UPDATED: Height reduced to 35% to push the wave higher
+                height: MediaQuery.of(context).size.height * 0.35,
                 width: double.infinity,
                 child: TopographicBackground(
                   child: SafeArea(
@@ -33,7 +34,10 @@ class SignupScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.topLeft,
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                            ),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                         ),
@@ -46,7 +50,7 @@ class SignupScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 34,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
                           ),
@@ -58,30 +62,76 @@ class SignupScreen extends StatelessWidget {
               ),
             ),
 
-            // BOTTOM PART: White form area
+            // BOTTOM PART: Black form area
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              padding: const EdgeInsets.fromLTRB(32.0, 24.0, 32.0, 0),
               child: Column(
                 children: [
-                  const TextField(
-                    decoration: InputDecoration(labelText: 'Full Name'),
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Full Name',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                     keyboardType: TextInputType.name,
                   ),
                   const SizedBox(height: 24),
-                  const TextField(
-                    decoration: InputDecoration(labelText: 'Email'),
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 24),
-                  const TextField(
+                  TextField(
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      suffixIcon: Icon(Icons.visibility_off_outlined),
+                      labelStyle: TextStyle(color: Colors.white70),
+                      suffixIcon: Icon(
+                        Icons.visibility_off_outlined,
+                        color: Colors.white54,
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
                     ),
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 40),
                   SizedBox(
@@ -89,24 +139,39 @@ class SignupScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => NavigationScreen(user: sampleUser)),
+                          MaterialPageRoute(
+                            builder: (_) => NavigationScreen(user: sampleUser),
+                          ),
                           (route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary, // Blue button
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Text('Sign up', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Sign up',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already have an Account? ", style: TextStyle(color: Colors.black54)),
+                      const Text(
+                        "Already have an Account? ",
+                        style: TextStyle(color: Colors.white70),
+                      ),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         child: const Text('Sign in'),

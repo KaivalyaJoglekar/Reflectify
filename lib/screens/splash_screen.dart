@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:reflectify/screens/login_screen.dart';
 import 'package:reflectify/widgets/topographic_background.dart';
-import 'package:reflectify/widgets/bottom_wave_clipper.dart'; // Import the new clipper
+import 'package:reflectify/widgets/bottom_wave_clipper.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // The main background is now black
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Column(
         children: [
-          // TOP PART: The dark header with the topographic pattern and wave
+          // TOP PART: The white header with the new abstract pattern
           ClipPath(
             clipper: BottomWaveClipper(),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.55, // Takes up 55% of the screen
+            child: SizedBox(
+              // UPDATED: Height is reduced to 45% to push the wave higher
+              height: MediaQuery.of(context).size.height * 0.45,
               width: double.infinity,
               child: const TopographicBackground(child: SizedBox.shrink()),
             ),
           ),
 
-          // BOTTOM PART: The white area with the text and button
+          // BOTTOM PART: The black area with white text
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -34,7 +36,7 @@ class SplashScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 34,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -42,7 +44,7 @@ class SplashScreen extends StatelessWidget {
                     'Your daily journal guide',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.grey[600],
+                      color: Colors.grey[400],
                       height: 1.5,
                     ),
                   ),
@@ -58,14 +60,13 @@ class SplashScreen extends StatelessWidget {
                             MaterialPageRoute(builder: (context) => const LoginScreen()),
                           );
                         },
+                        style: TextButton.styleFrom(foregroundColor: Colors.white70),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              'Continue',
-                              style: TextStyle(fontSize: 18, color: Colors.grey[800]),
-                            ),
+                            const Text('Continue', style: TextStyle(fontSize: 18)),
                             const SizedBox(width: 8),
+                            // The arrow icon will now be blue
                             Icon(
                               Icons.arrow_forward,
                               color: Theme.of(context).colorScheme.primary,

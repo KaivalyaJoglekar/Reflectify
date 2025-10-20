@@ -10,7 +10,7 @@ class JournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF9C27B0); // A nice purple to match the arrow
+    const accentColor = Color(0xFF3B82F6); // A nice blue color
 
     return MaterialApp(
       title: 'Reflectify',
@@ -31,7 +31,10 @@ class JournalApp extends StatelessWidget {
         // UPDATED: Centralized style for all text form fields
         inputDecorationTheme: InputDecorationTheme(
           labelStyle: const TextStyle(color: Colors.black54),
-          floatingLabelStyle: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
+          floatingLabelStyle: TextStyle(
+            color: accentColor,
+            fontWeight: FontWeight.bold,
+          ),
           hintStyle: TextStyle(color: Colors.grey[400]),
           contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
           border: UnderlineInputBorder(

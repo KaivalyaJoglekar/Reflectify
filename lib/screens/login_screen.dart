@@ -17,21 +17,21 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final sampleUser = User(
-      name: 'Kaivalya Joglekar',
-      username: 'kaivalyajoglekar',
-      email: 'kaivalya.j@example.com',
-    );
+        name: 'Kaivalya Joglekar',
+        username: 'kaivalyajoglekar',
+        email: 'kaivalya.j@example.com');
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black, // Form area is now black
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // TOP PART: The dark header with the wave and "Sign In" text
+            // TOP PART: The white header with the abstract pattern
             ClipPath(
               clipper: BottomWaveClipper(),
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                // UPDATED: Height reduced to 35% to push the wave higher
+                height: MediaQuery.of(context).size.height * 0.35,
                 width: double.infinity,
                 child: TopographicBackground(
                   child: SafeArea(
@@ -40,25 +40,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: Alignment.topLeft,
                           child: IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
+                            icon: const Icon(Icons.arrow_back, color: Colors.black),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                         ),
                         const Align(
                           alignment: Alignment.center,
                           child: Padding(
-                            padding: EdgeInsets.only(
-                              bottom: 40.0,
-                            ), // Adjust to center vertically
+                            padding: EdgeInsets.only(bottom: 40.0),
                             child: Text(
                               'Sign in',
                               style: TextStyle(
                                 fontSize: 34,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
                           ),
@@ -70,32 +65,35 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
 
-            // BOTTOM PART: The white form area
+            // BOTTOM PART: The black form area
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              padding: const EdgeInsets.fromLTRB(32.0, 24.0, 32.0, 0),
               child: Column(
                 children: [
                   TextFormField(
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    initialValue: 'demo@email.com',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                     ),
+                    initialValue: 'demo@email.com',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 24),
                   TextFormField(
                     obscureText: true,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Password',
                       hintText: '••••••••••',
-                      suffixIcon: Icon(Icons.visibility_off_outlined),
+                      hintStyle: const TextStyle(color: Colors.white24),
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      suffixIcon: const Icon(Icons.visibility_off_outlined, color: Colors.white54),
+                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                     ),
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -105,14 +103,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Checkbox(
                             value: _rememberMe,
-                            onChanged: (value) =>
-                                setState(() => _rememberMe = value ?? false),
-                            activeColor: Colors.black,
+                            onChanged: (value) => setState(() => _rememberMe = value ?? false),
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            checkColor: Colors.black,
+                            side: const BorderSide(color: Colors.white54),
                           ),
-                          const Text(
-                            'Remember Me',
-                            style: TextStyle(color: Colors.black54),
-                          ),
+                          const Text('Remember Me', style: TextStyle(color: Colors.white70)),
                         ],
                       ),
                       TextButton(
@@ -127,43 +123,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (_) => NavigationScreen(user: sampleUser),
-                          ),
-                        );
+                            MaterialPageRoute(builder: (_) => NavigationScreen(user: sampleUser)));
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: Theme.of(context).colorScheme.primary, // Blue button
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: const Text('Login', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Don't have an Account? ",
-                        style: TextStyle(color: Colors.black54),
-                      ),
+                      const Text("Don't have an Account? ", style: TextStyle(color: Colors.white70)),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const SignupScreen(),
-                            ),
-                          );
+                          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SignupScreen()));
                         },
                         child: const Text('Sign up'),
                       ),
