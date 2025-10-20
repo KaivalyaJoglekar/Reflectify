@@ -9,25 +9,44 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            _buildAppBar(context),
-            const SizedBox(height: 24),
-            _buildSearchBar(),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Project', () {}),
-            const SizedBox(height: 16),
-            _buildProjectList(),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Progress', () {}),
-            const SizedBox(height: 16),
-            _buildDailyTaskCard(context),
-          ],
+    return Stack(
+      children: [
+        Positioned(
+          top: -120,
+          left: -100,
+          child: Container(
+            width: 380,
+            height: 380,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  Theme.of(context).primaryColor.withOpacity(0.35),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+        SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(20.0),
+            children: [
+              _buildAppBar(context),
+              const SizedBox(height: 32),
+              _buildSearchBar(context),
+              const SizedBox(height: 32),
+              _buildSectionHeader('Project', () {}),
+              const SizedBox(height: 16),
+              _buildProjectList(),
+              const SizedBox(height: 32),
+              _buildSectionHeader('Progress', () {}),
+              const SizedBox(height: 16),
+              _buildDailyTaskCard(context),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -38,49 +57,57 @@ class DashboardScreen extends StatelessWidget {
         Row(
           children: [
             const CircleAvatar(
-              radius: 24,
+              radius: 28,
               backgroundImage: NetworkImage(
-                'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+                'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80',
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Good Day',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontSize: 14, color: Colors.white70),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    color: Colors.white70,
+                  ),
                 ),
                 Text(
                   user.name,
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(letterSpacing: 1.1),
                 ),
               ],
             ),
           ],
         ),
         IconButton(
-          icon: const Icon(Icons.settings, size: 28),
+          icon: const Icon(Icons.settings, size: 28, color: Colors.white),
           onPressed: () {},
         ),
       ],
     );
   }
 
-  Widget _buildSearchBar() {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: 'Search task...',
-        hintStyle: TextStyle(color: Colors.grey[400]),
-        prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-        filled: true,
-        fillColor: const Color(0xFF1E1E1E),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+  Widget _buildSearchBar(BuildContext context) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: TextField(
+          decoration: InputDecoration(
+            hintText: 'Search task...',
+            hintStyle: TextStyle(color: Colors.grey[400]),
+            prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+            border: InputBorder.none,
+          ),
         ),
       ),
     );
@@ -92,7 +119,7 @@ class DashboardScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         TextButton(onPressed: onSeeAll, child: const Text('See All')),
       ],
@@ -100,94 +127,98 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildProjectList() {
-    return SizedBox(
-      height: 150, // Give the horizontal list a fixed height
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: const [
-          SizedBox(
-            width: 200, // Give the cards a fixed width
-            child: ProjectCard(
-              color: Colors.pink,
-              title: 'Redesign main page',
-              tasks: 7,
-              date: '25.10 (11pm)',
-            ),
+    return Row(
+      children: const [
+        Expanded(
+          child: ProjectCard(
+            title: 'Redesign main page',
+            tasks: 7,
+            date: '25.10 (11pm)',
           ),
-          SizedBox(width: 16),
-          SizedBox(
-            width: 200, // Give the cards a fixed width
-            child: ProjectCard(
-              color: Colors.orange,
-              title: 'UI/UX Medical Dashboard',
-              tasks: 10,
-              date: '18.09 (10pm)',
-            ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: ProjectCard(
+            title: 'UI/UX Medical Dashboard',
+            tasks: 10,
+            date: '18.09 (10pm)',
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildDailyTaskCard(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Create and Check\nDaily Task',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              height: 1.3,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
-            'You can control the execution of a task by a command in the application',
-            style: TextStyle(color: Colors.grey[400]),
+            'You can control the execution of a task by a\ncommand in the application',
+            style: TextStyle(color: Colors.grey[400], height: 1.5),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildDateChip(context, 'MON', '15', true),
-              _buildDateChip(context, 'TUE', '16', false),
-              _buildDateChip(context, 'WED', '17', false),
-              _buildDateChip(context, 'THU', '18', false),
-              _buildDateChip(context, 'FRI', '19', false),
+              _buildDateChip(context, 'MON', '15', isSelected: true),
+              _buildDateChip(context, 'TUE', '16'),
+              _buildDateChip(context, 'WED', '17'),
+              _buildDateChip(context, 'THU', '18'),
+              _buildDateChip(context, 'FRI', '19'),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              ...List.generate(
-                5,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 36, // Fixed height to prevent overflow
+            child: Stack(
+              children: List.generate(
+                7,
+                (index) => Positioned(
+                  left: index * 25.0, // Overlap avatars
                   child: CircleAvatar(
-                    radius: 16,
+                    radius: 18,
                     backgroundImage: NetworkImage(
-                      'https://i.pravatar.cc/150?u=a${index}',
+                      'https://i.pravatar.cc/150?img=${index + 10}',
                     ),
                   ),
                 ),
               ),
-            ],
-          )
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildDateChip(
-      BuildContext context, String day, String date, bool isSelected) {
+    BuildContext context,
+    String day,
+    String date, {
+    bool isSelected = false,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
       decoration: BoxDecoration(
         color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
+        border: isSelected ? null : Border.all(color: Colors.white24),
       ),
       child: Column(
         children: [
@@ -195,16 +226,13 @@ class DashboardScreen extends StatelessWidget {
             day,
             style: TextStyle(
               fontSize: 12,
-              color: isSelected ? Colors.white : Colors.grey[400],
+              color: isSelected ? Colors.white : Colors.grey,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             date,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       ),

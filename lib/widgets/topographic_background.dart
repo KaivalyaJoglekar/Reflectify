@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class TopographicBackground extends StatelessWidget {
   final Widget child;
+  // ignore: use_super_parameters
   const TopographicBackground({Key? key, required this.child})
     : super(key: key);
 
@@ -30,6 +31,7 @@ class AbstractPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       // Lines are a very subtle black to not be distracting
+      // ignore: deprecated_member_use
       ..color = Colors.black.withOpacity(0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;

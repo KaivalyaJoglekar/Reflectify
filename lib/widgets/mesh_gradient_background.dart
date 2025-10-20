@@ -1,90 +1,78 @@
 import 'package:flutter/material.dart';
 
-class MeshGradientBackground extends StatefulWidget {
-  final Widget? child;
-  const MeshGradientBackground({super.key, this.child});
-
-  @override
-  State<MeshGradientBackground> createState() => _MeshGradientBackgroundState();
-}
-
-class _MeshGradientBackgroundState extends State<MeshGradientBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class MeshGradientBackground extends StatelessWidget {
+  const MeshGradientBackground({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Defined Colors to mimic the dark blue/purple mesh from the image
-    const Color darkBlue = Color(0xFF0A0A1F);
-    const Color midPurple = Color(0xFF1E0D40);
-    const Color neonBlue = Color(0xFF5A8DFF);
-    const Color neonPurple = Color(0xFF8A5DF4);
-
-    return Container(
-      color: darkBlue,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Stack(
-            children: [
-              // Animated Background Circles to mimic the mesh gradient glow
-              Positioned(
-                top: -100 + 50 * _controller.value,
-                left: -150 + 50 * _controller.value,
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: neonBlue.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: neonBlue.withOpacity(0.5),
-                        blurRadius: 150,
-                      ),
-                    ],
-                  ),
-                ),
+    return Stack(
+      children: [
+        // Grid Painter
+        CustomPaint(
+          size: Size.infinite,
+          painter: GridPainter(),
+        ),
+        // Top-left aurora glow
+        Positioned(
+          top: -200,
+          left: -200,
+          child: Container(
+            width: 500,
+            height: 500,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  Theme.of(context).primaryColor.withOpacity(0.2),
+                  Colors.transparent,
+                ],
               ),
-              Positioned(
-                bottom: -100 - 50 * _controller.value,
-                right: -150 - 50 * _controller.value,
-                child: Container(
-                  width: 400,
-                  height: 400,
-                  decoration: BoxDecoration(
-                    color: neonPurple.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: neonPurple.withOpacity(0.5),
-                        blurRadius: 200,
-                      ),
-                    ],
-                  ),
-                ),
+            ),
+          ),
+        ),
+        // Bottom-right aurora glow
+        Positioned(
+          bottom: -250,
+          right: -250,
+          child: Container(
+            width: 600,
+            height: 600,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFF8A5DF4).withOpacity(0.2),
+                  Colors.transparent,
+                ],
               ),
-              // Main content goes here
-              widget.child ?? const SizedBox.shrink(),
-            ],
-          );
-        },
-      ),
+            ),
+          ),
+        ),
+      ],
     );
+  }
+}
+
+class GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.05)
+      ..strokeWidth = 0.5;
+
+    // Draw vertical lines
+    for (double i = 0; i < size.width; i += 50) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    }
+
+    // Draw horizontal lines
+    for (double i = 0; i < size.height; i += 50) {
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }

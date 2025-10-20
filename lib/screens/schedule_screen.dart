@@ -7,6 +7,7 @@ class ScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent, // Make background transparent
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -34,7 +35,10 @@ class ScheduleScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: () {}),
+        IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () {},
+        ),
         IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
       ],
     );
@@ -44,24 +48,28 @@ class ScheduleScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildDateChip(context, 'MON', '15', true),
-        _buildDateChip(context, 'TUE', '16', false),
-        _buildDateChip(context, 'WED', '17', false),
-        _buildDateChip(context, 'THU', '18', false),
-        _buildDateChip(context, 'FRI', '19', false),
+        _buildDateChip(context, 'MON', '15', isSelected: true),
+        _buildDateChip(context, 'TUE', '16'),
+        _buildDateChip(context, 'WED', '17'),
+        _buildDateChip(context, 'THU', '18'),
+        _buildDateChip(context, 'FRI', '19'),
       ],
     );
   }
 
   Widget _buildDateChip(
-      BuildContext context, String day, String date, bool isSelected) {
+    BuildContext context,
+    String day,
+    String date, {
+    bool isSelected = false,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
       decoration: BoxDecoration(
         color: isSelected
             ? Theme.of(context).primaryColor
-            : const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(12),
+            : Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         children: [
@@ -69,16 +77,13 @@ class ScheduleScreen extends StatelessWidget {
             day,
             style: TextStyle(
               fontSize: 12,
-              color: isSelected ? Colors.white : Colors.grey[400],
+              color: isSelected ? Colors.white : Colors.grey,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             date,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -99,7 +104,7 @@ class ScheduleScreen extends StatelessWidget {
           eventTitle: 'Team meeting (Front and Back)',
           eventTime: '9:20 am - 11:15 am',
           color: Colors.pink,
-          isMultiLine: true,
+          isFloating: true,
         ),
         TimelineEventCard(
           time: '12 am',

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:reflectify/widgets/app_background.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:reflectify/models/journal_entry.dart';
 import 'package:reflectify/widgets/journal_card.dart';
-import 'package:reflectify/screens/add_journal_screen.dart'; 
+import 'package:reflectify/screens/add_journal_screen.dart';
 
 class JournalListScreen extends StatefulWidget {
   const JournalListScreen({super.key});
@@ -15,7 +16,6 @@ class _JournalListScreenState extends State<JournalListScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  // Sample data for demonstration
   final List<JournalEntry> _allEntries = [
     JournalEntry(
       title: "A Productive Day",
@@ -28,12 +28,6 @@ class _JournalListScreenState extends State<JournalListScreen> {
       content:
           "The sound of rain is incredibly calming. It's a perfect day to reflect on the past week and plan for the next.",
       date: DateTime.now().subtract(const Duration(days: 1)),
-    ),
-    JournalEntry(
-      title: "Planning the Weekend",
-      content:
-          "Setting my intentions for a restful and productive weekend. Need to finish the table calendar implementation.",
-      date: DateTime.now().subtract(const Duration(days: 3)),
     ),
   ];
 
@@ -62,7 +56,6 @@ class _JournalListScreenState extends State<JournalListScreen> {
     );
 
     if (newEntry != null && newEntry is JournalEntry) {
-      // Logic to save to database/provider and refresh list
       setState(() {
         _allEntries.add(newEntry);
       });
@@ -71,34 +64,39 @@ class _JournalListScreenState extends State<JournalListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('All Entries'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline), 
-            onPressed: _onNewEntry, 
-            tooltip: 'Add Entry for Selected Day',
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildCalendar(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Divider(height: 1),
-          ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: _allEntries
-                  .where((entry) => isSameDay(entry.date, _selectedDay))
-                  .map((entry) => JournalCard(entry: entry))
-                  .toList(),
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('All Entries'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline),
+              onPressed: _onNewEntry,
+              tooltip: 'Add Entry for Selected Day',
             ),
-          ),
-        ],
+          ],
+        ),
+        body: Column(
+          children: [
+            _buildCalendar(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider(height: 1, color: Colors.white24),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(16.0),
+                children: _allEntries
+                    .where((entry) => isSameDay(entry.date, _selectedDay))
+                    .map((entry) => JournalCard(entry: entry))
+                    .toList(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

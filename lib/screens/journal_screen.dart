@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reflectify/widgets/app_background.dart';
 import '../models/journal_entry.dart';
 
 class JournalScreen extends StatefulWidget {
@@ -34,60 +35,65 @@ class _JournalScreenState extends State<JournalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Journal Entry'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: _saveEntry,
-            tooltip: 'Save Entry',
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                autofocus: true,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('New Journal Entry'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: _saveEntry,
+              tooltip: 'Save Entry',
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                TextFormField(
+                  controller: _titleController,
+                  autofocus: true,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: 'Title',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.white38),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a title';
+                    }
+                    return null;
+                  },
                 ),
-                decoration: const InputDecoration(
-                  hintText: 'Title',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.white38),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _contentController,
+                  maxLines: null,
+                  style: const TextStyle(fontSize: 16, height: 1.5),
+                  decoration: const InputDecoration(
+                    hintText: 'What\'s on your mind?',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.white38),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your journal content';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _contentController,
-                maxLines: null,
-                style: const TextStyle(fontSize: 16, height: 1.5),
-                decoration: const InputDecoration(
-                  hintText: 'What\'s on your mind?',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.white38),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your journal content';
-                  }
-                  return null;
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

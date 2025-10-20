@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:reflectify/widgets/mesh_gradient_background.dart'; // ADDED
+import 'package:reflectify/widgets/mesh_gradient_background.dart';
 
 class AppBackground extends StatelessWidget {
-  final Widget? child;
-  const AppBackground({super.key, this.child});
+  final Widget child;
+  const AppBackground({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    // MODIFIED: Use the animated gradient background
-    return MeshGradientBackground(child: child);
+    return Stack(
+      children: [
+        const MeshGradientBackground(),
+        child,
+      ],
+    );
   }
 }

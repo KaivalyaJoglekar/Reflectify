@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ProjectCard extends StatelessWidget {
-  final Color color;
   final String title;
   final int tasks;
   final String date;
 
   const ProjectCard({
     super.key,
-    required this.color,
     required this.title,
     required this.tasks,
     required this.date,
@@ -17,45 +15,72 @@ class ProjectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 160,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 4,
-                height: 20,
-                color: color,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(
+            height: 28, // Fixed height for avatar row
+            child: Stack(
+              children: List.generate(
+                3,
+                (index) => Positioned(
+                  left: index * 20.0, // Overlap avatars
+                  child: CircleAvatar(
+                    radius: 14,
+                    backgroundImage: NetworkImage(
+                      'https://i.pravatar.cc/150?img=${index + 20}',
+                    ),
+                  ),
                 ),
               ),
-            ],
+            ),
           ),
-          const Spacer(),
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.task_alt, size: 16, color: Colors.white70),
-              const SizedBox(width: 4),
-              Text('$tasks Task', style: const TextStyle(color: Colors.white70)),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              const Icon(Icons.calendar_today, size: 16, color: Colors.white70),
-              const SizedBox(width: 4),
-              Text(date, style: const TextStyle(color: Colors.white70)),
+              Row(
+                children: [
+                  Icon(
+                    Icons.watch_later_outlined,
+                    size: 16,
+                    color: Colors.white54,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    date,
+                    style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.task_alt_outlined,
+                    size: 16,
+                    color: Colors.white54,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '$tasks Task',
+                    style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  ),
+                ],
+              ),
             ],
           ),
         ],
