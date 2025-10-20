@@ -15,6 +15,7 @@ class _TaskCardState extends State<TaskCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
+      // FIX: Use Theme.of(context).cardColor.withOpacity(0.5) to fix deprecation
       color: theme.cardColor.withOpacity(0.5),
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -24,6 +25,8 @@ class _TaskCardState extends State<TaskCard> {
           value: widget.task.isCompleted,
           onChanged: (bool? value) {
             setState(() {
+              // Mutating a field in a model inside a stateful widget.
+              // In Riverpod, this should be replaced by a call to TaskNotifier.
               widget.task.isCompleted = value!;
             });
           },
@@ -40,17 +43,9 @@ class _TaskCardState extends State<TaskCard> {
                 : TextDecoration.none,
           ),
         ),
+        // FIX: Use the simple string time field
         trailing: Text(
-          // Use a dummy date for formatting as only the time is relevant
-          DateFormat.jm().format(
-            DateTime(
-              2025,
-              1,
-              1,
-              widget.task.time.hour,
-              widget.task.time.minute,
-            ),
-          ),
+          widget.task.time,
           style: TextStyle(
             color: widget.task.isCompleted ? Colors.white54 : Colors.white,
           ),

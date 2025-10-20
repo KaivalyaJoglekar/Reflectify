@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reflectify/widgets/mesh_gradient_background.dart'; // ADDED
 
 class AppBackground extends StatelessWidget {
   final Widget? child;
@@ -6,7 +7,7 @@ class AppBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A simple, pure black container that fills the entire screen.
-    return Container(color: Colors.black, child: child);
+    // MODIFIED: Use the animated gradient background
+    return MeshGradientBackground(child: child);
   }
 }

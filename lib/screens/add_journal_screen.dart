@@ -42,7 +42,7 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
             colorScheme: ColorScheme.dark(
               primary: Theme.of(context).colorScheme.primary,
               onPrimary: Colors.white,
-              surface: Theme.of(context).colorScheme.background,
+              surface: Theme.of(context).colorScheme.surface,
               onSurface: Colors.white,
             ),
           ),

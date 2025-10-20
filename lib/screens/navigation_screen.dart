@@ -40,31 +40,23 @@ class _NavigationScreenState extends State<NavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book_outlined),
-            activeIcon: Icon(Icons.book),
-            label: 'All Entries',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            activeIcon: Icon(Icons.bar_chart),
-            label: 'Stats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      // Styling the bottom bar to be dark/transparent and match the image structure
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.black.withOpacity(
+          0.8,
+        ), // Dark, slightly opaque background
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            _buildNavItem(0, Icons.home_filled, 'Home'), // Home icon (filled)
+            _buildNavItem(1, Icons.calendar_month, 'Calendar'), // Calendar icon
+            const SizedBox(width: 48), // Space for FAB
+            _buildNavItem(2, Icons.show_chart, 'Chart'), // Chart icon
+            _buildNavItem(3, Icons.person, 'Profile'), // Profile icon
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -76,9 +68,31 @@ class _NavigationScreenState extends State<NavigationScreen> {
             ),
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, size: 30),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final isSelected = _selectedIndex == index;
+    final color = isSelected ? Theme.of(context).primaryColor : Colors.white54;
+    return InkWell(
+      onTap: () => _onItemTapped(index),
+      borderRadius: BorderRadius.circular(50),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color),
+            // Optional: You can add the label text here if you prefer that style
+            // Text(label, style: TextStyle(color: color, fontSize: 10)),
+          ],
+        ),
+      ),
     );
   }
 }
