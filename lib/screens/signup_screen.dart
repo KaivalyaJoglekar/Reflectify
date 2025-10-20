@@ -1,92 +1,120 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:reflectify/models/user_model.dart';
+import 'package:reflectify/widgets/topographic_background.dart';
 import 'package:reflectify/screens/navigation_screen.dart';
-import 'package:reflectify/widgets/app_background.dart';
+import 'package:reflectify/models/user_model.dart';
+import 'package:reflectify/widgets/wave_clipper.dart'; // Import the wave clipper
 
 class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // This is a sample user for navigation.
     final sampleUser = User(
-      name: 'Kaivalya Joglekar',
-      username: 'kaivalyajoglekar',
-      email: 'kaivalya.j@example.com',
+      name: 'New User',
+      username: 'newuser',
+      email: 'user@example.com',
     );
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        leading: BackButton(color: Colors.white),
         backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-      body: AppBackground(
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                  child: Container(
-                    padding: const EdgeInsets.all(28.0),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
-                    ),
+      body: TopographicBackground(
+        child: Column(
+          children: [
+            const Spacer(flex: 2),
+            Expanded(
+              flex: 3,
+              // NEW: Wrap the Container with ClipPath to apply the wave shape
+              child: ClipPath(
+                clipper: WaveClipper(),
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  // Adjusted padding to give space below the wave's curve
+                  padding: const EdgeInsets.fromLTRB(32.0, 80.0, 32.0, 24.0),
+                  child: SingleChildScrollView(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.person_add_alt_1,
-                          size: 60,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Create Account',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        const SizedBox(height: 8),
                         const Text(
-                          'Start your journaling journey.',
-                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                          'Create Account',
+                          style: TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                         const SizedBox(height: 40),
-                        _buildTextField(
-                          label: 'Full Name',
-                          icon: Icons.person_outline,
+                        const Text('Full Name', style: TextStyle(color: Colors.black54, fontSize: 16)),
+                        const SizedBox(height: 8),
+                        const TextField(
+                          decoration: InputDecoration(),
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          keyboardType: TextInputType.name,
                         ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          label: 'Email',
-                          icon: Icons.email_outlined,
+                        const SizedBox(height: 24),
+                        const Text('Email', style: TextStyle(color: Colors.black54, fontSize: 16)),
+                        const SizedBox(height: 8),
+                        const TextField(
+                          decoration: InputDecoration(),
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          keyboardType: TextInputType.emailAddress,
                         ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          label: 'Password',
-                          icon: Icons.lock_outline_rounded,
-                          isObscure: true,
+                        const SizedBox(height: 24),
+                        const Text('Password', style: TextStyle(color: Colors.black54, fontSize: 16)),
+                        const SizedBox(height: 8),
+                        const TextField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            suffixIcon: Icon(Icons.visibility_off_outlined),
+                          ),
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 40),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      NavigationScreen(user: sampleUser),
+                                  builder: (_) => NavigationScreen(user: sampleUser),
                                 ),
                                 (route) => false,
                               );
                             },
-                            child: const Text('Sign Up'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text('Sign up', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Already have an Account? ",
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Sign in'),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -94,24 +122,7 @@ class SignupScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required IconData icon,
-    bool isObscure = false,
-  }) {
-    return TextField(
-      obscureText: isObscure,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 12.0, right: 8.0),
-          child: Icon(icon),
+          ],
         ),
       ),
     );

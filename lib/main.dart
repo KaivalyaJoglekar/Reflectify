@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reflectify/screens/splash_screen.dart';
+import 'package:reflectify/screens/splash_screen.dart'; // This will now be our Welcome Screen
 
 void main() {
   runApp(const JournalApp());
@@ -10,81 +10,35 @@ class JournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryAccent = Color(0xFF8A5DF4); // Vivid Purple
-    const primaryRed = Color(0xFFF92A2A); // Red highlight
+    const accentColor = Color(0xFFF04E99); // A vibrant pink accent color
 
     return MaterialApp(
       title: 'Reflectify',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black,
-        primaryColor: primaryAccent,
-
-        // --- SET THE DEFAULT FONT FAMILY ---
-        fontFamily: 'Lato', // Lato is now the default for all text
-
+        brightness: Brightness.light,
+        primaryColor: Colors.black,
+        colorScheme: const ColorScheme.light(
+          primary: accentColor,
+          secondary: accentColor,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.black,
+            textStyle: const TextStyle(fontWeight: FontWeight.bold)
+          ),
+        ),
         inputDecorationTheme: InputDecorationTheme(
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.white24, width: 1.5),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: primaryAccent, width: 2),
-          ),
-          labelStyle: const TextStyle(
-            color: Colors.white54,
-            fontFamily: 'Lato',
-          ),
-          floatingLabelStyle: const TextStyle(color: primaryAccent),
-        ),
-
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF1E1E1E),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey[300]!),
             ),
-            textStyle: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'BebasNeue', // Use BebasNeue for buttons
-              letterSpacing: 1.2,
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
             ),
-          ),
-        ),
-
-        // --- DEFINE THE CUSTOM TEXT THEME WITH NEW FONTS ---
-        textTheme: const TextTheme(
-          // For body text, UI elements, etc.
-          bodyMedium: TextStyle(
-            color: Colors.white70,
-            fontSize: 16,
-            fontFamily: 'Lato',
-          ),
-
-          // For major headings like "Welcome Back"
-          headlineSmall: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 48,
-            fontFamily: 'BebasNeue', // Use BebasNeue for headings
-            letterSpacing: 1.5,
-          ),
-
-          // For section titles like "Recent Entries"
-          titleLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontFamily: 'BebasNeue',
-            letterSpacing: 1.2,
-          ),
-        ),
+            prefixIconColor: Colors.grey[500],
+         ),
       ),
-      home: const SplashScreen(),
+      home: const SplashScreen(), // Starts with the new Welcome Screen
     );
   }
 }

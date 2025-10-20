@@ -1,95 +1,89 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:reflectify/screens/login_screen.dart';
+import 'package:reflectify/widgets/topographic_background.dart';
+import 'package:reflectify/widgets/wave_clipper.dart'; // Import the new wave clipper
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-
-    _animation = Tween(
-      begin: 0.7,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    _controller.repeat(reverse: true);
-
-    Timer(const Duration(seconds: 4), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        // The background is now pure black, with no texture.
-        color: Colors.black,
-        child: Center(
-          child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _animation.value,
+      body: TopographicBackground(
+        child: Column(
+          children: [
+            const Spacer(flex: 3), // Keeps the majority of the screen dark
+            Expanded(
+              flex: 2,
+              // NEW: We wrap the container with ClipPath to apply our custom shape.
+              child: ClipPath(
+                clipper: WaveClipper(), // This is our custom wave shape!
                 child: Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(
-                          0xFFE83D67,
-                        ).withOpacity(0.5), // Magenta
-                        blurRadius: 70.0,
-                        spreadRadius: 15.0,
-                      ),
-                      BoxShadow(
-                        color: const Color(
-                          0xFF9B59B6,
-                        ).withOpacity(0.4), // Vivid Purple
-                        blurRadius: 80.0,
-                        spreadRadius: 10.0,
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.auto_stories,
-                      color: Colors.white,
-                      size: 80,
+                  width: double.infinity,
+                  color: Colors.white, // The container itself is now just a colored box
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(32.0, 60.0, 32.0, 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Welcome to Reflectify', // UPDATED TEXT
+                              style: TextStyle(
+                                fontSize: 34,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Your daily journal guide', // UPDATED TEXT
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                              );
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Continue',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

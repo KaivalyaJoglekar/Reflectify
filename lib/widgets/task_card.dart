@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../models/task_model.dart';
 
 class TaskCard extends StatefulWidget {
-  final Task task;
+  final dynamic task;
   const TaskCard({super.key, required this.task});
 
   @override
