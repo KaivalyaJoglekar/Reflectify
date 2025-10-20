@@ -17,8 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final sampleUser = User(
-        name: 'Kaivalya Joglekar',
-        username: 'kaivalyajoglekar',
+        name: 'Vitaliy D.',
+        username: 'vitaliy_d',
         email: 'kaivalya.j@example.com');
 
     return Scaffold(

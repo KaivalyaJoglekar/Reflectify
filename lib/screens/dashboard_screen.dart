@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:glass_kit/glass_kit.dart';
 import 'package:reflectify/models/user_model.dart';
+import 'package:reflectify/widgets/project_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   final User user;
+
   const DashboardScreen({super.key, required this.user});
 
   @override
@@ -23,7 +24,7 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 24),
             _buildSectionHeader('Progress', () {}),
             const SizedBox(height: 16),
-            _buildDailyTaskCard(),
+            _buildDailyTaskCard(context),
           ],
         ),
       ),
@@ -38,7 +39,6 @@ class DashboardScreen extends StatelessWidget {
           children: [
             const CircleAvatar(
               radius: 24,
-              // Replace with your image asset
               backgroundImage: NetworkImage(
                 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
               ),
@@ -49,12 +49,13 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 Text(
                   'Good Day',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontSize: 14),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 14, color: Colors.white70),
                 ),
                 Text(
-                  user.name.split(' ').first, // Show first name
+                  user.name,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
@@ -76,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
         hintStyle: TextStyle(color: Colors.grey[400]),
         prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
         filled: true,
-        fillColor: Colors.black.withOpacity(0.3),
+        fillColor: const Color(0xFF1E1E1E),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -100,38 +101,41 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildProjectList() {
     return SizedBox(
-      height: 150,
+      height: 150, // Give the horizontal list a fixed height
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: const [
-          ProjectCard(
-            color: Colors.pink,
-            title: 'Redesign main page',
-            tasks: 7,
-            date: '25.10 (11pm)',
+          SizedBox(
+            width: 200, // Give the cards a fixed width
+            child: ProjectCard(
+              color: Colors.pink,
+              title: 'Redesign main page',
+              tasks: 7,
+              date: '25.10 (11pm)',
+            ),
           ),
           SizedBox(width: 16),
-          ProjectCard(
-            color: Colors.orange,
-            title: 'UI/UX Medical Dashboard',
-            tasks: 10,
-            date: '18.09 (10pm)',
+          SizedBox(
+            width: 200, // Give the cards a fixed width
+            child: ProjectCard(
+              color: Colors.orange,
+              title: 'UI/UX Medical Dashboard',
+              tasks: 10,
+              date: '18.09 (10pm)',
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDailyTaskCard() {
-    // This is a simplified version of the card
-    return GlassContainer(
-      height: 180,
-      width: double.infinity,
-      borderRadius: BorderRadius.circular(24),
-      color: Colors.white.withOpacity(0.05),
-      borderColor: Colors.white.withOpacity(0.2),
-      blur: 15,
+  Widget _buildDailyTaskCard(BuildContext context) {
+    return Container(
       padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(24),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -141,68 +145,67 @@ class DashboardScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'You can control the execution of a task',
+            'You can control the execution of a task by a command in the application',
             style: TextStyle(color: Colors.grey[400]),
           ),
-          const Spacer(),
-          // Placeholder for dates and avatars
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // This can be built from a list of dates
-              Row(
-                children: const [
-                  Text('MON 15'),
-                  SizedBox(width: 8),
-                  Text('TUE 16'),
-                ],
-              ),
-              // Placeholder for stacked avatars
-              const Text('Avatars'),
+              _buildDateChip(context, 'MON', '15', true),
+              _buildDateChip(context, 'TUE', '16', false),
+              _buildDateChip(context, 'WED', '17', false),
+              _buildDateChip(context, 'THU', '18', false),
+              _buildDateChip(context, 'FRI', '19', false),
             ],
           ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              ...List.generate(
+                5,
+                (index) => Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundImage: NetworkImage(
+                      'https://i.pravatar.cc/150?u=a${index}',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
   }
-}
 
-// Custom widget for the project cards
-class ProjectCard extends StatelessWidget {
-  final Color color;
-  final String title;
-  final int tasks;
-  final String date;
-
-  const ProjectCard({
-    Key? key,
-    required this.color,
-    required this.title,
-    required this.tasks,
-    required this.date,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassContainer(
-      height: 150,
-      width: 180,
-      borderRadius: BorderRadius.circular(24),
-      color: color.withOpacity(0.1),
-      borderColor: color.withOpacity(0.5),
-      blur: 15,
-      padding: const EdgeInsets.all(16),
+  Widget _buildDateChip(
+      BuildContext context, String day, String date, bool isSelected) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            day,
+            style: TextStyle(
+              fontSize: 12,
+              color: isSelected ? Colors.white : Colors.grey[400],
+            ),
           ),
-          const Spacer(),
-          Text('$tasks Task', style: TextStyle(color: Colors.grey[300])),
           const SizedBox(height: 4),
-          Text(date, style: TextStyle(color: Colors.grey[300])),
+          Text(
+            date,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );

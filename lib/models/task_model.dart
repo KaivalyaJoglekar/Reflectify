@@ -1,10 +1,21 @@
-// lib/models/task_model.dart
 import 'package:flutter/material.dart';
 
-// Simple placeholder to prevent compile errors in dependent files.
-class SimpleTask {
+class Task {
   final String title;
+  final String time;
+  final bool isCompleted;
   final Color color;
+  final String projectName;
+  final int taskCount;
+  final String date;
 
-  const SimpleTask({required this.title, required this.color});
+  Task({
+    required this.title,
+    required this.time,
+    this.isCompleted = false,
+    required this.color,
+    required this.projectName,
+    required this.taskCount,
+    required this.date,
+  });
 }

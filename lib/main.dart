@@ -10,28 +10,34 @@ class JournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF3B82F6); // A nice blue color
+    const accentColor = Color(0xFF3B82F6); 
 
     return MaterialApp(
       title: 'Reflectify',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Colors.black,
-        colorScheme: const ColorScheme.light(
+        brightness: Brightness.dark,
+        primaryColor: accentColor,
+        scaffoldBackgroundColor: const Color(0xFF0F101C),
+        colorScheme: const ColorScheme.dark(
           primary: accentColor,
           secondary: accentColor,
+          surface: Color(0xFF1E1E1E),
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontFamily: 'Lato'),
+          bodyMedium: TextStyle(fontFamily: 'Lato'),
+          titleLarge: TextStyle(fontFamily: 'BebasNeue', fontSize: 28),
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: accentColor, // Use accent for text buttons
-            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+            foregroundColor: accentColor,
+            textStyle: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Lato'),
           ),
         ),
-        // UPDATED: Centralized style for all text form fields
         inputDecorationTheme: InputDecorationTheme(
-          labelStyle: const TextStyle(color: Colors.black54),
-          floatingLabelStyle: TextStyle(
+          labelStyle: const TextStyle(color: Colors.white54),
+          floatingLabelStyle: const TextStyle(
             color: accentColor,
             fontWeight: FontWeight.bold,
           ),
@@ -41,7 +47,7 @@ class JournalApp extends StatelessWidget {
             borderSide: BorderSide(color: Colors.grey[300]!),
           ),
           focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2.0),
+            borderSide: BorderSide(color: Colors.white, width: 2.0),
           ),
           prefixIconColor: Colors.grey[500],
         ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:reflectify/models/journal_entry.dart';
 import 'package:reflectify/widgets/journal_card.dart';
-import 'package:reflectify/screens/add_journal_screen.dart'; // ADDED
+import 'package:reflectify/screens/add_journal_screen.dart'; 
 
 class JournalListScreen extends StatefulWidget {
   const JournalListScreen({super.key});
@@ -44,7 +44,6 @@ class _JournalListScreenState extends State<JournalListScreen> {
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    // ADDED
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
@@ -54,7 +53,6 @@ class _JournalListScreenState extends State<JournalListScreen> {
   }
 
   void _onNewEntry() async {
-    // ADDED
     final newEntry = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) =>
@@ -78,8 +76,8 @@ class _JournalListScreenState extends State<JournalListScreen> {
         title: const Text('All Entries'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_circle_outline), // MODIFIED
-            onPressed: _onNewEntry, // MODIFIED
+            icon: const Icon(Icons.add_circle_outline), 
+            onPressed: _onNewEntry, 
             tooltip: 'Add Entry for Selected Day',
           ),
         ],
@@ -94,7 +92,6 @@ class _JournalListScreenState extends State<JournalListScreen> {
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16.0),
-              // MODIFIED: Filter entries for the selected day
               children: _allEntries
                   .where((entry) => isSameDay(entry.date, _selectedDay))
                   .map((entry) => JournalCard(entry: entry))
@@ -113,7 +110,7 @@ class _JournalListScreenState extends State<JournalListScreen> {
       lastDay: DateTime.utc(2030, 12, 31),
       focusedDay: _focusedDay,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-      onDaySelected: _onDaySelected, // MODIFIED
+      onDaySelected: _onDaySelected,
       headerStyle: HeaderStyle(
         formatButtonVisible: false,
         titleCentered: true,

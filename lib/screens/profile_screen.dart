@@ -109,7 +109,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           const Divider(color: Colors.white12),
           ListTile(
-            leading: Icon(Icons.logout, color: const Color(0xFFF92A2A)),
+            leading: const Icon(Icons.logout, color: Color(0xFFF92A2A)),
             title: const Text(
               'Logout',
               style: TextStyle(color: Color(0xFFF92A2A)),

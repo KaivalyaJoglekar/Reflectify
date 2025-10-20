@@ -1,4 +1,3 @@
-
 name: reflectify
 description: A futuristic journaling app
 publish_to: "none"
@@ -33,16 +32,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-fonts:
-  - family: BebasNeue
-    fonts:
-      - asset: fonts/BebasNeue-Regular.ttf
-      
-
-  - family: Lato
-    fonts:
-      - asset: fonts/Lato-Regular.ttf
-      
-
+  fonts:
+    - family: BebasNeue
+      fonts:
+        - asset: fonts/BebasNeue-Regular.ttf
+        
   
-
+    - family: Lato
+      fonts:
+        - asset: fonts/Lato-Regular.ttf
