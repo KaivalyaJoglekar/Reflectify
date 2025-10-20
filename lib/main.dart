@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reflectify/screens/splash_screen.dart'; // This will now be our Welcome Screen
+import 'package:reflectify/screens/splash_screen.dart';
 
 void main() {
   runApp(const JournalApp());
@@ -10,7 +10,7 @@ class JournalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFFF04E99); // A vibrant pink accent color
+    const accentColor = Color(0xFF9C27B0); // A nice purple to match the arrow
 
     return MaterialApp(
       title: 'Reflectify',
@@ -24,21 +24,26 @@ class JournalApp extends StatelessWidget {
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: Colors.black,
-            textStyle: const TextStyle(fontWeight: FontWeight.bold)
+            foregroundColor: accentColor, // Use accent for text buttons
+            textStyle: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
+        // UPDATED: Centralized style for all text form fields
         inputDecorationTheme: InputDecorationTheme(
-            border: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.black),
-            ),
-            prefixIconColor: Colors.grey[500],
-         ),
+          labelStyle: const TextStyle(color: Colors.black54),
+          floatingLabelStyle: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
+          hintStyle: TextStyle(color: Colors.grey[400]),
+          contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 2.0),
+          ),
+          prefixIconColor: Colors.grey[500],
+        ),
       ),
-      home: const SplashScreen(), // Starts with the new Welcome Screen
+      home: const SplashScreen(),
     );
   }
 }
