@@ -1,87 +1,180 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:reflectify/screens/login_screen.dart';
-import 'package:reflectify/widgets/topographic_background.dart';
-import 'package:reflectify/widgets/bottom_wave_clipper.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late AnimationController _fadeInController;
+  late Animation<double> _orb1MoveX, _orb1MoveY;
+  late Animation<double> _orb2MoveX, _orb2MoveY;
+  late Animation<double> _iconFade;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _fadeInController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..forward();
+
+    // Further reduced animation tweens for a very tight, centered movement
+    _orb1MoveX = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: -40, end: 20), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 20, end: -40), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _orb1MoveY = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: -30, end: 20), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 20, end: -30), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _orb2MoveX = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 40, end: -20), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -20, end: 40), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _orb2MoveY = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 30, end: -20), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -20, end: 30), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _iconFade =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_fadeInController);
+
+    Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const LoginScreen(),
+            transitionsBuilder: (_, animation, __, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 800),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _fadeInController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // The main background is now black
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        children: [
-          // TOP PART: The white header with the new abstract pattern
-          ClipPath(
-            clipper: BottomWaveClipper(),
-            child: SizedBox(
-              // UPDATED: Height is reduced to 45% to push the wave higher
-              height: MediaQuery.of(context).size.height * 0.45,
-              width: double.infinity,
-              child: const TopographicBackground(child: SizedBox.shrink()),
-            ),
-          ),
-
-          // BOTTOM PART: The black area with white text
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: CustomPaint(
+        // The painter is on the root widget, ensuring it covers the whole screen.
+        size: MediaQuery.of(context).size,
+        painter: DottedGridPainter(),
+        child: Center(
+          child: AnimatedBuilder(
+            animation: Listenable.merge([_controller, _fadeInController]),
+            builder: (context, child) {
+              return Stack(
+                alignment: Alignment.center,
                 children: [
-                  const Text(
-                    'Welcome to Reflectify',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  // Orb 1 (Reddish-Pink) - Diameter greatly reduced
+                  Transform.translate(
+                    offset: Offset(_orb1MoveX.value, _orb1MoveY.value),
+                    child: const Orb(
+                      color: Color(0xFFD62F6D),
+                      diameter: 150, // MODIFIED
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Your daily journal guide',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[400],
-                      height: 1.5,
+                  // Orb 2 (Purple) - Diameter greatly reduced
+                  Transform.translate(
+                    offset: Offset(_orb2MoveX.value, _orb2MoveY.value),
+                    child: const Orb(
+                      color: Color(0xFF8A5DF4),
+                      diameter: 130, // MODIFIED
                     ),
                   ),
-                  const Spacer(),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 32.0),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
-                          );
-                        },
-                        style: TextButton.styleFrom(foregroundColor: Colors.white70),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text('Continue', style: TextStyle(fontSize: 18)),
-                            const SizedBox(width: 8),
-                            // The arrow icon will now be blue
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Theme.of(context).colorScheme.primary,
-                            )
-                          ],
-                        ),
-                      ),
+                  FadeTransition(
+                    opacity: _iconFade,
+                    child: Image.network(
+                      'https://i.imgur.com/b2bX3AD.png',
+                      width: 70,
+                      height: 70,
+                      color: Colors.white.withOpacity(0.85),
                     ),
                   ),
                 ],
-              ),
-            ),
+              );
+            },
           ),
-        ],
+        ),
       ),
     );
   }
+}
+
+class Orb extends StatelessWidget {
+  final Color color;
+  final double diameter;
+
+  const Orb({Key? key, required this.color, required this.diameter})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: diameter,
+      height: diameter,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color.withOpacity(0.7),
+      ),
+      child: BackdropFilter(
+        // Reduced blur to match smaller size
+        filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+        child: Container(
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DottedGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.3)
+      ..style = PaintingStyle.fill;
+
+    const double spacing = 15.0;
+    const double radius = 0.7;
+
+    for (double i = 0; i < size.width; i += spacing) {
+      for (double j = 0; j < size.height; j += spacing) {
+        canvas.drawCircle(Offset(i, j), radius, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
