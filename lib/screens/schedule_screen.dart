@@ -1,13 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:reflectify/widgets/timeline_event_card.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
-class ScheduleScreen extends StatelessWidget {
-  const ScheduleScreen({super.key});
+class ScheduleScreen extends StatefulWidget {
+  final List<Map<String, dynamic>> tasks;
+
+  const ScheduleScreen({super.key, this.tasks = const []});
+
+  @override
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  DateTime _focusedDay = DateTime(2025, 10, 15); // Wednesday, October 15, 2025
+  DateTime _selectedDay = DateTime(2025, 10, 15);
+
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+      });
+    }
+  }
+
+  List<Map<String, dynamic>> _getTasksForSelectedDate() {
+    return widget.tasks.where((task) {
+      final taskDate = task['createdAt'] as DateTime?;
+      if (taskDate == null) return false;
+      return isSameDay(taskDate, _selectedDay);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final tasksForDate = _getTasksForSelectedDate();
+
     return Scaffold(
-      backgroundColor: Colors.transparent, // Make background transparent
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -15,15 +45,22 @@ class ScheduleScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
-              const SizedBox(height: 24),
-              const Text(
-                'Monday, 15th September 2021',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              const SizedBox(height: 16),
+              _buildCalendar(),
+              const SizedBox(height: 16),
+              Text(
+                DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
-              _buildWeekView(context),
-              const SizedBox(height: 24),
-              Expanded(child: _buildTimeline()),
+              Expanded(
+                child: tasksForDate.isEmpty
+                    ? _buildEmptyState()
+                    : _buildTaskList(tasksForDate),
+              ),
             ],
           ),
         ),
@@ -35,84 +72,179 @@ class ScheduleScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () {},
+        const Text(
+          'Schedule',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
         ),
         IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
       ],
     );
   }
 
-  Widget _buildWeekView(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildDateChip(context, 'MON', '15', isSelected: true),
-        _buildDateChip(context, 'TUE', '16'),
-        _buildDateChip(context, 'WED', '17'),
-        _buildDateChip(context, 'THU', '18'),
-        _buildDateChip(context, 'FRI', '19'),
-      ],
+  Widget _buildCalendar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          width: 1.5,
+        ),
+      ),
+      child: TableCalendar(
+        firstDay: DateTime(2025, 10, 15),
+        lastDay: DateTime(2030, 12, 31),
+        focusedDay: _focusedDay,
+        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+        onDaySelected: _onDaySelected,
+        calendarFormat: CalendarFormat.week,
+        startingDayOfWeek: StartingDayOfWeek.monday,
+        headerStyle: HeaderStyle(
+          formatButtonVisible: false,
+          titleCentered: true,
+          titleTextStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.white),
+          rightChevronIcon: const Icon(
+            Icons.chevron_right,
+            color: Colors.white,
+          ),
+        ),
+        calendarStyle: CalendarStyle(
+          defaultTextStyle: const TextStyle(color: Colors.white),
+          weekendTextStyle: const TextStyle(color: Colors.white70),
+          outsideTextStyle: const TextStyle(color: Colors.white30),
+          todayDecoration: BoxDecoration(
+            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            shape: BoxShape.circle,
+          ),
+          selectedDecoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            shape: BoxShape.circle,
+          ),
+          selectedTextStyle: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        daysOfWeekStyle: const DaysOfWeekStyle(
+          weekdayStyle: TextStyle(color: Colors.white70),
+          weekendStyle: TextStyle(color: Colors.white70),
+        ),
+      ),
     );
   }
 
-  Widget _buildDateChip(
-    BuildContext context,
-    String day,
-    String date, {
-    bool isSelected = false,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? Theme.of(context).primaryColor
-            : Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(14),
-      ),
+  Widget _buildEmptyState() {
+    return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Icon(Icons.task_alt, size: 64, color: Colors.white.withOpacity(0.3)),
+          const SizedBox(height: 16),
           Text(
-            day,
+            'No tasks for this date',
             style: TextStyle(
-              fontSize: 12,
-              color: isSelected ? Colors.white : Colors.grey,
+              fontSize: 18,
+              color: Colors.white.withOpacity(0.5),
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
-            date,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            'Tap + to add a task',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.3),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTimeline() {
-    return ListView(
-      children: const [
-        TimelineEventCard(
-          time: '7 am',
-          eventTitle: 'Morning training with Anna',
-          eventTime: '7:00 am - 8:30 am',
-          color: Colors.orange,
-        ),
-        TimelineEventCard(
-          time: '9 am',
-          eventTitle: 'Team meeting (Front and Back)',
-          eventTime: '9:20 am - 11:15 am',
-          color: Colors.pink,
-          isFloating: true,
-        ),
-        TimelineEventCard(
-          time: '12 am',
-          eventTitle: 'Call Nikita about buying a car',
-          eventTime: '12:10 am - 12:30 am',
-          color: Colors.green,
-        ),
-      ],
+  Widget _buildTaskList(List<Map<String, dynamic>> tasksForDate) {
+    return ListView.builder(
+      itemCount: tasksForDate.length,
+      itemBuilder: (context, index) {
+        final task = tasksForDate[index];
+        final taskDate = task['createdAt'] as DateTime;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFD62F6D).withOpacity(0.4),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    task['completed']
+                        ? Icons.check_circle
+                        : Icons.radio_button_unchecked,
+                    color: task['completed'] ? Colors.green : Colors.white54,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      task['title'],
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        decoration: task['completed']
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (task['description']?.isNotEmpty ?? false) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 36),
+                  child: Text(
+                    task['description'],
+                    style: const TextStyle(color: Colors.white54, fontSize: 14),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 36),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 14,
+                      color: Colors.white.withOpacity(0.4),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      DateFormat('h:mm a').format(taskDate),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.4),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

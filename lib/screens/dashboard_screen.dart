@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/widgets/project_card.dart';
+import 'package:reflectify/utils/streak_calculator.dart';
 
 class DashboardScreen extends StatelessWidget {
   final User user;
@@ -51,6 +53,9 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context) {
+    // Get current streak from shared calculator
+    final int currentStreak = StreakCalculator.calculateCurrentStreak();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -83,9 +88,44 @@ class DashboardScreen extends StatelessWidget {
             ),
           ],
         ),
-        IconButton(
-          icon: const Icon(Icons.settings, size: 28, color: Colors.white),
-          onPressed: () {},
+        Row(
+          children: [
+            // Streak Fire Icon
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF6B35).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color(0xFFFF6B35).withOpacity(0.4),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.local_fire_department,
+                    color: Color(0xFFFF6B35),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '$currentStreak',
+                    style: const TextStyle(
+                      color: Color(0xFFFF6B35),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            IconButton(
+              icon: const Icon(Icons.settings, size: 28, color: Colors.white),
+              onPressed: () {},
+            ),
+          ],
         ),
       ],
     );
@@ -97,7 +137,10 @@ class DashboardScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          width: 1.5,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -127,13 +170,13 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildProjectList() {
-    return Row(
-      children: const [
+    return const Row(
+      children: [
         Expanded(
           child: ProjectCard(
             title: 'Redesign main page',
             tasks: 7,
-            date: '25.10 (11pm)',
+            date: '25.10.25 (11pm)',
           ),
         ),
         SizedBox(width: 16),
@@ -141,7 +184,7 @@ class DashboardScreen extends StatelessWidget {
           child: ProjectCard(
             title: 'UI/UX Medical Dashboard',
             tasks: 10,
-            date: '18.09 (10pm)',
+            date: '18.10.25 (10pm)',
           ),
         ),
       ],
@@ -155,7 +198,10 @@ class DashboardScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(
+          color: const Color(0xFF8A5DF4).withOpacity(0.4),
+          width: 1.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

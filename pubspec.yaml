@@ -21,7 +21,8 @@ dependencies:
   image_picker: ^1.2.0
   geolocator: ^14.0.2
   fl_chart: ^1.1.1
-  glass_kit: ^3.0.0  # RE-ADDED
+  glass_kit: ^3.0.0 
+  uuid: ^4.5.1 # RE-ADDED
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +32,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/grid.jpg
 
   fonts:
     - family: BebasNeue

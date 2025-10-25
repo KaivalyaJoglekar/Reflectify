@@ -14,13 +14,22 @@ class ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Random colored borders for visual appeal
+    final colors = [
+      Theme.of(context).primaryColor,
+      const Color(0xFF8A5DF4),
+      const Color(0xFFD62F6D),
+      const Color(0xFF06B6D4),
+    ];
+    final borderColor = colors[title.hashCode % colors.length];
+
     return Container(
       height: 160,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: borderColor.withOpacity(0.4), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

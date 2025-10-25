@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:reflectify/screens/login_screen.dart';
+import 'package:reflectify/widgets/grainy_background.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -53,8 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
       TweenSequenceItem(tween: Tween(begin: -20, end: 30), weight: 1),
     ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    _iconFade =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_fadeInController);
+    _iconFade = Tween<double>(begin: 0.0, end: 1.0).animate(_fadeInController);
 
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
@@ -82,47 +82,54 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: CustomPaint(
-        // The painter is on the root widget, ensuring it covers the whole screen.
-        size: MediaQuery.of(context).size,
-        painter: DottedGridPainter(),
-        child: Center(
-          child: AnimatedBuilder(
-            animation: Listenable.merge([_controller, _fadeInController]),
-            builder: (context, child) {
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Orb 1 (Reddish-Pink) - Diameter greatly reduced
-                  Transform.translate(
-                    offset: Offset(_orb1MoveX.value, _orb1MoveY.value),
-                    child: const Orb(
-                      color: Color(0xFFD62F6D),
-                      diameter: 150, // MODIFIED
-                    ),
-                  ),
-                  // Orb 2 (Purple) - Diameter greatly reduced
-                  Transform.translate(
-                    offset: Offset(_orb2MoveX.value, _orb2MoveY.value),
-                    child: const Orb(
-                      color: Color(0xFF8A5DF4),
-                      diameter: 130, // MODIFIED
-                    ),
-                  ),
-                  FadeTransition(
-                    opacity: _iconFade,
-                    child: Image.network(
-                      'https://i.imgur.com/b2bX3AD.png',
-                      width: 70,
-                      height: 70,
-                      color: Colors.white.withOpacity(0.85),
-                    ),
-                  ),
-                ],
-              );
-            },
+      body: Stack(
+        children: [
+          // Grid background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/grid.jpg',
+              fit: BoxFit.cover,
+              color: Colors.black.withOpacity(0.7),
+              colorBlendMode: BlendMode.darken,
+            ),
           ),
-        ),
+          // Dotted grid overlay
+          CustomPaint(
+            size: MediaQuery.of(context).size,
+            painter: DottedGridPainter(),
+          ),
+          // Animated orbs
+          GrainyBackground(
+            child: Center(
+              child: AnimatedBuilder(
+                animation: Listenable.merge([_controller, _fadeInController]),
+                builder: (context, child) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Orb 1 (Reddish-Pink)
+                      Transform.translate(
+                        offset: Offset(_orb1MoveX.value, _orb1MoveY.value),
+                        child: const Orb(
+                          color: Color(0xFFD62F6D),
+                          diameter: 150,
+                        ),
+                      ),
+                      // Orb 2 (Purple)
+                      Transform.translate(
+                        offset: Offset(_orb2MoveX.value, _orb2MoveY.value),
+                        child: const Orb(
+                          color: Color(0xFF8A5DF4),
+                          diameter: 130,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -133,7 +140,7 @@ class Orb extends StatelessWidget {
   final double diameter;
 
   const Orb({Key? key, required this.color, required this.diameter})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -162,11 +169,11 @@ class DottedGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
+      ..color = Colors.white.withOpacity(0.4)
       ..style = PaintingStyle.fill;
 
-    const double spacing = 15.0;
-    const double radius = 0.7;
+    const double spacing = 25.0;
+    const double radius = 2.0;
 
     for (double i = 0; i < size.width; i += spacing) {
       for (double j = 0; j < size.height; j += spacing) {

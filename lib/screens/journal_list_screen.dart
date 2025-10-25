@@ -13,21 +13,21 @@ class JournalListScreen extends StatefulWidget {
 }
 
 class _JournalListScreenState extends State<JournalListScreen> {
-  DateTime _focusedDay = DateTime.now();
+  DateTime _focusedDay = DateTime(2025, 10, 15);
   DateTime? _selectedDay;
 
   final List<JournalEntry> _allEntries = [
     JournalEntry(
-      title: "A Productive Day",
+      title: "First Journal Entry",
       content:
-          "Managed to fix a long-standing bug and started designing the new journaling stats screen. Feeling accomplished.",
-      date: DateTime.now(),
+          "Today marks the beginning of my daily journaling journey. I'm excited to document my thoughts and experiences.",
+      date: DateTime(2025, 10, 15),
     ),
     JournalEntry(
-      title: "Thoughts on the Rain",
+      title: "Reflections on Goals",
       content:
-          "The sound of rain is incredibly calming. It's a perfect day to reflect on the past week and plan for the next.",
-      date: DateTime.now().subtract(const Duration(days: 1)),
+          "Setting clear goals for the month ahead. Focus on personal growth and staying consistent with daily habits.",
+      date: DateTime(2025, 10, 16),
     ),
   ];
 
@@ -104,8 +104,8 @@ class _JournalListScreenState extends State<JournalListScreen> {
   Widget _buildCalendar() {
     final theme = Theme.of(context);
     return TableCalendar(
-      firstDay: DateTime.utc(2020, 1, 1),
-      lastDay: DateTime.utc(2030, 12, 31),
+      firstDay: DateTime(2025, 10, 15),
+      lastDay: DateTime(2030, 12, 31),
       focusedDay: _focusedDay,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       onDaySelected: _onDaySelected,

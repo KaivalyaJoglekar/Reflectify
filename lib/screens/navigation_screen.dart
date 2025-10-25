@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/screens/dashboard_screen.dart';
 import 'package:reflectify/screens/schedule_screen.dart';
-import 'package:reflectify/screens/placeholder_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
+import 'package:reflectify/screens/journal_list_screen.dart';
+import 'package:reflectify/screens/add_journal_screen.dart';
+import 'package:reflectify/models/journal_entry.dart';
+import 'package:intl/intl.dart';
+import 'package:reflectify/screens/full_profile_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
   final User user;
@@ -15,19 +19,8 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen> {
   int _selectedIndex = 0;
-
-  late final List<Widget> _widgetOptions;
-
-  @override
-  void initState() {
-    super.initState();
-    _widgetOptions = <Widget>[
-      DashboardScreen(user: widget.user),
-      const ScheduleScreen(),
-      const PlaceholderScreen(title: 'Stats'),
-      const PlaceholderScreen(title: 'Notifications'),
-    ];
-  }
+  final List<Map<String, dynamic>> _tasks = [];
+  DateTime _selectedTaskDate = DateTime(2025, 10, 15);
 
   void _onItemTapped(int index) {
     setState(() {
@@ -35,22 +28,254 @@ class _NavigationScreenState extends State<NavigationScreen> {
     });
   }
 
+  void _onFABPressed() {
+    if (_selectedIndex == 2) {
+      // Journal tab - add journal entry
+      _showAddJournalDialog();
+    } else {
+      // Other tabs - add task
+      _showAddTaskDialog(context);
+    }
+  }
+
+  void _showAddJournalDialog() async {
+    final newEntry = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            AddJournalScreen(selectedDate: DateTime(2025, 10, 15)),
+        fullscreenDialog: true,
+      ),
+    );
+
+    if (newEntry != null && newEntry is JournalEntry) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Journal entry added!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _showAddTaskDialog(BuildContext context) {
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController descController = TextEditingController();
+    DateTime selectedDate = _selectedTaskDate;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C1E),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: Theme.of(context).primaryColor.withOpacity(0.4),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'New Task',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Date Picker
+                InkWell(
+                  onTap: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: selectedDate,
+                      firstDate: DateTime(2025, 10, 15),
+                      lastDate: DateTime(2030, 12, 31),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.dark(
+                              primary: Theme.of(context).primaryColor,
+                              onPrimary: Colors.white,
+                              surface: const Color(0xFF1C1C1E),
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+                    if (picked != null) {
+                      setDialogState(() {
+                        selectedDate = picked;
+                      });
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white70,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          DateFormat('EEEE, MMM d, yyyy').format(selectedDate),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: titleController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Task Title',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.white.withOpacity(0.3),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: descController,
+                  style: const TextStyle(color: Colors.white),
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: 'Description (optional)',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.white.withOpacity(0.3),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (titleController.text.isNotEmpty) {
+                          setState(() {
+                            _tasks.add({
+                              'title': titleController.text,
+                              'description': descController.text,
+                              'completed': false,
+                              'createdAt': selectedDate,
+                            });
+                            _selectedTaskDate = selectedDate;
+                          });
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Task added for ${DateFormat('MMM d').format(selectedDate)}!',
+                              ),
+                              backgroundColor: Colors.green,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Add Task'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Build widget options dynamically with current tasks
+    final widgetOptions = <Widget>[
+      DashboardScreen(user: widget.user),
+      ScheduleScreen(tasks: _tasks),
+      const JournalListScreen(),
+      FullProfileScreen(user: widget.user),
+    ];
+
     return AppBackground(
       child: Scaffold(
         extendBody: true,
-        backgroundColor: Colors.transparent, // Let the AppBackground show through
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _widgetOptions,
-        ),
+        backgroundColor: Colors.transparent,
+        body: IndexedStack(index: _selectedIndex, children: widgetOptions),
         bottomNavigationBar: _buildTransparentBottomBar(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: Theme.of(context).primaryColor,
-          elevation: 4,
-          child: const Icon(Icons.add, color: Colors.white, size: 30),
+        floatingActionButton: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withOpacity(0.5),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: FloatingActionButton(
+            onPressed: _onFABPressed,
+            backgroundColor: Theme.of(context).primaryColor,
+            elevation: 4,
+            child: const Icon(Icons.add, color: Colors.white, size: 30),
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
@@ -64,7 +289,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          width: 1.5,
+        ),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
@@ -77,10 +305,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               _buildNavItem(0, Icons.home_rounded),
-              _buildNavItem(1, Icons.bar_chart_rounded),
+              _buildNavItem(1, Icons.calendar_today_rounded),
               const SizedBox(width: 48), // Space for FAB
-              _buildNavItem(2, Icons.pie_chart_outline_rounded),
-              _buildNavItem(3, Icons.notifications_none_rounded),
+              _buildNavItem(2, Icons.book_rounded),
+              _buildNavItem(3, Icons.person_rounded),
             ],
           ),
         ),

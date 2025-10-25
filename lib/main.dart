@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import 'package:reflectify/screens/splash_screen.dart';
 
 void main() {
-  runApp(const JournalApp());
+  // Wrap the app in a ProviderScope
+  runApp(const ProviderScope(child: JournalApp()));
 }
 
 class JournalApp extends StatelessWidget {
@@ -18,11 +20,12 @@ class JournalApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         primaryColor: accentColor,
-        scaffoldBackgroundColor: Colors.transparent, // REQUIRED for glass effect
+        scaffoldBackgroundColor:
+            Colors.transparent, // REQUIRED for glass effect
         colorScheme: const ColorScheme.dark(
           primary: accentColor,
           secondary: accentColor,
-          surface: Color(0xFF1C1C1E), 
+          surface: Color(0xFF1C1C1E),
         ),
         textTheme: const TextTheme(
           bodyLarge: TextStyle(fontFamily: 'Lato'),
@@ -32,7 +35,8 @@ class JournalApp extends StatelessWidget {
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: Colors.white70,
-            textStyle: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Lato'),
+            textStyle:
+                const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Lato'),
           ),
         ),
       ),

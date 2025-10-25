@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reflectify/widgets/mesh_gradient_background.dart';
+import 'package:reflectify/widgets/grainy_background.dart';
 
 class AppBackground extends StatelessWidget {
   final Widget child;
@@ -7,11 +8,8 @@ class AppBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const MeshGradientBackground(),
-        child,
-      ],
+    return GrainyBackground(
+      child: Stack(children: [const MeshGradientBackground(), child]),
     );
   }
 }
