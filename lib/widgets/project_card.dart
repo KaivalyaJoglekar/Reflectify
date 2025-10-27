@@ -63,7 +63,7 @@ class ProjectCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.watch_later_outlined,
                     size: 16,
                     color: Colors.white54,

@@ -6,7 +6,9 @@ import 'package:reflectify/widgets/journal_card.dart';
 import 'package:reflectify/screens/add_journal_screen.dart';
 
 class JournalListScreen extends StatefulWidget {
-  const JournalListScreen({super.key});
+  final List<Map<String, dynamic>> tasks;
+
+  const JournalListScreen({super.key, this.tasks = const []});
 
   @override
   State<JournalListScreen> createState() => _JournalListScreenState();
@@ -89,10 +91,20 @@ class _JournalListScreenState extends State<JournalListScreen> {
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(16.0),
-                children: _allEntries
-                    .where((entry) => isSameDay(entry.date, _selectedDay))
-                    .map((entry) => JournalCard(entry: entry))
-                    .toList(),
+                children: [
+                  // Journal entries for selected day
+                  ..._allEntries
+                      .where((entry) => isSameDay(entry.date, _selectedDay))
+                      .map((entry) => JournalCard(entry: entry)),
+                  // Tasks for selected day
+                  ...widget.tasks
+                      .where((task) {
+                        final taskDate = task['createdAt'] as DateTime?;
+                        return taskDate != null &&
+                            isSameDay(taskDate, _selectedDay);
+                      })
+                      .map((task) => _buildTaskCard(task)),
+                ],
               ),
             ),
           ],
@@ -123,6 +135,84 @@ class _JournalListScreenState extends State<JournalListScreen> {
           color: theme.colorScheme.primary,
           shape: BoxShape.circle,
         ),
+      ),
+    );
+  }
+
+  Widget _buildTaskCard(Map<String, dynamic> task) {
+    final taskDate = task['createdAt'] as DateTime?;
+    final timeString = taskDate != null
+        ? '${taskDate.hour.toString().padLeft(2, '0')}:${taskDate.minute.toString().padLeft(2, '0')}'
+        : '';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF8A5DF4).withOpacity(0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                task['completed'] == true
+                    ? Icons.check_circle
+                    : Icons.radio_button_unchecked,
+                color: const Color(0xFF8A5DF4),
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  task['title'] ?? '',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              if (timeString.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8A5DF4).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    timeString,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF8A5DF4),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          if (task['description'] != null &&
+              task['description'].toString().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8, left: 32),
+              child: Text(
+                task['description'],
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withOpacity(0.6),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

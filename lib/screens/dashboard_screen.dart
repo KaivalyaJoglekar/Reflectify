@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/widgets/project_card.dart';
 import 'package:reflectify/utils/streak_calculator.dart';
@@ -90,35 +89,24 @@ class DashboardScreen extends StatelessWidget {
         ),
         Row(
           children: [
-            // Streak Fire Icon
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35).withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: const Color(0xFFFF6B35).withOpacity(0.4),
-                  width: 1.5,
+            // Streak Fire Icon (no background)
+            Row(
+              children: [
+                const Icon(
+                  Icons.local_fire_department,
+                  color: Color(0xFFFF6B35),
+                  size: 24,
                 ),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.local_fire_department,
+                const SizedBox(width: 4),
+                Text(
+                  '$currentStreak',
+                  style: const TextStyle(
                     color: Color(0xFFFF6B35),
-                    size: 20,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    '$currentStreak',
-                    style: const TextStyle(
-                      color: Color(0xFFFF6B35),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
             const SizedBox(width: 12),
             IconButton(

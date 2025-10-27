@@ -99,16 +99,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         onDaySelected: _onDaySelected,
         calendarFormat: CalendarFormat.week,
         startingDayOfWeek: StartingDayOfWeek.monday,
-        headerStyle: HeaderStyle(
+        headerStyle: const HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          titleTextStyle: const TextStyle(
+          titleTextStyle: TextStyle(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
-          leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.white),
-          rightChevronIcon: const Icon(
+          leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+          rightChevronIcon: Icon(
             Icons.chevron_right,
             color: Colors.white,
           ),

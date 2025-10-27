@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/screens/login_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
