@@ -727,13 +727,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildNavItem(0, Icons.dashboard_rounded),
-                _buildNavItem(1, Icons.task_alt_rounded),
-                _buildNavItem(2, Icons.calendar_today_rounded),
+                _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard'),
+                _buildNavItem(1, Icons.task_alt_rounded, 'Tasks'),
+                _buildNavItem(2, Icons.calendar_today_rounded, 'Calendar'),
                 const SizedBox(width: 30), // Space for FAB
-                _buildNavItem(5, Icons.book_rounded),
-                _buildNavItem(6, Icons.analytics_rounded),
-                _buildNavItem(7, Icons.person_rounded),
+                _buildNavItem(5, Icons.book_rounded, 'Journal'),
+                _buildNavItem(6, Icons.analytics_rounded, 'Analytics'),
+                _buildNavItem(7, Icons.person_rounded, 'Profile'),
               ],
             ),
           ),
@@ -742,22 +742,34 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon) {
+  Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
+    final color = isSelected
+        ? Theme.of(context).primaryColor
+        : Colors.white.withOpacity(0.6);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        customBorder: const CircleBorder(),
         onTap: () => _onItemTapped(index),
+        borderRadius: BorderRadius.circular(12),
         child: SizedBox(
-          width: 40,
-          height: 40,
-          child: Icon(
-            icon,
-            size: 24,
-            color: isSelected
-                ? Theme.of(context).primaryColor
-                : Colors.white.withOpacity(0.5),
+          width: 56,
+          height: 56,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 22, color: color),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: color,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
           ),
         ),
       ),
