@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reflectify/widgets/topographic_background.dart';
-import 'package:reflectify/screens/navigation_screen.dart';
+import 'package:reflectify/screens/main_navigation_screen.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/screens/signup_screen.dart';
 import 'package:reflectify/widgets/bottom_wave_clipper.dart';
@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (_) =>
-                                  NavigationScreen(user: sampleUser),
+                                  MainNavigationScreen(user: sampleUser),
                             ),
                           );
                         },

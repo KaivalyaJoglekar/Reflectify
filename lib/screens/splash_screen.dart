@@ -117,9 +117,22 @@ class _SplashScreenState extends State<SplashScreen>
               },
             ),
           ),
-          // Dark overlay for better blob visibility
+          // Visible dotted grid overlay
+          Positioned.fill(child: CustomPaint(painter: DottedGridPainter())),
+          // Dark overlay for better blob and grid visibility
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.3)),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.4),
+                    Colors.black.withOpacity(0.6),
+                  ],
+                ),
+              ),
+            ),
           ),
           // Animated merging blobs with enhanced blur
           Center(
@@ -134,7 +147,7 @@ class _SplashScreenState extends State<SplashScreen>
                       offset: Offset(_orb1MoveX.value, _orb1MoveY.value),
                       child: const MergingBlob(
                         color: Color(0xFFD62F6D),
-                        diameter: 200,
+                        diameter: 220,
                       ),
                     ),
                     // Blob 2 (Purple) - Medium
@@ -142,20 +155,74 @@ class _SplashScreenState extends State<SplashScreen>
                       offset: Offset(_orb2MoveX.value, _orb2MoveY.value),
                       child: const MergingBlob(
                         color: Color(0xFF8A5DF4),
-                        diameter: 180,
+                        diameter: 200,
                       ),
                     ),
-                    // Blob 3 (Blue-Purple) - Smaller
+                    // Blob 3 (Teal) - Smaller
                     Transform.translate(
                       offset: Offset(_orb3MoveX.value, _orb3MoveY.value),
                       child: const MergingBlob(
                         color: Color(0xFF4ECDC4),
-                        diameter: 160,
+                        diameter: 180,
                       ),
                     ),
                   ],
                 );
               },
+            ),
+          ),
+          // App branding
+          Positioned(
+            bottom: 120,
+            left: 0,
+            right: 0,
+            child: FadeTransition(
+              opacity: _fadeInController,
+              child: Column(
+                children: [
+                  const Text(
+                    'REFLECTIFY',
+                    style: TextStyle(
+                      fontFamily: 'BebasNeue',
+                      fontSize: 48,
+                      color: Colors.white,
+                      letterSpacing: 4,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Your Daily Reflection Companion',
+                    style: TextStyle(
+                      fontFamily: 'Lato',
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.7),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Loading indicator
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: FadeTransition(
+              opacity: _fadeInController,
+              child: Center(
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -210,11 +277,11 @@ class DottedGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.6)
+      ..color = Colors.white.withOpacity(0.15)
       ..style = PaintingStyle.fill;
 
-    const double spacing = 30.0;
-    const double radius = 2.5;
+    const double spacing = 25.0;
+    const double radius = 1.5;
 
     for (double i = 0; i < size.width; i += spacing) {
       for (double j = 0; j < size.height; j += spacing) {
