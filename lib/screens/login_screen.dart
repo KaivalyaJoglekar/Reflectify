@@ -157,11 +157,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pushReplacement(
+                          Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                               builder: (_) =>
                                   MainNavigationScreen(user: sampleUser),
                             ),
+                            (route) => false,
                           );
                         },
                         style: ElevatedButton.styleFrom(

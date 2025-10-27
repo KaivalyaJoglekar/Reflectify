@@ -94,10 +94,10 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // bg_mad.jpg background image - full screen
+          // grid.jpg background image - full screen
           Positioned.fill(
             child: Image.asset(
-              'assets/bg_mad.jpg',
+              'assets/grid.jpg',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 // Fallback to gradient if image fails to load

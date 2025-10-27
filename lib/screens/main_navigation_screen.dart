@@ -150,74 +150,119 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: DropdownButtonFormField<String>(
-                            initialValue: selectedCategory,
-                            dropdownColor: const Color(0xFF1C1C1E),
-                            decoration: InputDecoration(
-                              labelText: 'Category',
-                              labelStyle: const TextStyle(
-                                color: Colors.white70,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.white.withOpacity(0.3),
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButtonFormField<String>(
+                              isDense: true,
+                              isExpanded: true,
+                              menuMaxHeight: 300,
+                              initialValue: selectedCategory,
+                              dropdownColor: const Color(0xFF1C1C1E),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
                                 ),
-                                borderRadius: BorderRadius.circular(12),
+                                labelText: 'Category',
+                                labelStyle: const TextStyle(
+                                  color: Colors.white70,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
+                              items:
+                                  [
+                                        'Personal',
+                                        'Work',
+                                        'Projects',
+                                        'Study',
+                                        'Health',
+                                      ]
+                                      .map(
+                                        (cat) => DropdownMenuItem<String>(
+                                          value: cat,
+                                          child: Text(
+                                            cat,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setDialogState(() {
+                                    selectedCategory = val;
+                                  });
+                                }
+                              },
                             ),
-                            items:
-                                [
-                                      'Personal',
-                                      'Work',
-                                      'Projects',
-                                      'Study',
-                                      'Health',
-                                    ]
-                                    .map(
-                                      (cat) => DropdownMenuItem(
-                                        value: cat,
-                                        child: Text(cat),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (val) {
-                              if (val != null) {
-                                setDialogState(() {
-                                  selectedCategory = val;
-                                });
-                              }
-                            },
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: DropdownButtonFormField<int>(
-                            initialValue: selectedPriority,
-                            dropdownColor: const Color(0xFF1C1C1E),
-                            decoration: InputDecoration(
-                              labelText: 'Priority',
-                              labelStyle: const TextStyle(
-                                color: Colors.white70,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.white.withOpacity(0.3),
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButtonFormField<int>(
+                              isDense: true,
+                              isExpanded: true,
+                              menuMaxHeight: 300,
+                              initialValue: selectedPriority,
+                              dropdownColor: const Color(0xFF1C1C1E),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
                                 ),
-                                borderRadius: BorderRadius.circular(12),
+                                labelText: 'Priority',
+                                labelStyle: const TextStyle(
+                                  color: Colors.white70,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 1,
+                                  child: Text(
+                                    'High',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 2,
+                                  child: Text(
+                                    'Medium',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 3,
+                                  child: Text(
+                                    'Low',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setDialogState(() {
+                                    selectedPriority = val;
+                                  });
+                                }
+                              },
                             ),
-                            items: const [
-                              DropdownMenuItem(value: 1, child: Text('High')),
-                              DropdownMenuItem(value: 2, child: Text('Medium')),
-                              DropdownMenuItem(value: 3, child: Text('Low')),
-                            ],
-                            onChanged: (val) {
-                              if (val != null) {
-                                setDialogState(() {
-                                  selectedPriority = val;
-                                });
-                              }
-                            },
                           ),
                         ),
                       ],
@@ -659,35 +704,38 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   Widget _buildBottomBar() {
-    return Container(
-      height: 75,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
-          width: 1.5,
+    return SafeArea(
+      child: Container(
+        height: 60,
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.65),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: Theme.of(context).primaryColor.withOpacity(0.5),
+            width: 1.5,
+          ),
         ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BottomAppBar(
-          color: Colors.transparent,
-          elevation: 0,
-          shape: const CircularNotchedRectangle(),
-          notchMargin: 8.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              _buildNavItem(0, Icons.dashboard_rounded),
-              _buildNavItem(1, Icons.task_alt_rounded),
-              _buildNavItem(2, Icons.calendar_today_rounded),
-              const SizedBox(width: 48),
-              _buildNavItem(5, Icons.book_rounded),
-              _buildNavItem(6, Icons.analytics_rounded),
-              _buildNavItem(7, Icons.person_rounded),
-            ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BottomAppBar(
+            padding: EdgeInsets.zero,
+            height: 60,
+            color: Colors.transparent,
+            elevation: 0,
+            notchMargin: 8,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(0, Icons.dashboard_rounded),
+                _buildNavItem(1, Icons.task_alt_rounded),
+                _buildNavItem(2, Icons.calendar_today_rounded),
+                const SizedBox(width: 30), // Space for FAB
+                _buildNavItem(5, Icons.book_rounded),
+                _buildNavItem(6, Icons.analytics_rounded),
+                _buildNavItem(7, Icons.person_rounded),
+              ],
+            ),
           ),
         ),
       ),
@@ -696,13 +744,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   Widget _buildNavItem(int index, IconData icon) {
     final isSelected = _selectedIndex == index;
-    return IconButton(
-      icon: Icon(
-        icon,
-        color: isSelected ? Theme.of(context).primaryColor : Colors.white54,
-        size: 28,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: () => _onItemTapped(index),
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(
+            icon,
+            size: 24,
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Colors.white.withOpacity(0.5),
+          ),
+        ),
       ),
-      onPressed: () => _onItemTapped(index),
     );
   }
 
@@ -710,20 +768,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     if (_selectedIndex == 4) return null; // No FAB for Focus Mode
 
     return Container(
+      margin: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.5),
-            blurRadius: 20,
-            spreadRadius: 5,
+            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            spreadRadius: 2,
           ),
         ],
       ),
       child: FloatingActionButton(
-        onPressed: _onFABPressed,
+        elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
-        child: const Icon(Icons.add, size: 30),
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, size: 28, color: Colors.white),
+        onPressed: _onFABPressed,
       ),
     );
   }

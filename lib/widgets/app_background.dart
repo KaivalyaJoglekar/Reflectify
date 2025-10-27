@@ -8,8 +8,18 @@ class AppBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GrainyBackground(
-      child: Stack(children: [const MeshGradientBackground(), child]),
+    return Stack(
+      children: [
+        Image.asset(
+          'assets/grid.jpg',
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        GrainyBackground(
+          child: Stack(children: [const MeshGradientBackground(), child]),
+        ),
+      ],
     );
   }
 }

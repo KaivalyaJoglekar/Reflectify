@@ -9,11 +9,11 @@ class MeshGradientBackground extends StatelessWidget {
       children: [
         // Top-left aurora glow (Blue)
         Positioned(
-          top: -200,
-          left: -200,
+          top: -150,
+          left: -150,
           child: Container(
-            width: 500,
-            height: 500,
+            width: 350,
+            height: 350,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(

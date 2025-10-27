@@ -14,7 +14,6 @@ class JournalApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-    const accentColor = Color(0xFF3B82F6);
 
     return MaterialApp(
       title: 'Reflectify',
