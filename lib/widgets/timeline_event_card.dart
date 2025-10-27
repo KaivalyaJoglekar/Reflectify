@@ -33,15 +33,16 @@ class TimelineEventCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                    width: 1.5,
+                  ),
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      width: 4,
-                      color: color,
-                    ),
+                    Container(width: 4, color: color),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -52,9 +53,15 @@ class TimelineEventCard extends StatelessWidget {
                             children: [
                               Text(
                                 eventTitle,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              const Icon(Icons.more_horiz, color: Colors.white54, size: 20),
+                              const Icon(
+                                Icons.more_horiz,
+                                color: Colors.white54,
+                                size: 20,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 4),
@@ -68,14 +75,20 @@ class TimelineEventCard extends StatelessWidget {
                           if (isFloating) ...[
                             const SizedBox(height: 12),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.black.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Text(
                                 'Banking app structure and implement',
-                                style: TextStyle(color: Colors.white70, fontSize: 12),
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -89,14 +102,20 @@ class TimelineEventCard extends StatelessWidget {
                                       widthFactor: 0.7,
                                       child: CircleAvatar(
                                         radius: 12,
-                                        backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=${index + 20}'),
+                                        backgroundImage: NetworkImage(
+                                          'https://i.pravatar.cc/150?img=${index + 20}',
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.white54,
+                                  size: 16,
+                                ),
                               ],
-                            )
+                            ),
                           ],
                         ],
                       ),

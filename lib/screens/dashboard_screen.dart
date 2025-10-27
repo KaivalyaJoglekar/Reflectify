@@ -123,10 +123,10 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       height: 56,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),
@@ -184,10 +184,10 @@ class DashboardScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF8A5DF4).withOpacity(0.4),
+          color: const Color(0xFF8A5DF4).withOpacity(0.5),
           width: 1.5,
         ),
       ),

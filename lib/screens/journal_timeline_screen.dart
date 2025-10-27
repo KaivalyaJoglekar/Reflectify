@@ -259,10 +259,10 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: moodColor.withOpacity(0.3),
+                    color: moodColor.withOpacity(0.5),
                     width: 1.5,
                   ),
                 ),

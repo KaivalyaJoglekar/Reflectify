@@ -32,6 +32,33 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
     super.dispose();
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _currentDate,
+      firstDate: DateTime(2025, 10, 15),
+      lastDate: DateTime(2030, 12, 31),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: Theme.of(context).colorScheme.primary,
+              onPrimary: Colors.white,
+              surface: Theme.of(context).colorScheme.surface,
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _currentDate) {
+      setState(() {
+        _currentDate = picked;
+      });
+    }
+  }
+
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -141,22 +168,84 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.calendar_today, color: Colors.white70),
-            const SizedBox(width: 8),
-            Text(
-              DateFormat.yMMMd().format(_currentDate),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            // Date picker
+            Expanded(
+              child: InkWell(
+                onTap: () => _selectDate(context),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.5),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        DateFormat.yMMMd().format(_currentDate),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            const Spacer(),
-            const Icon(Icons.access_time_filled, color: Colors.white70),
-            const SizedBox(width: 8),
-            InkWell(
-              onTap: () => _selectTime(context),
-              child: Text(
-                _currentTime.format(context),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+            const SizedBox(width: 12),
+            // Time picker
+            Expanded(
+              child: InkWell(
+                onTap: () => _selectTime(context),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.5),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.access_time,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _currentTime.format(context),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -13,10 +13,15 @@ class _TaskCardState extends State<TaskCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      // FIX: Use Theme.of(context).cardColor.withOpacity(0.5) to fix deprecation
-      color: theme.cardColor.withOpacity(0.5),
+      color: Colors.transparent,
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: theme.primaryColor.withOpacity(0.5),
+          width: 1.5,
+        ),
+      ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         leading: Checkbox(

@@ -116,10 +116,10 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),
@@ -252,8 +252,12 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withOpacity(0.5),
+                  width: 1.5,
+                ),
               ),
               child: Text(
                 '$taskCount',
@@ -349,9 +353,9 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: categoryColor.withOpacity(0.4), width: 1.5),
+          border: Border.all(color: categoryColor.withOpacity(0.5), width: 1.5),
         ),
         child: Row(
           children: [

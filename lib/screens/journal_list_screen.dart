@@ -149,10 +149,10 @@ class _JournalListScreenState extends State<JournalListScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF8A5DF4).withOpacity(0.3),
+          color: const Color(0xFF8A5DF4).withOpacity(0.5),
           width: 1.5,
         ),
       ),

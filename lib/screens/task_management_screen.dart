@@ -162,10 +162,10 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),
@@ -258,9 +258,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: priorityColor.withOpacity(0.4), width: 1.5),
+          border: Border.all(color: priorityColor.withOpacity(0.5), width: 1.5),
         ),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(
@@ -380,10 +380,11 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1C1C1E),
+          color: Colors.transparent,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           border: Border.all(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Theme.of(context).primaryColor.withOpacity(0.5),
+            width: 1.5,
           ),
         ),
         child: Column(
@@ -422,10 +423,11 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1C1C1E),
+          color: Colors.transparent,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           border: Border.all(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Theme.of(context).primaryColor.withOpacity(0.5),
+            width: 1.5,
           ),
         ),
         child: Column(

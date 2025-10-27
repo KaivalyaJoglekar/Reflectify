@@ -242,12 +242,12 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Colors.white.withOpacity(0.05),
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
                         ? Theme.of(context).primaryColor
-                        : Colors.white.withOpacity(0.3),
+                        : Colors.white.withOpacity(0.5),
                     width: 1.5,
                   ),
                 ),
@@ -351,12 +351,13 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? Theme.of(context).primaryColor
-                        : Colors.white.withOpacity(0.05),
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
                           ? Theme.of(context).primaryColor
-                          : Colors.white.withOpacity(0.3),
+                          : Colors.white.withOpacity(0.5),
+                      width: 1.5,
                     ),
                   ),
                   child: Row(
@@ -390,10 +391,10 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),

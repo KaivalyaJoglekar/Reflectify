@@ -189,15 +189,10 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).primaryColor.withOpacity(0.3),
-            Theme.of(context).primaryColor.withOpacity(0.1),
-          ],
-        ),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.4),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),
@@ -325,9 +320,9 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: priorityColor.withOpacity(0.4), width: 1.5),
+        border: Border.all(color: priorityColor.withOpacity(0.5), width: 1.5),
       ),
       child: Row(
         children: [
@@ -414,11 +409,11 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: (isUrgent ? Colors.red : Theme.of(context).primaryColor)
-              .withOpacity(0.4),
+              .withOpacity(0.5),
           width: 1.5,
         ),
       ),
@@ -454,8 +449,12 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: (isUrgent ? Colors.red : Colors.blue).withOpacity(0.2),
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: (isUrgent ? Colors.red : Colors.blue).withOpacity(0.5),
+                width: 1.5,
+              ),
             ),
             child: Text(
               '${daysUntil}d',
@@ -479,10 +478,10 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),
@@ -522,8 +521,9 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
       ),
       child: Center(
         child: Column(

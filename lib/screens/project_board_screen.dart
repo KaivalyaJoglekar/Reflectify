@@ -115,14 +115,12 @@ class _ProjectBoardScreenState extends State<ProjectBoardScreen> {
               margin: const EdgeInsets.only(right: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? project.color.withOpacity(0.2)
-                    : Colors.white.withOpacity(0.05),
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected
                       ? project.color
-                      : Colors.white.withOpacity(0.3),
+                      : Colors.white.withOpacity(0.5),
                   width: isSelected ? 2 : 1.5,
                 ),
               ),
@@ -147,8 +145,12 @@ class _ProjectBoardScreenState extends State<ProjectBoardScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: project.color.withOpacity(0.2),
+                          color: Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: project.color.withOpacity(0.5),
+                            width: 1.5,
+                          ),
                         ),
                         child: Text(
                           '${project.progress}%',
@@ -234,8 +236,9 @@ class _ProjectBoardScreenState extends State<ProjectBoardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: color.withOpacity(0.5), width: 1.5),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -322,9 +325,9 @@ class _ProjectBoardScreenState extends State<ProjectBoardScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: priorityColor.withOpacity(0.4), width: 1.5),
+        border: Border.all(color: priorityColor.withOpacity(0.5), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

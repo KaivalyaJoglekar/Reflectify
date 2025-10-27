@@ -98,8 +98,12 @@ class FullProfileScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFFF6B35).withOpacity(0.2),
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFFFF6B35).withOpacity(0.5),
+                width: 1.5,
+              ),
             ),
             child: const Icon(
               Icons.local_fire_department,
@@ -377,9 +381,9 @@ class FullProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1.5),
+        border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
       ),
       child: child,
     );

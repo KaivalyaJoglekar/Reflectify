@@ -15,8 +15,9 @@ import 'package:reflectify/screens/daily_summary_screen.dart';
 import 'package:reflectify/screens/full_profile_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
 import 'package:reflectify/widgets/custom_toast.dart';
-import 'package:reflectify/widgets/daily_quote_card.dart';
 import 'package:reflectify/screens/add_journal_screen.dart';
+import 'package:reflectify/providers/theme_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -378,12 +379,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
                               vertical: 12,
                             ),
                           ),
-                          child: const Text('Create'),
+                          child: const Text(
+                            'Create',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -526,16 +534,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       child: Scaffold(
         extendBody: true,
         backgroundColor: Colors.transparent,
-        body: Column(
-          children: [
-            // Daily Quote Card (shown on dashboard only)
-            if (_selectedIndex == 0)
-              const SafeArea(bottom: false, child: DailyQuoteCard()),
-            Expanded(
-              child: IndexedStack(index: _selectedIndex, children: screens),
-            ),
-          ],
-        ),
+        body: IndexedStack(index: _selectedIndex, children: screens),
         drawer: _buildDrawer(),
         bottomNavigationBar: _buildBottomBar(),
         floatingActionButton: _buildFAB(),
@@ -605,6 +604,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               );
             },
           ),
+          Consumer(
+            builder: (context, ref, child) {
+              final themeMode = ref.watch(themeModeProvider);
+              return ListTile(
+                leading: Icon(
+                  themeMode == ThemeMode.dark
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                  color: Colors.white70,
+                ),
+                title: Text(
+                  themeMode == ThemeMode.dark ? 'Light Theme' : 'Dark Theme',
+                ),
+                onTap: () {
+                  ref.read(themeModeProvider.notifier).toggleTheme();
+                  Navigator.pop(context);
+                },
+              );
+            },
+          ),
         ],
       ),
     );
@@ -639,10 +658,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       height: 75,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),

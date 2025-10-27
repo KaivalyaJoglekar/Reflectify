@@ -34,9 +34,9 @@ class TodayTaskCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: color.withOpacity(0.3)),
+            border: Border.all(color: color.withOpacity(0.5), width: 1.5),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

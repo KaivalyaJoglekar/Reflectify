@@ -84,10 +84,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget _buildCalendar() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           width: 1.5,
         ),
       ),
@@ -108,10 +108,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             fontWeight: FontWeight.bold,
           ),
           leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
-          rightChevronIcon: Icon(
-            Icons.chevron_right,
-            color: Colors.white,
-          ),
+          rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
         ),
         calendarStyle: CalendarStyle(
           defaultTextStyle: const TextStyle(color: Colors.white),
@@ -177,10 +174,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFFD62F6D).withOpacity(0.4),
+              color: const Color(0xFFD62F6D).withOpacity(0.5),
               width: 1.5,
             ),
           ),

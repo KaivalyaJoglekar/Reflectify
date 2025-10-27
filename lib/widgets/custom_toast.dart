@@ -142,20 +142,20 @@ class _AnimatedToastState extends State<_AnimatedToast>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      widget.iconColor.withOpacity(0.3),
-                      widget.iconColor.withOpacity(0.1),
+                      Colors.black.withOpacity(0.7),
+                      Colors.black.withOpacity(0.5),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: widget.iconColor.withOpacity(0.5),
+                    color: widget.iconColor.withOpacity(0.6),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: widget.iconColor.withOpacity(0.3),
-                      blurRadius: 20,
-                      spreadRadius: 5,
+                      color: widget.iconColor.withOpacity(0.2),
+                      blurRadius: 16,
+                      spreadRadius: 2,
                     ),
                   ],
                 ),
@@ -164,14 +164,15 @@ class _AnimatedToastState extends State<_AnimatedToast>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: widget.iconColor.withOpacity(0.2),
+                        gradient: LinearGradient(
+                          colors: [
+                            widget.iconColor.withOpacity(0.4),
+                            widget.iconColor.withOpacity(0.2),
+                          ],
+                        ),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        widget.icon,
-                        color: widget.iconColor,
-                        size: 24,
-                      ),
+                      child: Icon(widget.icon, color: Colors.white, size: 24),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
