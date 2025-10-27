@@ -5,6 +5,7 @@ import 'package:reflectify/models/task_model.dart';
 import 'package:reflectify/models/project_model.dart';
 import 'package:reflectify/models/focus_session_model.dart';
 import 'package:reflectify/models/journal_entry.dart';
+import 'package:reflectify/providers/theme_provider.dart';
 import 'package:reflectify/screens/enhanced_dashboard_screen.dart';
 import 'package:reflectify/screens/task_management_screen.dart';
 import 'package:reflectify/screens/enhanced_calendar_screen.dart';
@@ -16,7 +17,6 @@ import 'package:reflectify/screens/full_profile_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
 import 'package:reflectify/widgets/custom_toast.dart';
 import 'package:reflectify/screens/add_journal_screen.dart';
-import 'package:reflectify/providers/theme_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -151,7 +151,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: selectedCategory,
+                            initialValue: selectedCategory,
                             dropdownColor: const Color(0xFF1C1C1E),
                             decoration: InputDecoration(
                               labelText: 'Category',
@@ -192,7 +192,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: DropdownButtonFormField<int>(
-                            value: selectedPriority,
+                            initialValue: selectedPriority,
                             dropdownColor: const Color(0xFF1C1C1E),
                             decoration: InputDecoration(
                               labelText: 'Priority',
@@ -618,7 +618,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   themeMode == ThemeMode.dark ? 'Light Theme' : 'Dark Theme',
                 ),
                 onTap: () {
-                  ref.read(themeModeProvider.notifier).toggleTheme();
+                  // Toggle theme by updating the state directly
+                  ref
+                      .read(themeModeProvider.notifier)
+                      .state = themeMode == ThemeMode.dark
+                      ? ThemeMode.light
+                      : ThemeMode.dark;
                   Navigator.pop(context);
                 },
               );
