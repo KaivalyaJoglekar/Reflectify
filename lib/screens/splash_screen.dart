@@ -11,72 +11,68 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late AnimationController _fadeInController;
-  late Animation<double> _orb1MoveX, _orb1MoveY;
-  late Animation<double> _orb2MoveX, _orb2MoveY;
-  late Animation<double> _orb3MoveX, _orb3MoveY;
+  late Animation<double> _aurora1X;
+  late Animation<double> _aurora1Y;
+  late Animation<double> _aurora2X;
+  late Animation<double> _aurora2Y;
+  late Animation<double> _auroraOpacity;
 
   @override
   void initState() {
     super.initState();
 
+    // Slightly longer splash: ~2.8 seconds for smoother mixing
     _controller = AnimationController(
-      duration: const Duration(seconds: 6),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _fadeInController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 2800),
       vsync: this,
     )..forward();
 
-    // Enhanced blob animations for smooth merging effect
-    _orb1MoveX = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: -60, end: 30), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 30, end: -60), weight: 1),
+    // Aurora 1: left-to-right subtle motion
+    _aurora1X = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: -60.0, end: -10.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -10.0, end: 20.0), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _aurora1Y = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: -10.0, end: 10.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 10.0, end: -5.0), weight: 1),
     ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    _orb1MoveY = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: -40, end: 30), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 30, end: -40), weight: 1),
+    // Aurora 2: right-to-left subtle motion (opposite phase)
+    _aurora2X = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 60.0, end: 10.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 10.0, end: -20.0), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _aurora2Y = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 15.0, end: -5.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -5.0, end: 20.0), weight: 1),
     ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    _orb2MoveX = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 60, end: -30), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: -30, end: 60), weight: 1),
-    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    // Global opacity ramp for entrance
+    _auroraOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
+    );
 
-    _orb2MoveY = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 40, end: -30), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: -30, end: 40), weight: 1),
-    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    // Third blob for enhanced merging effect
-    _orb3MoveX = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: 40), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 40, end: -40), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: -40, end: 0), weight: 1),
-    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    _orb3MoveY = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: -50, end: 0), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 0, end: 50), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 50, end: -50), weight: 1),
-    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    Timer(const Duration(seconds: 5), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const LoginScreen(),
-            transitionsBuilder: (_, animation, __, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
+    // Navigate right after the animation completes (allow a tiny moment)
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Future.delayed(const Duration(milliseconds: 250), () {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => const LoginScreen(),
+                transitionsBuilder: (_, animation, __, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                transitionDuration: const Duration(milliseconds: 500),
+              ),
+            );
+          }
+        });
       }
     });
   }
@@ -84,8 +80,34 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     _controller.dispose();
-    _fadeInController.dispose();
     super.dispose();
+  }
+
+  Widget _auroraBlob({required Color color, required double diameter}) {
+    return Container(
+      width: diameter,
+      height: diameter / 1.8,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(diameter / 2),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withOpacity(0.95),
+            color.withOpacity(0.55),
+            color.withOpacity(0.0),
+          ],
+          stops: const [0.0, 0.5, 1.0],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.45),
+            blurRadius: 40,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -94,132 +116,82 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // grid.jpg background image - full screen
+          // Grid background (only on splash)
           Positioned.fill(
-            child: Image.asset(
-              'assets/grid.jpg',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                // Fallback to gradient if image fails to load
-                return Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF1a1a2e),
-                        Color(0xFF16213e),
-                        Color(0xFF0f3460),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+            child: Image.asset('assets/grid.jpg', fit: BoxFit.cover),
           ),
-          // Visible dotted grid overlay
-          Positioned.fill(child: CustomPaint(painter: DottedGridPainter())),
-          // Dark overlay for better blob and grid visibility
+
+          // Dark overlay to make auroras visible
           Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.4),
-                    Colors.black.withOpacity(0.6),
-                  ],
-                ),
-              ),
-            ),
+            child: Container(color: Colors.black.withOpacity(0.7)),
           ),
-          // Animated merging blobs with enhanced blur
+
+          // Animated auroras in center mixing together
           Center(
             child: AnimatedBuilder(
-              animation: Listenable.merge([_controller, _fadeInController]),
+              animation: _controller,
               builder: (context, child) {
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Blob 1 (Reddish-Pink) - Larger
-                    Transform.translate(
-                      offset: Offset(_orb1MoveX.value, _orb1MoveY.value),
-                      child: const MergingBlob(
-                        color: Color(0xFFD62F6D),
-                        diameter: 220,
+                return SizedBox(
+                  width: 320,
+                  height: 200,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Aurora 1 (purple/pink)
+                      Opacity(
+                        opacity: _auroraOpacity.value * 0.95,
+                        child: Transform.translate(
+                          offset: Offset(_aurora1X.value, _aurora1Y.value),
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(
+                              sigmaX: 28,
+                              sigmaY: 28,
+                            ),
+                            child: _auroraBlob(
+                              color: const Color(0xFF6C5CE7), // purple
+                              diameter: 160,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    // Blob 2 (Purple) - Medium
-                    Transform.translate(
-                      offset: Offset(_orb2MoveX.value, _orb2MoveY.value),
-                      child: const MergingBlob(
-                        color: Color(0xFF8A5DF4),
-                        diameter: 200,
+
+                      // Aurora 2 (teal/green) overlapping and mixing
+                      Opacity(
+                        opacity: _auroraOpacity.value * 0.9,
+                        child: Transform.translate(
+                          offset: Offset(_aurora2X.value, _aurora2Y.value),
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(
+                              sigmaX: 34,
+                              sigmaY: 34,
+                            ),
+                            child: _auroraBlob(
+                              color: const Color(0xFF4D7BFF), // blue
+                              diameter: 160,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    // Blob 3 (Teal) - Smaller
-                    Transform.translate(
-                      offset: Offset(_orb3MoveX.value, _orb3MoveY.value),
-                      child: const MergingBlob(
-                        color: Color(0xFF4ECDC4),
-                        diameter: 180,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               },
             ),
           ),
-          // App branding
-          Positioned(
-            bottom: 120,
-            left: 0,
-            right: 0,
-            child: FadeTransition(
-              opacity: _fadeInController,
-              child: Column(
-                children: [
-                  const Text(
-                    'REFLECTIFY',
-                    style: TextStyle(
-                      fontFamily: 'BebasNeue',
-                      fontSize: 48,
-                      color: Colors.white,
-                      letterSpacing: 4,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Your Daily Reflection Companion',
-                    style: TextStyle(
-                      fontFamily: 'Lato',
-                      fontSize: 14,
-                      color: Colors.white.withOpacity(0.7),
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Loading indicator
+
+          // Loading indicator at bottom (kept as-is)
           Positioned(
             bottom: 60,
             left: 0,
             right: 0,
-            child: FadeTransition(
-              opacity: _fadeInController,
-              child: Center(
-                child: SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withOpacity(0.7),
-                    ),
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.white.withOpacity(0.7),
                   ),
                 ),
               ),
@@ -229,67 +201,4 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-}
-
-class MergingBlob extends StatelessWidget {
-  final Color color;
-  final double diameter;
-
-  const MergingBlob({super.key, required this.color, required this.diameter});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: diameter,
-      height: diameter,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            color.withOpacity(0.8),
-            color.withOpacity(0.6),
-            color.withOpacity(0.3),
-          ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.5),
-            blurRadius: 60,
-            spreadRadius: 20,
-          ),
-        ],
-      ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-        child: Container(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.transparent,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DottedGridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.15)
-      ..style = PaintingStyle.fill;
-
-    const double spacing = 25.0;
-    const double radius = 1.5;
-
-    for (double i = 0; i < size.width; i += spacing) {
-      for (double j = 0; j < size.height; j += spacing) {
-        canvas.drawCircle(Offset(i, j), radius, paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
