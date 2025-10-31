@@ -708,33 +708,39 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       child: Container(
         height: 60,
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.65),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: Theme.of(context).primaryColor.withOpacity(0.5),
-            width: 1.5,
-          ),
-        ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
-          child: BottomAppBar(
-            padding: EdgeInsets.zero,
-            height: 60,
-            color: Colors.transparent,
-            elevation: 0,
-            notchMargin: 8,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard'),
-                _buildNavItem(1, Icons.task_alt_rounded, 'Tasks'),
-                _buildNavItem(2, Icons.calendar_today_rounded, 'Calendar'),
-                const SizedBox(width: 30), // Space for FAB
-                _buildNavItem(5, Icons.book_rounded, 'Journal'),
-                _buildNavItem(6, Icons.analytics_rounded, 'Analytics'),
-                _buildNavItem(7, Icons.person_rounded, 'Profile'),
-              ],
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withOpacity(0.2),
+                  width: 1.5,
+                ),
+              ),
+              child: BottomAppBar(
+                padding: EdgeInsets.zero,
+                height: 60,
+                color: Colors.transparent,
+                elevation: 0,
+                notchMargin: 8,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(child: _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard')),
+                    Expanded(child: _buildNavItem(1, Icons.task_alt_rounded, 'Tasks')),
+                    Expanded(child: _buildNavItem(2, Icons.calendar_today_rounded, 'Calendar')),
+                    const SizedBox(width: 30), // Space for FAB
+                    Expanded(child: _buildNavItem(5, Icons.book_rounded, 'Journal')),
+                    Expanded(child: _buildNavItem(6, Icons.analytics_rounded, 'Analytics')),
+                    Expanded(child: _buildNavItem(7, Icons.person_rounded, 'Profile')),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -753,21 +759,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       child: InkWell(
         onTap: () => _onItemTapped(index),
         borderRadius: BorderRadius.circular(12),
-        child: SizedBox(
-          width: 56,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           height: 56,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 22, color: color),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 9,
                   color: color,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
             ],
           ),
