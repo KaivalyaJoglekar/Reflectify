@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_underscores
+
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -23,9 +25,9 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Slightly longer splash: ~2.8 seconds for smoother mixing
+    // Splash screen duration set to 5 seconds.
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2800),
+      duration: const Duration(seconds: 5),
       vsync: this,
     )..forward();
 
@@ -57,22 +59,20 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // Navigate right after the animation completes (allow a tiny moment)
+    // Navigate right after the animation completes.
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        Future.delayed(const Duration(milliseconds: 250), () {
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              PageRouteBuilder(
-                pageBuilder: (_, __, ___) => const LoginScreen(),
-                transitionsBuilder: (_, animation, __, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-                transitionDuration: const Duration(milliseconds: 500),
-              ),
-            );
-          }
-        });
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => const LoginScreen(),
+              transitionsBuilder: (_, animation, __, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 500),
+            ),
+          );
+        }
       }
     });
   }

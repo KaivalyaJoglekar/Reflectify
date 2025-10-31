@@ -795,8 +795,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
         shape: const CircleBorder(),
-        child: const Icon(Icons.add, size: 28, color: Colors.white),
         onPressed: _onFABPressed,
+        child: const Icon(Icons.add, size: 28, color: Colors.white),
       ),
     );
   }
