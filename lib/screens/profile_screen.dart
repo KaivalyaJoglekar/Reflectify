@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/screens/login_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
-
-// Import Firebase Auth
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:reflectify/widgets/glass_card.dart'; // Import new widget
 
 class ProfileScreen extends StatelessWidget {
   final User user;
@@ -21,6 +20,7 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
+      // Use the standard AppBackground
       body: AppBackground(
         child: SafeArea(
           child: ListView(
@@ -65,7 +65,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildStatsCard(BuildContext context) {
-    return _buildGlassCard(
+    // Use the new GlassCard widget
+    return GlassCard(
+      padding: const EdgeInsets.all(12),
       child: Column(
         children: [
           _buildStatRow(
@@ -94,7 +96,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildActionsCard(BuildContext context) {
-    return _buildGlassCard(
+    // Use the new GlassCard widget
+    return GlassCard(
+      padding: const EdgeInsets.all(12),
       child: Column(
         children: [
           ListTile(
@@ -118,7 +122,6 @@ class ProfileScreen extends StatelessWidget {
               style: TextStyle(color: Color(0xFFF92A2A)),
             ),
             onTap: () async {
-              // UPDATED: Sign out and navigate to Login
               await fb_auth.FirebaseAuth.instance.signOut();
               if (context.mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
@@ -156,21 +159,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassCard({required Widget child}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
-          ),
-          child: child,
-        ),
-      ),
-    );
-  }
+  // The local _buildGlassCard method is no longer needed
+  // and can be deleted.
 }

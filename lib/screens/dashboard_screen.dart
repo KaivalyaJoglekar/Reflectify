@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/widgets/project_card.dart';
 import 'package:reflectify/utils/streak_calculator.dart';
+import 'package:reflectify/widgets/app_background.dart'; // Import
+import 'package:reflectify/widgets/glass_card.dart'; // Import
 
 class DashboardScreen extends StatelessWidget {
   final User user;
@@ -10,44 +12,26 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          top: -120,
-          left: -100,
-          child: Container(
-            width: 380,
-            height: 380,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.35),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
+    // Replace the Stack with AppBackground
+    return AppBackground(
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(20.0),
+          children: [
+            _buildAppBar(context),
+            const SizedBox(height: 32),
+            _buildSearchBar(context),
+            const SizedBox(height: 32),
+            _buildSectionHeader('Project', () {}),
+            const SizedBox(height: 16),
+            _buildProjectList(),
+            const SizedBox(height: 32),
+            _buildSectionHeader('Progress', () {}),
+            const SizedBox(height: 16),
+            _buildDailyTaskCard(context),
+          ],
         ),
-        SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(20.0),
-            children: [
-              _buildAppBar(context),
-              const SizedBox(height: 32),
-              _buildSearchBar(context),
-              const SizedBox(height: 32),
-              _buildSectionHeader('Project', () {}),
-              const SizedBox(height: 16),
-              _buildProjectList(),
-              const SizedBox(height: 32),
-              _buildSectionHeader('Progress', () {}),
-              const SizedBox(height: 16),
-              _buildDailyTaskCard(context),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -120,18 +104,12 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
-          width: 1.5,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    // Replace Container with GlassCard
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      borderRadius: 16,
+      child: SizedBox(
+        height: 40, // Adjust height to account for padding
         child: TextField(
           decoration: InputDecoration(
             hintText: 'Search task...',
@@ -180,17 +158,11 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildDailyTaskCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    // Replace Container with GlassCard
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFF8A5DF4).withOpacity(0.5),
-          width: 1.5,
-        ),
-      ),
+      borderRadius: 24,
+      borderColor: const Color(0xFF8A5DF4).withOpacity(0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

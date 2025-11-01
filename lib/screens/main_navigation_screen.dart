@@ -3,14 +3,14 @@ import 'dart:ui';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/models/task_model.dart';
 import 'package:reflectify/models/project_model.dart';
-import 'package:reflectify/models/focus_session_model.dart';
+import 'package:reflectify/models/focus_session_model.dart'; // Still needed by DailySummaryScreen
 import 'package:reflectify/models/journal_entry.dart';
 import 'package:reflectify/providers/theme_provider.dart';
 import 'package:reflectify/screens/enhanced_dashboard_screen.dart';
 import 'package:reflectify/screens/task_management_screen.dart';
 import 'package:reflectify/screens/enhanced_calendar_screen.dart';
 import 'package:reflectify/screens/project_board_screen.dart';
-import 'package:reflectify/screens/focus_mode_screen.dart';
+// import 'package:reflectify/screens/focus_mode_screen.dart'; // Removed
 import 'package:reflectify/screens/journal_timeline_screen.dart';
 import 'package:reflectify/screens/daily_summary_screen.dart';
 import 'package:reflectify/screens/full_profile_screen.dart';
@@ -32,7 +32,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
   final List<Task> _tasks = [];
   final List<Project> _projects = [];
-  final List<FocusSession> _focusSessions = [];
+  final List<FocusSession> _focusSessions = []; // Kept for DailySummaryScreen
   final List<JournalEntry> _journalEntries = [];
 
   void _onItemTapped(int index) {
@@ -55,9 +55,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       case 3: // Projects - Add Project
         _showAddProjectDialog();
         break;
-      case 4: // Focus - Start Session (handled in screen)
-        break;
-      case 5: // Journal - Add Entry
+      // Case 4 (Focus Mode) removed
+      case 4: // Journal - Add Entry
         _showAddJournalDialog();
         break;
       default:
@@ -68,7 +67,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void _showAddTaskDialog() {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descController = TextEditingController();
-    DateTime selectedDate = DateTime(2025, 10, 15);
+    DateTime selectedDate = DateTime.now(); // Default to today
     TimeOfDay selectedTime = TimeOfDay.now();
     String selectedCategory = 'Personal';
     int selectedPriority = 2;
@@ -156,7 +155,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               isDense: true,
                               isExpanded: true,
                               menuMaxHeight: 300,
-                              initialValue: selectedCategory,
+                              value: selectedCategory, // FIXED: Use value
                               dropdownColor: const Color(0xFF1C1C1E),
                               decoration: InputDecoration(
                                 isDense: true,
@@ -213,7 +212,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               isDense: true,
                               isExpanded: true,
                               menuMaxHeight: 300,
-                              initialValue: selectedPriority,
+                              value: selectedPriority, // FIXED: Use value
                               dropdownColor: const Color(0xFF1C1C1E),
                               decoration: InputDecoration(
                                 isDense: true,
@@ -276,7 +275,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               final picked = await showDatePicker(
                                 context: context,
                                 initialDate: selectedDate,
-                                firstDate: DateTime(2025, 10, 15),
+                                firstDate: DateTime(2020),
                                 lastDate: DateTime(2030),
                                 builder: (context, child) {
                                   return Theme(
@@ -397,16 +396,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                                 selectedTime.minute,
                               );
 
+                              // FIXED: Create a Task object that matches the model
                               final newTask = Task(
+                                id: UniqueKey().toString(), // Add a unique ID
                                 title: titleController.text,
-                                time: selectedTime.format(context),
-                                color: Theme.of(context).primaryColor,
-                                projectName: 'General',
-                                taskCount: 1,
-                                date: taskDateTime,
                                 description: descController.text,
-                                category: selectedCategory,
+                                date: taskDateTime,
+                                deadline: taskDateTime, // Use the same for now
                                 priority: selectedPriority,
+                                category: selectedCategory,
+                                isCompleted: false, // Default to false
                               );
 
                               setState(() {
@@ -463,7 +462,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final newEntry = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) =>
-            AddJournalScreen(selectedDate: DateTime(2025, 10, 15)),
+            const AddJournalScreen(), // FIXED: Removed selectedDate
         fullscreenDialog: true,
       ),
     );
@@ -513,14 +512,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     });
   }
 
-  void _handleSessionComplete(FocusSession session) {
-    setState(() {
-      _focusSessions.add(session);
-    });
-  }
+  // Removed _handleSessionComplete as Focus Mode is gone
 
   @override
   Widget build(BuildContext context) {
+    // FIXED: Screen list updated to remove Focus Mode
     final screens = <Widget>[
       // 0: Enhanced Dashboard
       EnhancedDashboardScreen(
@@ -562,16 +558,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onProjectTap: (project) {},
         onAddProject: _showAddProjectDialog,
       ),
-      // 4: Focus Mode
-      FocusModeScreen(
-        sessions: _focusSessions,
-        onSessionComplete: _handleSessionComplete,
-      ),
-      // 5: Journal
+      // 4: Journal (was 5)
       JournalTimelineScreen(entries: _journalEntries, onEntryTap: (entry) {}),
-      // 6: Analytics
+      // 5: Analytics (was 6)
       DailySummaryScreen(tasks: _tasks, focusSessions: _focusSessions),
-      // 7: Profile
+      // 6: Profile (was 7)
       FullProfileScreen(user: widget.user),
     ];
 
@@ -632,10 +623,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _buildDrawerItem(Icons.task_alt, 'Tasks', 1),
           _buildDrawerItem(Icons.calendar_month, 'Calendar', 2),
           _buildDrawerItem(Icons.folder, 'Projects', 3),
-          _buildDrawerItem(Icons.timer, 'Focus Mode', 4),
-          _buildDrawerItem(Icons.book, 'Journal', 5),
-          _buildDrawerItem(Icons.analytics, 'Analytics', 6),
-          _buildDrawerItem(Icons.person, 'Profile', 7),
+          // _buildDrawerItem(Icons.timer, 'Focus Mode', 4), // FIXED: Removed
+          _buildDrawerItem(Icons.book, 'Journal', 4), // FIXED: Index 5 -> 4
+          _buildDrawerItem(Icons.analytics, 'Analytics', 5), // FIXED: Index 6 -> 5
+          _buildDrawerItem(Icons.person, 'Profile', 6), // FIXED: Index 7 -> 6
           const Divider(),
           ListTile(
             leading: const Icon(Icons.settings, color: Colors.white70),
@@ -735,9 +726,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     Expanded(child: _buildNavItem(1, Icons.task_alt_rounded, 'Tasks')),
                     Expanded(child: _buildNavItem(2, Icons.calendar_today_rounded, 'Calendar')),
                     const SizedBox(width: 30), // Space for FAB
-                    Expanded(child: _buildNavItem(5, Icons.book_rounded, 'Journal')),
-                    Expanded(child: _buildNavItem(6, Icons.analytics_rounded, 'Analytics')),
-                    Expanded(child: _buildNavItem(7, Icons.person_rounded, 'Profile')),
+                    Expanded(child: _buildNavItem(4, Icons.book_rounded, 'Journal')), // FIXED: Index 5 -> 4
+                    Expanded(child: _buildNavItem(5, Icons.analytics_rounded, 'Analytics')), // FIXED: Index 6 -> 5
+                    Expanded(child: _buildNavItem(6, Icons.person_rounded, 'Profile')), // FIXED: Index 7 -> 6
                   ],
                 ),
               ),
@@ -785,8 +776,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   Widget? _buildFAB() {
-    if (_selectedIndex == 4) return null; // No FAB for Focus Mode
-
+    // if (_selectedIndex == 4) return null; // This check is no longer needed
     return Container(
       margin: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(

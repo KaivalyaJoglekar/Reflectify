@@ -4,6 +4,8 @@ import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/models/task_model.dart';
 import 'package:reflectify/models/project_model.dart';
 import 'package:reflectify/utils/streak_calculator.dart';
+import 'package:reflectify/widgets/app_background.dart'; // Import
+import 'package:reflectify/widgets/glass_card.dart'; // Import
 
 class EnhancedDashboardScreen extends StatefulWidget {
   final User user;
@@ -38,45 +40,26 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     final priorities = _getTopPriorities();
     final upcomingDeadlines = _getUpcomingDeadlines();
 
-    return Stack(
-      children: [
-        // Gradient orb
-        Positioned(
-          top: -120,
-          left: -100,
-          child: Container(
-            width: 380,
-            height: 380,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.35),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
+    // Replace Stack with AppBackground
+    return AppBackground(
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(20.0),
+          children: [
+            _buildAppBar(context),
+            const SizedBox(height: 24),
+            _buildTodayHeader(today),
+            const SizedBox(height: 24),
+            _buildQuickActions(),
+            const SizedBox(height: 24),
+            _buildTopPriorities(priorities),
+            const SizedBox(height: 24),
+            _buildUpcomingDeadlines(upcomingDeadlines),
+            const SizedBox(height: 24),
+            _buildProgressOverview(todayTasks),
+          ],
         ),
-        SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(20.0),
-            children: [
-              _buildAppBar(context),
-              const SizedBox(height: 24),
-              _buildTodayHeader(today),
-              const SizedBox(height: 24),
-              _buildQuickActions(),
-              const SizedBox(height: 24),
-              _buildTopPriorities(priorities),
-              const SizedBox(height: 24),
-              _buildUpcomingDeadlines(upcomingDeadlines),
-              const SizedBox(height: 24),
-              _buildProgressOverview(todayTasks),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -186,16 +169,11 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
   }
 
   Widget _buildTodayHeader(DateTime today) {
-    return Container(
+    // Replace Container with GlassCard
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
-          width: 1.5,
-        ),
-      ),
+      borderRadius: 20,
+      borderColor: Theme.of(context).primaryColor.withOpacity(0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -265,25 +243,36 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     Color color,
     VoidCallback onTap,
   ) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.4), width: 1.5),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-          ],
+    // This is already a glass-like card, so we can wrap it in GlassCard
+    // for the blur effect, but with custom styling.
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      borderRadius: 16,
+      borderColor: color.withOpacity(0.4),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          // We remove the outer container's color and border,
+          // as GlassCard now handles it.
+          // We keep the inner color from the original design.
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 32),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -316,14 +305,12 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     final priorityColor = _getPriorityColor(task.priority);
     final priorityLabel = _getPriorityLabel(task.priority);
 
-    return Container(
+    // Replace Container with GlassCard
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: priorityColor.withOpacity(0.5), width: 1.5),
-      ),
+      borderRadius: 16,
+      borderColor: priorityColor.withOpacity(0.5),
       child: Row(
         children: [
           Checkbox(
@@ -404,19 +391,14 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
   Widget _buildDeadlineCard(Task task) {
     final daysUntil = task.deadline!.difference(DateTime.now()).inDays;
     final isUrgent = daysUntil <= 3;
+    final color = isUrgent ? Colors.red : Theme.of(context).primaryColor;
 
-    return Container(
+    // Replace Container with GlassCard
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: (isUrgent ? Colors.red : Theme.of(context).primaryColor)
-              .withOpacity(0.5),
-          width: 1.5,
-        ),
-      ),
+      borderRadius: 16,
+      borderColor: color.withOpacity(0.5),
       child: Row(
         children: [
           Icon(
@@ -475,16 +457,11 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     final total = todayTasks.length;
     final progress = total > 0 ? completed / total : 0.0;
 
-    return Container(
+    // Replace Container with GlassCard
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
-          width: 1.5,
-        ),
-      ),
+      borderRadius: 20,
+      borderColor: Theme.of(context).primaryColor.withOpacity(0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -518,13 +495,11 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
   }
 
   Widget _buildEmptyState(String message, IconData icon) {
-    return Container(
+    // Replace Container with GlassCard
+    return GlassCard(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
-      ),
+      borderRadius: 16,
+      borderColor: Colors.white.withOpacity(0.3),
       child: Center(
         child: Column(
           children: [

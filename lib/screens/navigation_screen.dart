@@ -43,8 +43,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
   void _showAddJournalDialog() async {
     final newEntry = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) =>
-            AddJournalScreen(selectedDate: DateTime(2025, 10, 15)),
+        // FIXED: Removed selectedDate parameter as AddJournalScreen no longer accepts it.
+        builder: (context) => const AddJournalScreen(),
         fullscreenDialog: true,
       ),
     );
@@ -338,7 +338,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
     final widgetOptions = <Widget>[
       DashboardScreen(user: widget.user),
       ScheduleScreen(tasks: _tasks),
-      JournalListScreen(tasks: _tasks),
+      // FIXED: Removed tasks parameter as JournalListScreen no longer accepts it.
+      const JournalListScreen(),
       FullProfileScreen(user: widget.user),
     ];
 
@@ -372,11 +373,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
   }
 
   Widget _buildTransparentBottomBar() {
+    // UPDATED: Applied glassmorphism effect
     return Container(
       height: 75,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        // 1. Add the tint color
+        color: Colors.black.withOpacity(0.4),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: Theme.of(context).primaryColor.withOpacity(0.5),
@@ -385,20 +388,25 @@ class _NavigationScreenState extends State<NavigationScreen> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: BottomAppBar(
-          color: Colors.transparent,
-          elevation: 0,
-          shape: const CircularNotchedRectangle(),
-          notchMargin: 8.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              _buildNavItem(0, Icons.home_rounded),
-              _buildNavItem(1, Icons.calendar_today_rounded),
-              const SizedBox(width: 48), // Space for FAB
-              _buildNavItem(2, Icons.book_rounded),
-              _buildNavItem(3, Icons.person_rounded),
-            ],
+        child: BackdropFilter(
+          // 2. Add the blur
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: BottomAppBar(
+            // 3. Make the bar itself transparent
+            color: Colors.transparent,
+            elevation: 0,
+            shape: const CircularNotchedRectangle(),
+            notchMargin: 8.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                _buildNavItem(0, Icons.home_rounded),
+                _buildNavItem(1, Icons.calendar_today_rounded),
+                const SizedBox(width: 48), // Space for FAB
+                _buildNavItem(2, Icons.book_rounded),
+                _buildNavItem(3, Icons.person_rounded),
+              ],
+            ),
           ),
         ),
       ),
