@@ -400,8 +400,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               final newTask = Task(
                                 id: UniqueKey().toString(), // Add a unique ID
                                 title: titleController.text,
-                                description: descController.text,
+                                time: selectedTime.format(
+                                  context,
+                                ), // Add required time parameter
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor, // Add required color parameter
+                                projectName:
+                                    selectedCategory, // Add required projectName parameter
+                                taskCount:
+                                    1, // Add required taskCount parameter
                                 date: taskDateTime,
+                                description: descController.text,
                                 deadline: taskDateTime, // Use the same for now
                                 priority: selectedPriority,
                                 category: selectedCategory,
@@ -566,6 +576,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       FullProfileScreen(user: widget.user),
     ];
 
+    // ... rest of your build method ...
     return AppBackground(
       child: Scaffold(
         extendBody: true,
@@ -625,7 +636,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _buildDrawerItem(Icons.folder, 'Projects', 3),
           // _buildDrawerItem(Icons.timer, 'Focus Mode', 4), // FIXED: Removed
           _buildDrawerItem(Icons.book, 'Journal', 4), // FIXED: Index 5 -> 4
-          _buildDrawerItem(Icons.analytics, 'Analytics', 5), // FIXED: Index 6 -> 5
+          _buildDrawerItem(
+            Icons.analytics,
+            'Analytics',
+            5,
+          ), // FIXED: Index 6 -> 5
           _buildDrawerItem(Icons.person, 'Profile', 6), // FIXED: Index 7 -> 6
           const Divider(),
           ListTile(
@@ -722,13 +737,37 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Expanded(child: _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard')),
-                    Expanded(child: _buildNavItem(1, Icons.task_alt_rounded, 'Tasks')),
-                    Expanded(child: _buildNavItem(2, Icons.calendar_today_rounded, 'Calendar')),
+                    Expanded(
+                      child: _buildNavItem(
+                        0,
+                        Icons.dashboard_rounded,
+                        'Dashboard',
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildNavItem(1, Icons.task_alt_rounded, 'Tasks'),
+                    ),
+                    Expanded(
+                      child: _buildNavItem(
+                        2,
+                        Icons.calendar_today_rounded,
+                        'Calendar',
+                      ),
+                    ),
                     const SizedBox(width: 30), // Space for FAB
-                    Expanded(child: _buildNavItem(4, Icons.book_rounded, 'Journal')), // FIXED: Index 5 -> 4
-                    Expanded(child: _buildNavItem(5, Icons.analytics_rounded, 'Analytics')), // FIXED: Index 6 -> 5
-                    Expanded(child: _buildNavItem(6, Icons.person_rounded, 'Profile')), // FIXED: Index 7 -> 6
+                    Expanded(
+                      child: _buildNavItem(4, Icons.book_rounded, 'Journal'),
+                    ), // FIXED: Index 5 -> 4
+                    Expanded(
+                      child: _buildNavItem(
+                        5,
+                        Icons.analytics_rounded,
+                        'Analytics',
+                      ),
+                    ), // FIXED: Index 6 -> 5
+                    Expanded(
+                      child: _buildNavItem(6, Icons.person_rounded, 'Profile'),
+                    ), // FIXED: Index 7 -> 6
                   ],
                 ),
               ),
@@ -776,6 +815,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   Widget? _buildFAB() {
+    // *** THIS IS THE FIX ***
+    // Hide the FAB on screens where it doesn't have a primary action,
+    // like Analytics (5) and Profile (6).
+    if (_selectedIndex == 5 || _selectedIndex == 6) {
+      return null;
+    }
+    // ***********************
+
     // if (_selectedIndex == 4) return null; // This check is no longer needed
     return Container(
       margin: const EdgeInsets.only(bottom: 5),
