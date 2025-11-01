@@ -1,21 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:reflectify/widgets/topographic_background.dart';
-import 'package:reflectify/screens/navigation_screen.dart';
+// Use MainNavigationScreen for consistency
+import 'package:reflectify/screens/main_navigation_screen.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/widgets/bottom_wave_clipper.dart';
 import 'package:reflectify/widgets/grainy_background.dart';
 
-class SignupScreen extends StatelessWidget {
+// Import Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+
+// Convert to StatefulWidget
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final sampleUser = User(
-      name: 'New User',
-      username: 'newuser',
-      email: 'user@example.com',
-    );
+  State<SignupScreen> createState() => _SignupScreenState();
+}
 
+class _SignupScreenState extends State<SignupScreen> {
+  // Add text controllers
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  // Add loading state
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Signup function
+  Future<void> _signup() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+
+    try {
+      // Create user with Firebase
+      final credential =
+          await fb_auth.FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      final fb_auth.User? firebaseUser = credential.user;
+
+      if (firebaseUser != null) {
+        // Update the user's display name
+        await firebaseUser.updateDisplayName(_nameController.text.trim());
+        // Reload user to get the updated info
+        await firebaseUser.reload();
+        
+        // Get the reloaded user
+        final updatedUser = fb_auth.FirebaseAuth.instance.currentUser;
+
+        // Create app User model
+        final appUser = User(
+          name: updatedUser?.displayName ?? 'New User',
+          username: updatedUser?.email?.split('@').first ?? 'user',
+          email: updatedUser?.email ?? 'no-email',
+        );
+
+        // Navigate to main app
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => MainNavigationScreen(user: appUser),
+            ),
+            (route) => false,
+          );
+        }
+      }
+    } on fb_auth.FirebaseAuthException catch (e) {
+      // Show error snackbar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message ?? 'Signup failed. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black, // Form area is black
       body: GrainyBackground(
@@ -70,6 +148,7 @@ class SignupScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     TextField(
+                      controller: _nameController, // Assign controller
                       decoration: InputDecoration(
                         labelText: 'Full Name',
                         labelStyle: const TextStyle(color: Colors.white70),
@@ -91,6 +170,7 @@ class SignupScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     TextField(
+                      controller: _emailController, // Assign controller
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle: const TextStyle(color: Colors.white70),
@@ -112,6 +192,7 @@ class SignupScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     TextField(
+                      controller: _passwordController, // Assign controller
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
@@ -139,15 +220,7 @@ class SignupScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  NavigationScreen(user: sampleUser),
-                            ),
-                            (route) => false,
-                          );
-                        },
+                        onPressed: _isLoading ? null : _signup, // Call _signup
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(
                             context,
@@ -158,13 +231,22 @@ class SignupScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Sign up',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : const Text(
+                                'Sign up',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 24),

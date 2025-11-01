@@ -4,6 +4,9 @@ import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/screens/login_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
 
+// Import Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+
 class ProfileScreen extends StatelessWidget {
   final User user;
 
@@ -114,11 +117,15 @@ class ProfileScreen extends StatelessWidget {
               'Logout',
               style: TextStyle(color: Color(0xFFF92A2A)),
             ),
-            onTap: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-                (route) => false,
-              );
+            onTap: () async {
+              // UPDATED: Sign out and navigate to Login
+              await fb_auth.FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
             },
           ),
         ],

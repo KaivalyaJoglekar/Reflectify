@@ -6,6 +6,9 @@ import 'package:reflectify/screens/signup_screen.dart';
 import 'package:reflectify/widgets/bottom_wave_clipper.dart';
 import 'package:reflectify/widgets/grainy_background.dart';
 
+// Import Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
@@ -15,14 +18,72 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
 
+  // Add text controllers
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  // Add loading state
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Login function
+  Future<void> _login() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+
+    try {
+      // Sign in with Firebase
+      final credential =
+          await fb_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      final fb_auth.User? firebaseUser = credential.user;
+
+      if (firebaseUser != null) {
+        // Create app User model from Firebase User
+        final appUser = User(
+          name: firebaseUser.displayName ?? 'Reflectify User',
+          username: firebaseUser.email?.split('@').first ?? 'user',
+          email: firebaseUser.email!,
+        );
+
+        // Navigate to main app
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => MainNavigationScreen(user: appUser),
+            ),
+            (route) => false,
+          );
+        }
+      }
+    } on fb_auth.FirebaseAuthException catch (e) {
+      // Show error snackbar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message ?? 'Login failed. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final sampleUser = User(
-      name: 'Vitaliy D.',
-      username: 'vitaliy_d',
-      email: 'kaivalya.j@example.com',
-    );
-
     return Scaffold(
       backgroundColor: Colors.black, // Form area is now black
       body: GrainyBackground(
@@ -77,6 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     TextFormField(
+                      controller: _emailController, // Assign controller
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle: const TextStyle(color: Colors.white70),
@@ -90,7 +152,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      initialValue: 'demo@email.com',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -99,6 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     TextFormField(
+                      controller: _passwordController, // Assign controller
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
@@ -156,15 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  MainNavigationScreen(user: sampleUser),
-                            ),
-                            (route) => false,
-                          );
-                        },
+                        onPressed: _isLoading ? null : _login, // Call _login
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(
                             context,
@@ -175,13 +229,22 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : const Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 24),
