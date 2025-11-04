@@ -68,7 +68,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descController = TextEditingController();
     DateTime selectedDate = DateTime.now(); // Default to today
-    TimeOfDay selectedTime = TimeOfDay.now();
+    TimeOfDay selectedStartTime = TimeOfDay.now();
+    TimeOfDay selectedEndTime = TimeOfDay(
+      hour: (TimeOfDay.now().hour + 1) % 24,
+      minute: TimeOfDay.now().minute,
+    ); // Default to 1 hour later
     String selectedCategory = 'Personal';
     int selectedPriority = 2;
 
@@ -325,13 +329,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Start Time and End Time Row
+                    Row(
+                      children: [
                         Expanded(
                           child: InkWell(
                             onTap: () async {
                               final picked = await showTimePicker(
                                 context: context,
-                                initialTime: selectedTime,
+                                initialTime: selectedStartTime,
                                 builder: (context, child) {
                                   return Theme(
                                     data: Theme.of(context).copyWith(
@@ -345,7 +354,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               );
                               if (picked != null) {
                                 setDialogState(() {
-                                  selectedTime = picked;
+                                  selectedStartTime = picked;
+                                  // Auto-adjust end time if it's before start time
+                                  final startMinutes = picked.hour * 60 + picked.minute;
+                                  final endMinutes = selectedEndTime.hour * 60 + selectedEndTime.minute;
+                                  if (endMinutes <= startMinutes) {
+                                    selectedEndTime = TimeOfDay(
+                                      hour: (picked.hour + 1) % 24,
+                                      minute: picked.minute,
+                                    );
+                                  }
                                 });
                               }
                             },
@@ -361,14 +379,103 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
-                                    Icons.access_time,
-                                    color: Colors.white70,
-                                    size: 16,
+                                  const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.access_time,
+                                        color: Colors.white70,
+                                        size: 16,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'Start',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    selectedTime.format(context),
+                                    selectedStartTime.format(context),
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () async {
+                              final picked = await showTimePicker(
+                                context: context,
+                                initialTime: selectedEndTime,
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: ColorScheme.dark(
+                                        primary: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (picked != null) {
+                                // Validate that end time is after start time
+                                final startMinutes = selectedStartTime.hour * 60 + selectedStartTime.minute;
+                                final endMinutes = picked.hour * 60 + picked.minute;
+                                
+                                if (endMinutes > startMinutes) {
+                                  setDialogState(() {
+                                    selectedEndTime = picked;
+                                  });
+                                } else {
+                                  // Show error message
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('End time must be after start time'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.access_time_filled,
+                                        color: Colors.white70,
+                                        size: 16,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'End',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    selectedEndTime.format(context),
                                     style: const TextStyle(fontSize: 13),
                                   ),
                                 ],
@@ -394,17 +501,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                                 selectedDate.year,
                                 selectedDate.month,
                                 selectedDate.day,
-                                selectedTime.hour,
-                                selectedTime.minute,
+                                selectedStartTime.hour,
+                                selectedStartTime.minute,
                               );
+
+                              // Format time as "start - end"
+                              final timeString = '${selectedStartTime.format(context)} - ${selectedEndTime.format(context)}';
 
                               // FIXED: Create a Task object that matches the model
                               final newTask = Task(
                                 id: UniqueKey().toString(), // Add a unique ID
                                 title: titleController.text,
-                                time: selectedTime.format(
-                                  context,
-                                ), // Add required time parameter
+                                time: timeString, // Format: "9:00 AM - 10:00 AM"
                                 color: Theme.of(
                                   context,
                                 ).primaryColor, // Add required color parameter

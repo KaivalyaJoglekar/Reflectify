@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_underscores
 
-import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:reflectify/screens/login_screen.dart';
