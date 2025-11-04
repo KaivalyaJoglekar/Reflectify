@@ -1,130 +1,117 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 class TimelineEventCard extends StatelessWidget {
-  final String time;
-  final String eventTitle;
-  final String eventTime;
-  final Color color;
-  final bool isFloating;
+  final String title;
+  final String startTime;
+  final String endTime;
+  final String? description;
+  final Color accentColor;
+  final bool hasVideoCall;
+  final List<String>? participantAvatars;
+  final VoidCallback? onTap;
 
   const TimelineEventCard({
     super.key,
-    required this.time,
-    required this.eventTitle,
-    required this.eventTime,
-    required this.color,
-    this.isFloating = false,
+    required this.title,
+    required this.startTime,
+    required this.endTime,
+    this.description,
+    required this.accentColor,
+    this.hasVideoCall = false,
+    this.participantAvatars,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 50,
-              child: Text(time, style: TextStyle(color: Colors.grey[400])),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Theme.of(context).primaryColor.withOpacity(0.5),
-                    width: 1.5,
-                  ),
-                ),
-                child: Row(
+      padding: const EdgeInsets.only(left: 60, bottom: 16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1F1F1F),
+            borderRadius: BorderRadius.circular(12),
+            border: Border(left: BorderSide(color: accentColor, width: 4)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
                   children: [
-                    Container(width: 4, color: color),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                eventTitle,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.more_horiz,
-                                color: Colors.white54,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            eventTime,
-                            style: TextStyle(
-                              color: Colors.grey[300],
-                              fontSize: 12,
-                            ),
-                          ),
-                          if (isFloating) ...[
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                'Banking app structure and implement',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: List.generate(
-                                    4,
-                                    (index) => Align(
-                                      widthFactor: 0.7,
-                                      child: CircleAvatar(
-                                        radius: 12,
-                                        backgroundImage: NetworkImage(
-                                          'https://i.pravatar.cc/150?img=${index + 20}',
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.white54,
-                                  size: 16,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
+                    if (hasVideoCall)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Icon(
+                          Icons.videocam,
+                          size: 16,
+                          color: Colors.grey[400],
+                        ),
                       ),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '$startTime - $endTime',
+                      style: TextStyle(fontSize: 13, color: Colors.grey[400]),
                     ),
                   ],
                 ),
-              ),
+                if (description != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    description!,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+                  ),
+                ],
+                if (participantAvatars != null &&
+                    participantAvatars!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      for (int i = 0; i < participantAvatars!.length; i++)
+                        Align(
+                          widthFactor: 0.7,
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF1F1F1F),
+                                width: 2,
+                              ),
+                              image: DecorationImage(
+                                image: NetworkImage(participantAvatars![i]),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      const Spacer(),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white54,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

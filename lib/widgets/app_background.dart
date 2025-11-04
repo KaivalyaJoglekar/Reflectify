@@ -115,8 +115,8 @@ class _AppBackgroundState extends State<AppBackground>
                             gradient: RadialGradient(
                               center: const Alignment(-0.5, -0.5),
                               colors: [
-                                const Color(0xFF6C5CE7).withOpacity(0.85),
-                                const Color(0xFF6C5CE7).withOpacity(0.25),
+                                Color.fromRGBO(108, 92, 231, 0.85),
+                                Color.fromRGBO(108, 92, 231, 0.25),
                                 Colors.transparent,
                               ],
                               stops: const [0.0, 0.4, 1.0],
@@ -139,8 +139,8 @@ class _AppBackgroundState extends State<AppBackground>
                             gradient: RadialGradient(
                               center: const Alignment(0.6, 0.6),
                               colors: [
-                                const Color(0xFF4D7BFF).withOpacity(0.8),
-                                const Color(0xFF4D7BFF).withOpacity(0.2),
+                                Color.fromRGBO(77, 123, 255, 0.8),
+                                Color.fromRGBO(77, 123, 255, 0.2),
                                 Colors.transparent,
                               ],
                               stops: const [0.0, 0.35, 1.0],
@@ -164,10 +164,13 @@ class _AppBackgroundState extends State<AppBackground>
                             gradient: RadialGradient(
                               center: const Alignment(0.7, -0.7),
                               colors: [
-                                const Color(
-                                  0xFFE040FB,
-                                ).withOpacity(0.75), // Pink/Magenta
-                                const Color(0xFFE040FB).withOpacity(0.2),
+                                Color.fromRGBO(
+                                  224,
+                                  64,
+                                  251,
+                                  0.75,
+                                ), // Pink/Magenta
+                                Color.fromRGBO(224, 64, 251, 0.2),
                                 Colors.transparent,
                               ],
                               stops: const [0.0, 0.4, 1.0],
@@ -191,10 +194,8 @@ class _AppBackgroundState extends State<AppBackground>
                             gradient: RadialGradient(
                               center: const Alignment(-0.6, 0.6),
                               colors: [
-                                const Color(
-                                  0xFF00BFA5,
-                                ).withOpacity(0.8), // Teal
-                                const Color(0xFF00BFA5).withOpacity(0.2),
+                                Color.fromRGBO(0, 191, 165, 0.8), // Teal
+                                Color.fromRGBO(0, 191, 165, 0.2),
                                 Colors.transparent,
                               ],
                               stops: const [0.0, 0.35, 1.0],
