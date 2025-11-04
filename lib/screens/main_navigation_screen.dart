@@ -155,7 +155,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               isDense: true,
                               isExpanded: true,
                               menuMaxHeight: 300,
-                              value: selectedCategory, // FIXED: Use value
+                              initialValue:
+                                  selectedCategory, // FIXED: Use value
                               dropdownColor: const Color(0xFF1C1C1E),
                               decoration: InputDecoration(
                                 isDense: true,
@@ -212,7 +213,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               isDense: true,
                               isExpanded: true,
                               menuMaxHeight: 300,
-                              value: selectedPriority, // FIXED: Use value
+                              initialValue:
+                                  selectedPriority, // FIXED: Use value
                               dropdownColor: const Color(0xFF1C1C1E),
                               decoration: InputDecoration(
                                 isDense: true,
@@ -609,10 +611,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 32,
-                  backgroundImage: NetworkImage(
-                    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61',
+                  backgroundColor: Theme.of(context).primaryColor,
+                  child: Text(
+                    widget.user.name.isNotEmpty
+                        ? widget.user.name[0].toUpperCase()
+                        : 'U',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),

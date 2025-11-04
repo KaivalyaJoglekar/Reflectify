@@ -4,7 +4,7 @@ import 'package:reflectify/widgets/topographic_background.dart';
 import 'package:reflectify/screens/main_navigation_screen.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/widgets/bottom_wave_clipper.dart';
-import 'package:reflectify/widgets/grainy_background.dart';
+import 'package:reflectify/widgets/app_background.dart';
 
 // Import Firebase Auth
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
@@ -25,6 +25,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   // Add loading state
   bool _isLoading = false;
+  // Password visibility
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -41,11 +43,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
     try {
       // Create user with Firebase
-      final credential =
-          await fb_auth.FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      final credential = await fb_auth.FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       final fb_auth.User? firebaseUser = credential.user;
 
@@ -54,7 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
         await firebaseUser.updateDisplayName(_nameController.text.trim());
         // Reload user to get the updated info
         await firebaseUser.reload();
-        
+
         // Get the reloaded user
         final updatedUser = fb_auth.FirebaseAuth.instance.currentUser;
 
@@ -96,7 +98,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black, // Form area is black
-      body: GrainyBackground(
+      body: AppBackground(
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -193,13 +195,20 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 24),
                     TextField(
                       controller: _passwordController, // Assign controller
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle: const TextStyle(color: Colors.white70),
-                        suffixIcon: const Icon(
-                          Icons.visibility_off_outlined,
-                          color: Colors.white54,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.white54,
+                          ),
+                          onPressed: () => setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          }),
                         ),
                         enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white24),

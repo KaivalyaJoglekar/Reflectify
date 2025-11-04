@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/screens/login_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:intl/intl.dart';
 import 'package:reflectify/utils/streak_calculator.dart';
 
 class FullProfileScreen extends StatelessWidget {
@@ -91,6 +93,13 @@ class FullProfileScreen extends StatelessWidget {
 
   Widget _buildStreakCard(BuildContext context) {
     final currentStreak = StreakCalculator.calculateCurrentStreak();
+    // Retrieve the last sign-in time from Firebase (if available)
+    final fb_auth.User? firebaseUser =
+        fb_auth.FirebaseAuth.instance.currentUser;
+    final DateTime? lastSignIn = firebaseUser?.metadata.lastSignInTime;
+    final lastSignInText = lastSignIn != null
+        ? DateFormat('MMM d, yyyy').format(lastSignIn)
+        : '—';
 
     return _buildGlassCard(
       child: Row(
@@ -130,10 +139,10 @@ class FullProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Keep it going! 🔥',
+                  'Last login: $lastSignInText',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withOpacity(0.6),
                   ),
                 ),
               ],

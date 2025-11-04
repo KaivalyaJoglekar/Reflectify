@@ -133,7 +133,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
 
 SPEC CHECKSUMS:
-  file_selector_macos: 6280b52b459ae6c590af5d78fc35c7267a3c4b31
+  file_selector_macos: 9e9e068e90ebee155097d00e89ae91edb2374db7
   Firebase: f07b15ae5a6ec0f93713e30b923d9970d144af3e
   firebase_auth: b6e7af6050a882814c2450b4302f680abde292a9
   firebase_core: d81d1a44df95699ce074ae63d8cb43e9df21e142

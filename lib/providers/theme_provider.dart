@@ -55,21 +55,21 @@ final lightTheme = ThemeData(
       fontWeight: FontWeight.bold,
       color: Colors.black87,
     ),
-    // Title styles - Lato for section titles
+    // Title styles - use BebasNeue for headings (requested font)
     titleLarge: TextStyle(
-      fontFamily: 'Lato',
+      fontFamily: 'BebasNeue',
       fontSize: 22,
       fontWeight: FontWeight.bold,
       color: Colors.black87,
     ),
     titleMedium: TextStyle(
-      fontFamily: 'Lato',
+      fontFamily: 'BebasNeue',
       fontSize: 16,
       fontWeight: FontWeight.w600,
       color: Colors.black87,
     ),
     titleSmall: TextStyle(
-      fontFamily: 'Lato',
+      fontFamily: 'BebasNeue',
       fontSize: 14,
       fontWeight: FontWeight.w600,
       color: Colors.black87,
@@ -202,19 +202,19 @@ final darkTheme = ThemeData(
       fontSize: 24,
       fontWeight: FontWeight.bold,
     ),
-    // Title styles - Lato for section titles
+    // Title styles - use BebasNeue for headings (requested font)
     titleLarge: TextStyle(
-      fontFamily: 'Lato',
+      fontFamily: 'BebasNeue',
       fontSize: 22,
       fontWeight: FontWeight.bold,
     ),
     titleMedium: TextStyle(
-      fontFamily: 'Lato',
+      fontFamily: 'BebasNeue',
       fontSize: 16,
       fontWeight: FontWeight.w600,
     ),
     titleSmall: TextStyle(
-      fontFamily: 'Lato',
+      fontFamily: 'BebasNeue',
       fontSize: 14,
       fontWeight: FontWeight.w600,
     ),
