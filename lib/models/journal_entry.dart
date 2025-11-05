@@ -9,7 +9,7 @@ class JournalEntry {
   DateTime date;
   final List<String> tags;
   final String mood; // happy, sad, neutral, excited, etc.
-  final bool isMilestone;
+  bool isFavorite;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -20,7 +20,7 @@ class JournalEntry {
     required this.date,
     this.tags = const [],
     this.mood = 'neutral',
-    this.isMilestone = false,
+    this.isFavorite = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : id = id ?? _uuid.v4(),
@@ -34,7 +34,7 @@ class JournalEntry {
     DateTime? date,
     List<String>? tags,
     String? mood,
-    bool? isMilestone,
+    bool? isFavorite,
     DateTime? updatedAt,
   }) {
     return JournalEntry(
@@ -44,7 +44,7 @@ class JournalEntry {
       date: date ?? this.date,
       tags: tags ?? this.tags,
       mood: mood ?? this.mood,
-      isMilestone: isMilestone ?? this.isMilestone,
+      isFavorite: isFavorite ?? this.isFavorite,
       createdAt: createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );

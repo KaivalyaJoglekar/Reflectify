@@ -148,12 +148,12 @@ class _AnimatedToastState extends State<_AnimatedToast>
                   ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: widget.iconColor.withOpacity(0.6),
+                    color: Colors.white.withOpacity(0.2),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: widget.iconColor.withOpacity(0.2),
+                      color: Colors.black.withOpacity(0.3),
                       blurRadius: 16,
                       spreadRadius: 2,
                     ),

@@ -14,7 +14,7 @@ class EnhancedDashboardScreen extends StatefulWidget {
   final Function(Task) onTaskComplete;
   final VoidCallback onAddTask;
   final VoidCallback onViewCalendar;
-  final VoidCallback onViewProjects;
+  final VoidCallback onFocusMode;
 
   const EnhancedDashboardScreen({
     super.key,
@@ -24,7 +24,7 @@ class EnhancedDashboardScreen extends StatefulWidget {
     required this.onTaskComplete,
     required this.onAddTask,
     required this.onViewCalendar,
-    required this.onViewProjects,
+    required this.onFocusMode,
   });
 
   @override
@@ -101,32 +101,21 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CircleAvatar(
-              radius: 28,
-              backgroundImage: NetworkImage(
-                'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3',
+            Text(
+              _getGreeting(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 16,
+                color: Colors.white70,
               ),
             ),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _getGreeting(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: 16,
-                    color: Colors.white70,
-                  ),
-                ),
-                Text(
-                  widget.user.name,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(letterSpacing: 1.1),
-                ),
-              ],
+            Text(
+              widget.user.name,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(letterSpacing: 1.1),
             ),
           ],
         ),
@@ -225,10 +214,10 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: _buildQuickActionCard(
-                'Projects',
-                Icons.folder,
-                const Color(0xFF4ECDC4),
-                widget.onViewProjects,
+                'Focus',
+                Icons.psychology,
+                const Color(0xFF4CAF50),
+                widget.onFocusMode,
               ),
             ),
           ],

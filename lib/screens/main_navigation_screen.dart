@@ -5,14 +5,13 @@ import 'package:reflectify/models/task_model.dart';
 import 'package:reflectify/models/project_model.dart';
 import 'package:reflectify/models/focus_session_model.dart'; // Still needed by DailySummaryScreen
 import 'package:reflectify/models/journal_entry.dart';
+import 'package:reflectify/models/focus_history_model.dart';
 import 'package:reflectify/providers/theme_provider.dart';
 import 'package:reflectify/screens/enhanced_dashboard_screen.dart';
-import 'package:reflectify/screens/task_management_screen.dart';
 import 'package:reflectify/screens/enhanced_calendar_screen.dart';
-import 'package:reflectify/screens/project_board_screen.dart';
-// import 'package:reflectify/screens/focus_mode_screen.dart'; // Removed
+import 'package:reflectify/screens/focus_mode_screen.dart';
 import 'package:reflectify/screens/journal_timeline_screen.dart';
-import 'package:reflectify/screens/daily_summary_screen.dart';
+// import 'package:reflectify/screens/daily_summary_screen.dart'; // Merged into Profile
 import 'package:reflectify/screens/full_profile_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
 import 'package:reflectify/widgets/custom_toast.dart';
@@ -34,6 +33,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Project> _projects = [];
   final List<FocusSession> _focusSessions = []; // Kept for DailySummaryScreen
   final List<JournalEntry> _journalEntries = [];
+  final List<FocusHistory> _focusHistory = [];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -46,22 +46,33 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       case 0: // Dashboard - Add Task
         _showAddTaskDialog();
         break;
-      case 1: // Tasks - Add Task
+      case 1: // Tasks/Calendar - Add Task
         _showAddTaskDialog();
         break;
-      case 2: // Calendar - Add Task/Event
-        _showAddTaskDialog();
+      case 2: // Focus Mode - Not used (has its own controls)
         break;
-      case 3: // Projects - Add Project
-        _showAddProjectDialog();
-        break;
-      // Case 4 (Focus Mode) removed
-      case 4: // Journal - Add Entry
+      case 3: // Journal - Add Entry
         _showAddJournalDialog();
+        break;
+      case 4: // Profile - Not used
         break;
       default:
         _showAddTaskDialog();
     }
+  }
+
+  void _onFocusSessionComplete(FocusHistory session) {
+    setState(() {
+      _focusHistory.add(session);
+    });
+    CustomToast.show(
+      context,
+      message: session.completed
+          ? '🎉 Focus session completed!'
+          : 'Focus session stopped',
+      icon: session.completed ? Icons.check_circle : Icons.info,
+      iconColor: session.completed ? Colors.green : Colors.orange,
+    );
   }
 
   void _showAddTaskDialog() {
@@ -303,7 +314,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: Colors.white.withOpacity(0.3),
@@ -373,7 +383,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: Colors.white.withOpacity(0.3),
@@ -455,7 +464,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: Colors.white.withOpacity(0.3),
@@ -579,6 +587,345 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
+  void _showEditTaskDialog(Task task) {
+    final TextEditingController titleController = TextEditingController(
+      text: task.title,
+    );
+    final TextEditingController descController = TextEditingController(
+      text: task.description,
+    );
+    DateTime selectedDate = task.date;
+    final timeParts = task.time.split(':');
+    TimeOfDay selectedStartTime = TimeOfDay(
+      hour: int.parse(timeParts[0]),
+      minute: int.parse(timeParts[1]),
+    );
+    TimeOfDay selectedEndTime = TimeOfDay(
+      hour: (int.parse(timeParts[0]) + 1) % 24,
+      minute: int.parse(timeParts[1]),
+    );
+    String selectedCategory = task.category;
+    int selectedPriority = task.priority;
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.3),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withOpacity(0.6),
+                  width: 1.5,
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Edit Task',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: titleController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Task Title',
+                        labelStyle: const TextStyle(color: Colors.white70),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: descController,
+                      style: const TextStyle(color: Colors.white),
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: 'Description',
+                        labelStyle: const TextStyle(color: Colors.white70),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: selectedCategory,
+                            dropdownColor: const Color(0xFF1C1C1E),
+                            decoration: InputDecoration(
+                              labelText: 'Category',
+                              labelStyle: const TextStyle(
+                                color: Colors.white70,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            items:
+                                [
+                                      'Personal',
+                                      'Work',
+                                      'Projects',
+                                      'Study',
+                                      'Health',
+                                    ]
+                                    .map(
+                                      (cat) => DropdownMenuItem<String>(
+                                        value: cat,
+                                        child: Text(cat),
+                                      ),
+                                    )
+                                    .toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                setDialogState(() {
+                                  selectedCategory = val;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: selectedPriority,
+                            dropdownColor: const Color(0xFF1C1C1E),
+                            decoration: InputDecoration(
+                              labelText: 'Priority',
+                              labelStyle: const TextStyle(
+                                color: Colors.white70,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            items: const [
+                              DropdownMenuItem(value: 1, child: Text('High')),
+                              DropdownMenuItem(value: 2, child: Text('Medium')),
+                              DropdownMenuItem(value: 3, child: Text('Low')),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) {
+                                setDialogState(() {
+                                  selectedPriority = val;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    InkWell(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime(2025, 10, 15),
+                          lastDate: DateTime(2030, 12, 31),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: ColorScheme.dark(
+                                  primary: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (picked != null) {
+                          setDialogState(() {
+                            selectedDate = picked;
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              color: Colors.white70,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              DateFormat('MMM dd, yyyy').format(selectedDate),
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () async {
+                              final picked = await showTimePicker(
+                                context: context,
+                                initialTime: selectedStartTime,
+                              );
+                              if (picked != null) {
+                                setDialogState(() {
+                                  selectedStartTime = picked;
+                                });
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Start Time',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    selectedStartTime.format(context),
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (titleController.text.isNotEmpty) {
+                              final updatedTask = task.copyWith(
+                                title: titleController.text,
+                                description: descController.text,
+                                category: selectedCategory,
+                                priority: selectedPriority,
+                                date: selectedDate,
+                                time: selectedStartTime.format(context),
+                                color: _getCategoryColor(selectedCategory),
+                              );
+
+                              setState(() {
+                                final index = _tasks.indexWhere(
+                                  (t) => t.id == task.id,
+                                );
+                                if (index != -1) {
+                                  _tasks[index] = updatedTask;
+                                }
+                              });
+
+                              Navigator.pop(context);
+                              CustomToast.show(
+                                context,
+                                message: 'Task updated!',
+                                icon: Icons.check_circle,
+                                iconColor: const Color(0xFF8A5DF4),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: const Text('Update'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'work':
+        return const Color(0xFF8A5DF4);
+      case 'personal':
+        return const Color(0xFFD62F6D);
+      case 'projects':
+        return const Color(0xFF4ECDC4);
+      case 'study':
+        return const Color(0xFFF4A261);
+      case 'health':
+        return const Color(0xFF06D6A0);
+      default:
+        return Colors.blue;
+    }
+  }
+
   void _showAddProjectDialog() {
     CustomToast.show(
       context,
@@ -586,6 +933,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       icon: Icons.folder,
       iconColor: const Color(0xFF4ECDC4),
     );
+  }
+
+  void _navigateToFocusMode() {
+    setState(() {
+      _selectedIndex = 2; // Navigate to Focus Mode tab
+    });
   }
 
   void _showAddJournalDialog() async {
@@ -621,6 +974,25 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     });
   }
 
+  void _handleTaskToggleComplete(Task task) {
+    setState(() {
+      final index = _tasks.indexWhere((t) => t.id == task.id);
+      if (index != -1) {
+        _tasks[index] = task.copyWith(isCompleted: !task.isCompleted);
+        CustomToast.show(
+          context,
+          message: task.isCompleted
+              ? 'Task marked as incomplete'
+              : 'Task completed!',
+          icon: task.isCompleted
+              ? Icons.radio_button_unchecked
+              : Icons.check_circle,
+          iconColor: task.isCompleted ? Colors.grey : Colors.green,
+        );
+      }
+    });
+  }
+
   void _handleTaskDelete(Task task) {
     setState(() {
       _tasks.removeWhere((t) => t.id == task.id);
@@ -633,20 +1005,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  void _handleTaskReorder(Task task, Task targetTask) {
-    setState(() {
-      final taskIndex = _tasks.indexOf(task);
-      final targetIndex = _tasks.indexOf(targetTask);
-      _tasks.removeAt(taskIndex);
-      _tasks.insert(targetIndex, task);
-    });
+  void _handleTaskEdit(Task task) {
+    _showEditTaskDialog(task);
   }
 
-  // Removed _handleSessionComplete as Focus Mode is gone
+  // Removed _handleTaskDelete, _handleTaskReorder, and _handleSessionComplete as they're no longer used
 
   @override
   Widget build(BuildContext context) {
-    // FIXED: Screen list updated to remove Focus Mode
+    // Screen list with 5 tabs: Dashboard, Tasks, Focus, Journal, Profile (with Analytics)
     final screens = <Widget>[
       // 0: Enhanced Dashboard
       EnhancedDashboardScreen(
@@ -656,22 +1023,31 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onTaskComplete: _handleTaskComplete,
         onAddTask: _showAddTaskDialog,
         onViewCalendar: () => setState(() => _selectedIndex = 1),
-        onViewProjects: () => setState(() => _selectedIndex = 2),
+        onFocusMode: _navigateToFocusMode,
       ),
-      // 1: Calendar with Timeline
+      // 1: Tasks (Calendar with Timeline)
       EnhancedCalendarScreen(
         tasks: _tasks,
         onDateSelected: (date) {},
-        onTaskTap: (task) {
-          CustomToast.show(context, message: task.title, icon: Icons.info);
-        },
+        onTaskTap: (task) {},
+        onTaskEdit: _handleTaskEdit,
+        onTaskDelete: _handleTaskDelete,
+        onTaskToggleComplete: _handleTaskToggleComplete,
       ),
-      // 2: Journal
+      // 2: Focus Mode
+      FocusModeScreen(
+        onSessionComplete: _onFocusSessionComplete,
+        history: _focusHistory,
+      ),
+      // 3: Journal
       JournalTimelineScreen(entries: _journalEntries, onEntryTap: (entry) {}),
-      // 3: Analytics
-      DailySummaryScreen(tasks: _tasks, focusSessions: _focusSessions),
-      // 4: Profile
-      FullProfileScreen(user: widget.user),
+      // 4: Profile (with Analytics merged in)
+      FullProfileScreen(
+        user: widget.user,
+        tasks: _tasks,
+        focusSessions: _focusSessions,
+        journalEntries: _journalEntries,
+      ),
     ];
 
     // ... rest of your build method ...
@@ -851,22 +1227,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                       ),
                     ),
                     Expanded(
-                      child: _buildNavItem(
-                        1,
-                        Icons.calendar_today_rounded,
-                        'Calendar',
-                      ),
+                      child: _buildNavItem(1, Icons.task_alt_rounded, 'Tasks'),
                     ),
                     const SizedBox(width: 30), // Space for FAB
                     Expanded(
-                      child: _buildNavItem(2, Icons.book_rounded, 'Journal'),
+                      child: _buildNavItem(
+                        2,
+                        Icons.psychology_rounded,
+                        'Focus',
+                      ),
                     ),
                     Expanded(
-                      child: _buildNavItem(
-                        3,
-                        Icons.analytics_rounded,
-                        'Analytics',
-                      ),
+                      child: _buildNavItem(3, Icons.book_rounded, 'Journal'),
                     ),
                     Expanded(
                       child: _buildNavItem(4, Icons.person_rounded, 'Profile'),

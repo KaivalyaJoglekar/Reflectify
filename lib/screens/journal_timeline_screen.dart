@@ -18,21 +18,19 @@ class JournalTimelineScreen extends StatefulWidget {
 
 class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
   String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'Milestones', 'Recent', 'Favorites'];
+  final List<String> _filters = ['All', 'Favorites', 'Recent'];
 
   List<JournalEntry> get _filteredEntries {
     var entries = List<JournalEntry>.from(widget.entries);
 
     switch (_selectedFilter) {
-      case 'Milestones':
-        entries = entries.where((e) => e.isMilestone).toList();
+      case 'Favorites':
+        entries = entries.where((e) => e.isFavorite).toList();
+        entries.sort((a, b) => b.date.compareTo(a.date));
         break;
       case 'Recent':
         entries.sort((a, b) => b.date.compareTo(a.date));
         entries = entries.take(20).toList();
-        break;
-      case 'Favorites':
-        // Could add a favorites feature
         break;
       default:
         entries.sort((a, b) => b.date.compareTo(a.date));
@@ -88,7 +86,11 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
             children: [
               Text(
                 'Journal Timeline',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BebasNeue',
+                ),
               ),
               SizedBox(height: 4),
               Text(
@@ -129,7 +131,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
               decoration: BoxDecoration(
                 color: isSelected
                     ? Theme.of(context).primaryColor
-                    : Colors.white.withOpacity(0.1),
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: isSelected
@@ -216,122 +218,189 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
   Widget _buildTimelineEntry(JournalEntry entry) {
     final moodIcon = _getMoodIcon(entry.mood);
     final moodColor = _getMoodColor(entry.mood);
+    final dayOfWeek = DateFormat('EEEE').format(entry.date);
+    final date = DateFormat('MMMM d, yyyy').format(entry.date);
 
     return GestureDetector(
       onTap: () => widget.onEntryTap(entry),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Stack(
           children: [
-            // Timeline indicator
-            Column(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: entry.isMilestone
-                        ? Colors.amber.withOpacity(0.3)
-                        : moodColor.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: entry.isMilestone ? Colors.amber : moodColor,
-                      width: 2,
-                    ),
-                  ),
-                  child: Icon(
-                    entry.isMilestone ? Icons.star : moodIcon,
-                    color: entry.isMilestone ? Colors.amber : moodColor,
-                    size: 20,
-                  ),
+            Container(
+              margin: const EdgeInsets.only(left: 50),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    moodColor.withOpacity(0.15),
+                    Colors.black.withOpacity(0.3),
+                  ],
                 ),
-                Container(
-                  width: 2,
-                  height: 40,
-                  color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: moodColor.withOpacity(0.4),
+                  width: 1.5,
                 ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            // Content
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: moodColor.withOpacity(0.5),
-                    width: 1.5,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            entry.title,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Day and Date Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            dayOfWeek,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: moodColor,
                             ),
                           ),
-                        ),
-                        if (entry.isMilestone)
-                          const Icon(Icons.flag, color: Colors.amber, size: 20),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      entry.content,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.7),
-                        height: 1.5,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 14,
-                          color: Colors.white.withOpacity(0.5),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          DateFormat('MMM d, yyyy').format(entry.date),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.5),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        if (entry.tags.isNotEmpty) ...[
-                          Icon(
-                            Icons.label,
-                            size: 14,
-                            color: Colors.white.withOpacity(0.5),
-                          ),
-                          const SizedBox(width: 4),
+                          const SizedBox(height: 2),
                           Text(
-                            entry.tags.take(2).join(', '),
+                            date,
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withOpacity(0.6),
                             ),
                           ),
                         ],
-                      ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: moodColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: moodColor.withOpacity(0.4),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(moodIcon, color: moodColor, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  entry.mood.capitalize(),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: moodColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                entry.isFavorite = !entry.isFavorite;
+                              });
+                            },
+                            child: Icon(
+                              entry.isFavorite ? Icons.star : Icons.star_border,
+                              color: entry.isFavorite
+                                  ? Colors.amber
+                                  : Colors.white.withOpacity(0.5),
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Title
+                  if (entry.title.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        entry.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                  // Content
+                  Text(
+                    entry.content,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white.withOpacity(0.8),
+                      height: 1.6,
+                    ),
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  // Tags
+                  if (entry.tags.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: entry.tags.take(3).map((tag) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '#$tag',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white.withOpacity(0.6),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            // Mood Icon Circle (overlapping on left)
+            Positioned(
+              left: 0,
+              top: 20,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: moodColor.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: moodColor, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: moodColor.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
                     ),
                   ],
                 ),
+                child: Icon(moodIcon, color: moodColor, size: 24),
               ),
             ),
           ],
@@ -433,5 +502,12 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
         ],
       ),
     );
+  }
+}
+
+extension StringCapitalize on String {
+  String capitalize() {
+    if (isEmpty) return this;
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

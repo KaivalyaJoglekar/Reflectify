@@ -11,12 +11,18 @@ class EnhancedCalendarScreen extends ConsumerStatefulWidget {
   final List<Task> tasks;
   final Function(DateTime) onDateSelected;
   final Function(Task) onTaskTap;
+  final Function(Task)? onTaskEdit;
+  final Function(Task)? onTaskDelete;
+  final Function(Task)? onTaskToggleComplete;
 
   const EnhancedCalendarScreen({
     super.key,
     required this.tasks,
     required this.onDateSelected,
     required this.onTaskTap,
+    this.onTaskEdit,
+    this.onTaskDelete,
+    this.onTaskToggleComplete,
   });
 
   @override
@@ -48,6 +54,75 @@ class _EnhancedCalendarScreenState
     return grouped[normalized] ?? [];
   }
 
+  void _showTaskOptions(Task task) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[600],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: Icon(
+                task.isCompleted
+                    ? Icons.radio_button_unchecked
+                    : Icons.check_circle,
+                color: Colors.green,
+              ),
+              title: Text(
+                task.isCompleted ? 'Mark as Incomplete' : 'Mark as Complete',
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.onTaskToggleComplete != null) {
+                  widget.onTaskToggleComplete!(task);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.blue),
+              title: const Text('Edit Task'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.onTaskEdit != null) {
+                  widget.onTaskEdit!(task);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete Task'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.onTaskDelete != null) {
+                  widget.onTaskDelete!(task);
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,8 +150,12 @@ class _EnhancedCalendarScreenState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
-            'Calendar',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            'Tasks',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'BebasNeue',
+            ),
           ),
           Row(
             children: [
@@ -364,22 +443,33 @@ class _EnhancedCalendarScreenState
     final isDark = themeMode == ThemeMode.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
     final textSecondary = isDark ? Colors.white70 : const Color(0xFF6B6B6B);
+    final categoryColor = _getCategoryColor(task.category);
 
     return GestureDetector(
-      onTap: () => widget.onTaskTap(task),
+      onTap: () => _showTaskOptions(task),
+      onLongPress: () => _showTaskOptions(task),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8, left: 60),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: task.color.withOpacity(0.5), width: 1.5),
+          border: Border.all(color: categoryColor.withOpacity(0.5), width: 1.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
+                if (task.isCompleted)
+                  Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    child: const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 20,
+                    ),
+                  ),
                 Expanded(
                   child: Text(
                     task.title,
@@ -387,6 +477,9 @@ class _EnhancedCalendarScreenState
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: textColor,
+                      decoration: task.isCompleted
+                          ? TextDecoration.lineThrough
+                          : null,
                     ),
                   ),
                 ),
@@ -503,14 +596,15 @@ class _EnhancedCalendarScreenState
     final priorityColor = _getPriorityColor(task.priority);
 
     return GestureDetector(
-      onTap: () => widget.onTaskTap(task),
+      onTap: () => _showTaskOptions(task),
+      onLongPress: () => _showTaskOptions(task),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: categoryColor.withOpacity(0.5), width: 1.5),
+          border: Border.all(color: categoryColor.withOpacity(0.6), width: 2.0),
         ),
         child: Row(
           children: [
