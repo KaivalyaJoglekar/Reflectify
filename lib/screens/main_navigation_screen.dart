@@ -356,8 +356,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                                 setDialogState(() {
                                   selectedStartTime = picked;
                                   // Auto-adjust end time if it's before start time
-                                  final startMinutes = picked.hour * 60 + picked.minute;
-                                  final endMinutes = selectedEndTime.hour * 60 + selectedEndTime.minute;
+                                  final startMinutes =
+                                      picked.hour * 60 + picked.minute;
+                                  final endMinutes =
+                                      selectedEndTime.hour * 60 +
+                                      selectedEndTime.minute;
                                   if (endMinutes <= startMinutes) {
                                     selectedEndTime = TimeOfDay(
                                       hour: (picked.hour + 1) % 24,
@@ -426,9 +429,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               );
                               if (picked != null) {
                                 // Validate that end time is after start time
-                                final startMinutes = selectedStartTime.hour * 60 + selectedStartTime.minute;
-                                final endMinutes = picked.hour * 60 + picked.minute;
-                                
+                                final startMinutes =
+                                    selectedStartTime.hour * 60 +
+                                    selectedStartTime.minute;
+                                final endMinutes =
+                                    picked.hour * 60 + picked.minute;
+
                                 if (endMinutes > startMinutes) {
                                   setDialogState(() {
                                     selectedEndTime = picked;
@@ -437,7 +443,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                                   // Show error message
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('End time must be after start time'),
+                                      content: Text(
+                                        'End time must be after start time',
+                                      ),
                                       duration: Duration(seconds: 2),
                                     ),
                                   );
@@ -506,13 +514,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                               );
 
                               // Format time as "start - end"
-                              final timeString = '${selectedStartTime.format(context)} - ${selectedEndTime.format(context)}';
+                              final timeString =
+                                  '${selectedStartTime.format(context)} - ${selectedEndTime.format(context)}';
 
                               // FIXED: Create a Task object that matches the model
                               final newTask = Task(
                                 id: UniqueKey().toString(), // Add a unique ID
                                 title: titleController.text,
-                                time: timeString, // Format: "9:00 AM - 10:00 AM"
+                                time:
+                                    timeString, // Format: "9:00 AM - 10:00 AM"
                                 color: Theme.of(
                                   context,
                                 ).primaryColor, // Add required color parameter
@@ -645,24 +655,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         projects: _projects,
         onTaskComplete: _handleTaskComplete,
         onAddTask: _showAddTaskDialog,
-        onViewCalendar: () => setState(() => _selectedIndex = 2),
-        onViewProjects: () => setState(() => _selectedIndex = 3),
+        onViewCalendar: () => setState(() => _selectedIndex = 1),
+        onViewProjects: () => setState(() => _selectedIndex = 2),
       ),
-      // 1: Task Management
-      TaskManagementScreen(
-        tasks: _tasks,
-        onTaskComplete: _handleTaskComplete,
-        onTaskDelete: _handleTaskDelete,
-        onTaskReorder: _handleTaskReorder,
-        onTaskEdit: (task) {
-          CustomToast.show(
-            context,
-            message: 'Edit coming soon!',
-            icon: Icons.edit,
-          );
-        },
-      ),
-      // 2: Calendar
+      // 1: Calendar with Timeline
       EnhancedCalendarScreen(
         tasks: _tasks,
         onDateSelected: (date) {},
@@ -670,19 +666,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           CustomToast.show(context, message: task.title, icon: Icons.info);
         },
       ),
-      // 3: Projects
-      ProjectBoardScreen(
-        projects: _projects,
-        tasks: _tasks,
-        onTaskStatusChange: (task, status) {},
-        onProjectTap: (project) {},
-        onAddProject: _showAddProjectDialog,
-      ),
-      // 4: Journal (was 5)
+      // 2: Journal
       JournalTimelineScreen(entries: _journalEntries, onEntryTap: (entry) {}),
-      // 5: Analytics (was 6)
+      // 3: Analytics
       DailySummaryScreen(tasks: _tasks, focusSessions: _focusSessions),
-      // 6: Profile (was 7)
+      // 4: Profile
       FullProfileScreen(user: widget.user),
     ];
 
@@ -863,29 +851,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                       ),
                     ),
                     Expanded(
-                      child: _buildNavItem(1, Icons.task_alt_rounded, 'Tasks'),
-                    ),
-                    Expanded(
                       child: _buildNavItem(
-                        2,
+                        1,
                         Icons.calendar_today_rounded,
                         'Calendar',
                       ),
                     ),
                     const SizedBox(width: 30), // Space for FAB
                     Expanded(
-                      child: _buildNavItem(4, Icons.book_rounded, 'Journal'),
-                    ), // FIXED: Index 5 -> 4
+                      child: _buildNavItem(2, Icons.book_rounded, 'Journal'),
+                    ),
                     Expanded(
                       child: _buildNavItem(
-                        5,
+                        3,
                         Icons.analytics_rounded,
                         'Analytics',
                       ),
-                    ), // FIXED: Index 6 -> 5
+                    ),
                     Expanded(
-                      child: _buildNavItem(6, Icons.person_rounded, 'Profile'),
-                    ), // FIXED: Index 7 -> 6
+                      child: _buildNavItem(4, Icons.person_rounded, 'Profile'),
+                    ),
                   ],
                 ),
               ),

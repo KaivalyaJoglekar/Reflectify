@@ -1,9 +1,13 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:reflectify/models/task_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reflectify/providers/theme_provider.dart';
 
-class EnhancedCalendarScreen extends StatefulWidget {
+class EnhancedCalendarScreen extends ConsumerStatefulWidget {
   final List<Task> tasks;
   final Function(DateTime) onDateSelected;
   final Function(Task) onTaskTap;
@@ -16,12 +20,14 @@ class EnhancedCalendarScreen extends StatefulWidget {
   });
 
   @override
-  State<EnhancedCalendarScreen> createState() => _EnhancedCalendarScreenState();
+  ConsumerState<EnhancedCalendarScreen> createState() =>
+      _EnhancedCalendarScreenState();
 }
 
-class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
-  DateTime _focusedDay = DateTime(2025, 10, 15);
-  DateTime _selectedDay = DateTime(2025, 10, 15);
+class _EnhancedCalendarScreenState
+    extends ConsumerState<EnhancedCalendarScreen> {
+  DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   Map<DateTime, List<Task>> _groupTasksByDate() {
@@ -44,8 +50,6 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tasksForSelectedDay = _getTasksForDay(_selectedDay);
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -57,11 +61,7 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
             const SizedBox(height: 16),
             _buildSelectedDateHeader(),
             const SizedBox(height: 12),
-            Expanded(
-              child: tasksForSelectedDay.isEmpty
-                  ? _buildEmptyState()
-                  : _buildTasksList(tasksForSelectedDay),
-            ),
+            Expanded(child: _build24HourTimeline()),
           ],
         ),
       ),
@@ -113,6 +113,9 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
   }
 
   Widget _buildCalendar() {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -171,21 +174,33 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
           },
         ),
         startingDayOfWeek: StartingDayOfWeek.monday,
-        headerStyle: const HeaderStyle(
+        headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
           titleTextStyle: TextStyle(
-            color: Colors.white,
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
-          leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
-          rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
+          leftChevronIcon: Icon(
+            Icons.chevron_left,
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+          ),
+          rightChevronIcon: Icon(
+            Icons.chevron_right,
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+          ),
         ),
         calendarStyle: CalendarStyle(
-          defaultTextStyle: const TextStyle(color: Colors.white),
-          weekendTextStyle: const TextStyle(color: Colors.white70),
-          outsideTextStyle: const TextStyle(color: Colors.white30),
+          defaultTextStyle: TextStyle(
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+          ),
+          weekendTextStyle: TextStyle(
+            color: isDark ? Colors.white70 : const Color(0xFF6B6B6B),
+          ),
+          outsideTextStyle: TextStyle(
+            color: isDark ? Colors.white30 : const Color(0xFFBDBDBD),
+          ),
           todayDecoration: BoxDecoration(
             color: Theme.of(context).primaryColor.withOpacity(0.3),
             shape: BoxShape.circle,
@@ -203,13 +218,13 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
             shape: BoxShape.circle,
           ),
         ),
-        daysOfWeekStyle: const DaysOfWeekStyle(
+        daysOfWeekStyle: DaysOfWeekStyle(
           weekdayStyle: TextStyle(
-            color: Colors.white70,
+            color: isDark ? Colors.white70 : const Color(0xFF6B6B6B),
             fontWeight: FontWeight.w600,
           ),
           weekendStyle: TextStyle(
-            color: Colors.white70,
+            color: isDark ? Colors.white70 : const Color(0xFF6B6B6B),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -269,6 +284,146 @@ class _EnhancedCalendarScreenState extends State<EnhancedCalendarScreen> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _build24HourTimeline() {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemCount: 24,
+      itemBuilder: (context, hour) {
+        final timeString = '${hour.toString().padLeft(2, '0')}:00';
+        final tasksAtHour = widget.tasks.where((task) {
+          try {
+            final taskHour = int.parse(task.time.split(':')[0]);
+            final matchesDate = DateUtils.isSameDay(task.date, _selectedDay);
+            return taskHour == hour && matchesDate;
+          } catch (e) {
+            return false;
+          }
+        }).toList();
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  // Time marker
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 45,
+                        child: Text(
+                          timeString,
+                          style: TextStyle(
+                            color: isDark
+                                ? Colors.grey[500]
+                                : const Color(0xFF9E9E9E),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 15,
+                        height: 1,
+                        color: isDark
+                            ? Colors.grey[700]
+                            : const Color(0xFFE0E0E0),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: isDark
+                          ? Colors.grey[900]
+                          : const Color(0xFFEEEEEE),
+                    ),
+                  ),
+                ],
+              ),
+              if (tasksAtHour.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                ...tasksAtHour.map((task) => _buildTimelineTaskCard(task)),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTimelineTaskCard(Task task) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+    final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final textSecondary = isDark ? Colors.white70 : const Color(0xFF6B6B6B);
+
+    return GestureDetector(
+      onTap: () => widget.onTaskTap(task),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8, left: 60),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: task.color.withOpacity(0.5), width: 1.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    task.title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+                Text(
+                  task.time,
+                  style: TextStyle(fontSize: 13, color: textSecondary),
+                ),
+              ],
+            ),
+            if (task.description.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                task.description,
+                style: TextStyle(fontSize: 13, color: textSecondary),
+              ),
+            ],
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: task.color.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    task.category,
+                    style: TextStyle(fontSize: 12, color: task.color),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
