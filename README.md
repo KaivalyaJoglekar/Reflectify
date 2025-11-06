@@ -1,94 +1,365 @@
-Reflectify ✨
+# Reflectify ✨
 
-A sleek, modern daily journal and scheduling application built with Flutter. Reflectify helps you organize your day and capture your thoughts with a stunning UI featuring animated mesh gradients and glassmorphism effects.
+<div align="center">
 
-Key Features
+**Reflect. Focus. Achieve.**
 
-Modern UI/UX: A beautiful, animated interface with mesh gradients and glassmorphism provides a calming and futuristic user experience.
+A comprehensive productivity and self-reflection app that combines task management, focus sessions, journaling, and analytics in one beautiful interface.
 
-User Authentication: Secure login and signup flow to keep your journal private.
+[![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?style=for-the-badge&logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?style=for-the-badge&logo=dart)](https://dart.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
 
-Daily Schedule: Manage your day with a simple, elegant task list on your main dashboard.
+</div>
 
-User Profile & Streaks: Track your journaling consistency with a GitHub-style contribution graph and view your stats on a dedicated profile page.
+---
 
-Cross-Platform: Built with Flutter for a consistent experience on both iOS and Android from a single codebase.
+## 🌟 Overview
 
-Tech Stack & Packages
+Reflectify is a modern all-in-one productivity companion that helps you organize your day, stay focused, reflect on your journey, and track your progress. Built with Flutter and featuring a stunning glassmorphism UI with animated backgrounds, Reflectify makes productivity beautiful.
 
-Framework: Flutter
+## ✨ Key Features
 
-Language: Dart
+### 📊 **Enhanced Dashboard**
+- **Personalized Greeting**: Dynamic greetings based on time of day with user avatar
+- **Today's Overview**: Quick glance at remaining tasks for the day
+- **Quick Actions**: Fast access to Add Task, Calendar, and Focus Mode
+- **Top 3 Priorities**: Intelligent priority-based task display with color-coded badges
+- **Upcoming Deadlines**: Visual deadline tracking with urgency indicators
+- **Progress Overview**: Real-time completion tracking with animated progress bars
+- **Streak Counter**: Fire icon showing your current productivity streak
 
-UI Packages:
+### ✅ **Advanced Task Management**
+- **Smart Calendar View**: TableCalendar integration with priority indicators
+- **24-Hour Timeline**: Hourly breakdown of your daily schedule
+- **Priority System**: 3-tier priority levels (High/Medium/Low) with color coding
+- **Category Organization**: Organize tasks by Work, Personal, Projects, Study, Health
+- **Rich Task Details**: 
+  - Title and description
+  - Start and end time selection
+  - Date picker with validation
+  - Category and priority assignment
+  - Time and category badges
+- **Task Actions**: Complete, edit, and delete with confirmation dialogs
+- **Visual Feedback**: Color-coded priority indicators on calendar dates
 
-glass_kit: For creating the glassmorphism card effects.
+### 🎯 **Focus Mode**
+- **Pomodoro Timer**: Customizable focus sessions (15m, 25m, 45m, 1h)
+- **Custom Duration**: Set your own focus duration
+- **Session Tracking**: 
+  - Start time and end time recording
+  - Completion status tracking
+  - Session history with timestamps
+- **Visual Timer**: Large circular timer with countdown display
+- **Session History**: View all past focus sessions with completion status
+- **Tab Interface**: Switch between Timer and History views
 
-flutter_heatmap_calendar: For the GitHub-style streak graph on the profile page.
+### 📝 **Journal Timeline**
+- **Rich Text Entries**: Write detailed journal entries with timestamps
+- **Mood Tracking**: Track your emotional state with each entry
+- **Favorites System**: Mark important entries for quick access
+- **Timeline View**: Month-grouped chronological display
+- **Filter Options**: 
+  - All entries
+  - Favorites only
+  - Recent entries (last 20)
+- **Entry Details**: 
+  - Date and time stamps
+  - Mood indicators
+  - Full content display
+  - Favorite toggle
 
-Utilities:
+### 📈 **Analytics & Profile**
+- **Comprehensive Stats**:
+  - Total journal entries count
+  - Tasks completed counter
+  - Longest streak calculator
+  - Member since date (from Firebase)
+- **Interactive Charts**:
+  - Weekly view: 7-day line chart of completed tasks
+  - Daily view: Task completion rate and progress
+  - Date navigation with picker
+  - Toggle between weekly and daily views
+- **Visual Insights**: 
+  - Color-coded charts with theme integration
+  - Smooth animations and transitions
+  - Real-time data updates
+- **User Profile**:
+  - Avatar with user initial
+  - Username and email display
+  - Editable profile (with edit icon)
 
-intl: For formatting dates and times.
+### 🎨 **Modern UI/UX**
+- **Glassmorphism Design**: Frosted glass effects throughout the app
+- **Animated Aurora Background**: Smooth 40-second gradient animations
+- **Liquid Navigation Bar**: 
+  - Animated glass indicator that slides between tabs
+  - White ripple effects on tap
+  - Proper spacing with centered FAB
+  - 5-tab layout: Dashboard, Tasks, Focus, Journal, Profile
+- **Gradient FAB**: Floating action button with context-aware actions
+- **Glass Cards**: Consistent glass card design across all screens
+- **Color Theming**: 
+  - Purple primary color (#8A5DF4)
+  - Color-coded categories and priorities
+  - Dark mode optimized
+- **Smooth Animations**:
+  - 300ms tab transitions
+  - Scale animations on selection
+  - Fade and slide effects
 
-Project Structure
+### 🔐 **Authentication & Security**
+- **Firebase Authentication**: Secure email/password login
+- **User Management**: Profile data stored securely
+- **Logout Confirmation**: Prevent accidental logouts with dialog
+- **Session Persistence**: Stay logged in across app restarts
 
-The project follows a standard feature-first directory structure to keep the code organized and scalable.
+### 🎯 **Smart Features**
+- **RepaintBoundary Optimization**: Isolated screen repaints for better performance
+- **Const Constructors**: Memory-efficient widget building
+- **Riverpod State Management**: Theme mode and app state management
+- **Custom Toast Notifications**: Beautiful feedback messages
+- **Empty State Handling**: Helpful messages when no data exists
+- **Input Validation**: 
+  - Time validation (end time after start time)
+  - Required field checks
+  - Date range constraints
 
+## 🛠️ Tech Stack
+
+### **Framework & Language**
+- **Flutter 3.x**: Cross-platform UI framework
+- **Dart 3.x**: Programming language
+- **Material Design 3**: Modern design system
+
+### **Backend & Database**
+- **Firebase Authentication**: User authentication
+- **Firebase Realtime Database**: Data storage (configured but can be enabled)
+
+### **State Management**
+- **Riverpod**: Modern state management for theme and app state
+
+### **UI Packages**
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Firebase
+  firebase_core: ^latest
+  firebase_auth: ^latest
+  firebase_database: ^latest
+  
+  # State Management
+  flutter_riverpod: ^latest
+  
+  # UI Components
+  table_calendar: ^latest      # Calendar widget
+  fl_chart: ^latest            # Analytics charts
+  glass_kit: ^latest           # Glassmorphism effects
+  
+  # Utilities
+  intl: ^latest                # Date/time formatting
+  uuid: ^latest                # Unique ID generation
+  
+  # Notifications (configured)
+  flutter_local_notifications: ^latest
+  geolocator: ^latest
+  image_picker: ^latest
+  package_info_plus: ^latest
+  shared_preferences: ^latest
+```
+
+## 📁 Project Structure
+
+```
 lib/
-├── models/         # Contains all data models (User, Task, JournalEntry)
-├── screens/        # Contains all the main screens of the app
-├── widgets/        # Contains reusable custom widgets
-└── main.dart       # The main entry point of the application
+├── main.dart                          # App entry point
+├── firebase_options.dart              # Firebase configuration
+├── models/                            # Data models
+│   ├── user_model.dart               # User data structure
+│   ├── task_model.dart               # Task with priority & deadline
+│   ├── project_model.dart            # Project structure
+│   ├── journal_entry.dart            # Journal entry model
+│   ├── focus_session_model.dart      # Focus session data
+│   └── focus_history_model.dart      # Focus history tracking
+├── screens/                           # App screens
+│   ├── login_screen.dart             # Authentication
+│   ├── main_navigation_screen.dart   # Bottom nav & FAB logic
+│   ├── enhanced_dashboard_screen.dart # Main dashboard
+│   ├── enhanced_calendar_screen.dart  # Calendar + timeline
+│   ├── focus_mode_screen.dart        # Focus timer
+│   ├── journal_timeline_screen.dart  # Journal entries
+│   ├── add_journal_screen.dart       # New journal entry
+│   └── full_profile_screen.dart      # Profile & analytics
+├── widgets/                           # Reusable components
+│   ├── app_background.dart           # Animated aurora background
+│   ├── glass_card.dart               # Glassmorphism container
+│   └── custom_toast.dart             # Toast notifications
+├── providers/                         # State management
+│   └── theme_provider.dart           # Theme mode provider
+└── utils/                             # Utility functions
+    └── streak_calculator.dart        # Streak calculation logic
+```
 
+## 🚀 Getting Started
 
-Getting Started
+### Prerequisites
 
-To get a local copy up and running, follow these simple steps.
+- **Flutter SDK**: Version 3.0 or higher
+  ```bash
+  flutter --version
+  ```
+- **Dart SDK**: Version 3.0 or higher
+- **IDE**: VS Code, Android Studio, or IntelliJ IDEA
+- **Firebase Project**: For authentication (optional for local testing)
 
-Prerequisites:
+### Installation
 
-You must have the Flutter SDK installed on your machine. For help, see the official Flutter documentation.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/KaivalyaJoglekar/Reflectify.git
+   cd reflectify
+   ```
 
-Installation & Setup:
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
 
-Clone the repository:
+3. **Firebase Setup** (Optional)
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
+   - Add iOS and Android apps
+   - Download `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
+   - Place files in respective directories
+   - Enable Email/Password authentication in Firebase Console
 
-git clone [https://github.com/your-username/reflectify-journal-app.git](https://github.com/your-username/reflectify-journal-app.git)
+4. **Run the app**
+   ```bash
+   # List available devices
+   flutter devices
+   
+   # Run on connected device
+   flutter run
+   
+   # Run on specific device
+   flutter run -d <device_id>
+   
+   # Run in release mode
+   flutter run --release
+   ```
 
+### Build for Production
 
-Navigate to the project directory:
+```bash
+# Android APK
+flutter build apk --release
 
-cd reflectify-journal-app
+# Android App Bundle
+flutter build appbundle --release
 
+# iOS
+flutter build ios --release
+```
 
-Install dependencies:
+## 📱 Screenshots
 
-flutter pub get
+<!-- Add screenshots of your app here -->
 
+## 🎨 Design Highlights
 
-Run the app:
+### Color Palette
+- **Primary**: `#8A5DF4` (Purple)
+- **Work**: `#8A5DF4` (Purple)
+- **Personal**: `#D62F6D` (Pink)
+- **Projects**: `#4ECDC4` (Teal)
+- **Study**: `#F4A261` (Orange)
+- **Health**: `#06D6A0` (Green)
+- **High Priority**: `#FF5252` (Red)
+- **Medium Priority**: `#FF9800` (Orange)
+- **Low Priority**: `#4CAF50` (Green)
 
-flutter run
+### Typography
+- **Headings**: Bold, 20-24px
+- **Body**: Regular/Medium, 14-16px
+- **Labels**: Small, 11-12px
+- **Font**: System default (San Francisco on iOS, Roboto on Android)
 
+## 🔧 Configuration
 
-Contributing
+### Theme Mode
+Toggle between light and dark mode (currently dark mode optimized):
+```dart
+// In providers/theme_provider.dart
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.dark);
+```
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+### Animation Duration
+Adjust background animation speed:
+```dart
+// In widgets/app_background.dart
+duration: const Duration(seconds: 40), // Slower = better performance
+```
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+### Bottom Navbar Height
+```dart
+// In screens/main_navigation_screen.dart
+height: 70, // Navbar height
+const EdgeInsets.fromLTRB(20, 20, 20, 120), // Screen bottom padding
+```
 
-Fork the Project
+## 🤝 Contributing
 
-Create your Feature Branch (git checkout -b feature/AmazingFeature)
+Contributions are what make the open-source community amazing! Any contributions are **greatly appreciated**.
 
-Commit your Changes (git commit -m 'Add some AmazingFeature')
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Push to the Branch (git push origin feature/AmazingFeature)
+### Contribution Ideas
+- [ ] Add task notifications
+- [ ] Implement data export/import
+- [ ] Add more chart types in analytics
+- [ ] Create widget for home screen
+- [ ] Add dark/light theme toggle in UI
+- [ ] Implement task categories customization
+- [ ] Add focus mode sound effects
+- [ ] Create onboarding tutorial
 
-Open a Pull Request
+## 📄 License
 
-License
+Distributed under the MIT License. See `LICENSE` for more information.
 
-Distributed under the MIT License. See LICENSE for more information.
+## 👨‍💻 Author
 
-Project Link: https://github.com/your-username/reflectify-journal-app
+**Kaivalya Joglekar**
+
+- GitHub: [@KaivalyaJoglekar](https://github.com/KaivalyaJoglekar)
+- Project Link: [https://github.com/KaivalyaJoglekar/Reflectify](https://github.com/KaivalyaJoglekar/Reflectify)
+
+## 🙏 Acknowledgments
+
+- [Flutter](https://flutter.dev) - Amazing cross-platform framework
+- [Firebase](https://firebase.google.com) - Backend services
+- [FL Chart](https://github.com/imaNNeo/fl_chart) - Beautiful charts
+- [Table Calendar](https://pub.dev/packages/table_calendar) - Calendar widget
+- [Riverpod](https://riverpod.dev) - State management
+- Design inspiration from modern productivity apps
+
+## 📞 Support
+
+If you like this project, please ⭐ star the repository!
+
+For issues and feature requests, please use the [GitHub Issues](https://github.com/KaivalyaJoglekar/Reflectify/issues) page.
+
+---
+
+<div align="center">
+
+**Made with ❤️ and Flutter**
+
+*Reflect. Focus. Achieve.*
+
+</div>

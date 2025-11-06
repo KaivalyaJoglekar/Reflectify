@@ -44,7 +44,12 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return AppBackground(
       child: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            20,
+            20,
+            120,
+          ), // Added extra bottom padding for navbar
           children: [
             _buildAppBar(context),
             const SizedBox(height: 24),

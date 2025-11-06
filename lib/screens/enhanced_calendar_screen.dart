@@ -560,7 +560,12 @@ class _EnhancedCalendarScreenState
     final isDark = themeMode == ThemeMode.dark;
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        0,
+        20,
+        120,
+      ), // Added bottom padding for navbar
       itemCount: 24,
       itemBuilder: (context, hour) {
         final timeString = '${hour.toString().padLeft(2, '0')}:00';

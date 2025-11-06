@@ -40,14 +40,20 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
       body: AppBackground(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(
+              20,
+              20,
+              20,
+              120,
+            ), // Added bottom padding for navbar
             children: [
               _buildProfileHeader(context),
               const SizedBox(height: 32),
               _buildStatsCard(context),
               const SizedBox(height: 24),
               _buildAnalyticsCard(context),
-              const SizedBox(height: 100), // Extra padding for bottom nav
+              const SizedBox(height: 24),
+              _buildLogoutButton(context),
             ],
           ),
         ),
@@ -200,9 +206,14 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
   }
 
   List<FlSpot> _getWeeklyData() {
+    // Get the start of the week (Monday)
+    final today = _selectedDate;
+    final weekday = today.weekday; // 1 = Monday, 7 = Sunday
+    final startOfWeek = today.subtract(Duration(days: weekday - 1));
+
     final spots = <FlSpot>[];
-    for (int i = 6; i >= 0; i--) {
-      final date = _selectedDate.subtract(Duration(days: i));
+    for (int i = 0; i < 7; i++) {
+      final date = startOfWeek.add(Duration(days: i));
       final dayTasks = widget.tasks.where(
         (task) =>
             task.date.year == date.year &&
@@ -210,9 +221,19 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
             task.date.day == date.day &&
             task.isCompleted,
       );
-      spots.add(FlSpot((6 - i).toDouble(), dayTasks.length.toDouble()));
+      spots.add(FlSpot(i.toDouble(), dayTasks.length.toDouble()));
     }
     return spots;
+  }
+
+  DateTime _getStartOfWeek() {
+    final weekday = _selectedDate.weekday; // 1 = Monday, 7 = Sunday
+    return _selectedDate.subtract(Duration(days: weekday - 1));
+  }
+
+  DateTime _getEndOfWeek() {
+    final startOfWeek = _getStartOfWeek();
+    return startOfWeek.add(const Duration(days: 6));
   }
 
   Widget _buildAnalyticsCard(BuildContext context) {
@@ -326,7 +347,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                       const SizedBox(width: 8),
                       Text(
                         _showWeekly
-                            ? '${DateFormat('MMM d').format(_selectedDate.subtract(const Duration(days: 6)))} - ${DateFormat('MMM d').format(_selectedDate)}'
+                            ? '${DateFormat('MMM d').format(_getStartOfWeek())} - ${DateFormat('MMM d').format(_getEndOfWeek())}'
                             : DateFormat('MMM d, yyyy').format(_selectedDate),
                         style: const TextStyle(
                           fontSize: 14,
@@ -389,20 +410,24 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          final days = [
-                            'Mon',
-                            'Tue',
-                            'Wed',
-                            'Thu',
-                            'Fri',
-                            'Sat',
-                            'Sun',
-                          ];
                           if (value.toInt() >= 0 && value.toInt() < 7) {
+                            final date = _getStartOfWeek().add(
+                              Duration(days: value.toInt()),
+                            );
+                            final dayLabels = [
+                              'Mon',
+                              'Tue',
+                              'Wed',
+                              'Thu',
+                              'Fri',
+                              'Sat',
+                              'Sun',
+                            ];
+                            final dayLabel = dayLabels[date.weekday - 1];
                             return Padding(
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
-                                days[value.toInt()],
+                                dayLabel,
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.white.withOpacity(0.6),
@@ -524,21 +549,6 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
               ),
             ),
           ),
-          const Divider(color: Colors.white12, height: 32),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.logout, color: Color(0xFFF92A2A)),
-            title: const Text(
-              'Logout',
-              style: TextStyle(color: Color(0xFFF92A2A)),
-            ),
-            onTap: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-                (route) => false,
-              );
-            },
-          ),
         ],
       ),
     );
@@ -610,6 +620,75 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
         border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
       ),
       child: child,
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return _buildGlassCard(
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF92A2A).withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(Icons.logout, color: Color(0xFFF92A2A), size: 20),
+        ),
+        title: const Text(
+          'Logout',
+          style: TextStyle(
+            color: Color(0xFFF92A2A),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          color: Color(0xFFF92A2A),
+          size: 16,
+        ),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFF1C1C1E),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  width: 1.5,
+                ),
+              ),
+              title: const Text(
+                'Logout',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: const Text('Are you sure you want to logout?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF92A2A),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Logout'),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

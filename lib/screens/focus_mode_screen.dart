@@ -355,8 +355,13 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
   }
 
   Widget _buildTimerTab() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        20,
+        20,
+        120,
+      ), // Added bottom padding for navbar
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -376,7 +381,11 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history, size: 80, color: Colors.white.withValues(alpha: 0.3)),
+            Icon(
+              Icons.history,
+              size: 80,
+              color: Colors.white.withValues(alpha: 0.3),
+            ),
             const SizedBox(height: 16),
             Text(
               'No focus sessions yet',
@@ -399,7 +408,12 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        0,
+        20,
+        120,
+      ), // Added bottom padding for navbar
       itemCount: widget.history.length,
       itemBuilder: (context, index) {
         final session = widget.history[widget.history.length - 1 - index];
@@ -730,7 +744,9 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [color, color.withValues(alpha: 0.7)]),
+          gradient: LinearGradient(
+            colors: [color, color.withValues(alpha: 0.7)],
+          ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

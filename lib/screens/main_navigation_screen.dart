@@ -35,35 +35,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   final List<FocusSession> _focusSessions = []; // Kept for DailySummaryScreen
   final List<JournalEntry> _journalEntries = [];
   final List<FocusHistory> _focusHistory = [];
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    );
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    _animationController.reset();
-    _animationController.forward();
   }
 
   void _onFABPressed() {
@@ -1092,6 +1068,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       // 0: Enhanced Dashboard
       RepaintBoundary(
         child: EnhancedDashboardScreen(
+          key: ValueKey(
+            _tasks.length + _tasks.where((t) => t.isCompleted).length,
+          ),
           user: widget.user,
           tasks: _tasks,
           projects: _projects,
@@ -1104,6 +1083,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       // 1: Tasks (Calendar with Timeline)
       RepaintBoundary(
         child: EnhancedCalendarScreen(
+          key: ValueKey(
+            _tasks.length + _tasks.where((t) => t.isCompleted).length,
+          ),
           tasks: _tasks,
           onDateSelected: (date) {},
           onTaskTap: (task) {},
@@ -1129,6 +1111,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       // 4: Profile (with Analytics merged in)
       RepaintBoundary(
         child: FullProfileScreen(
+          key: ValueKey(
+            _tasks.length + _tasks.where((t) => t.isCompleted).length,
+          ),
           user: widget.user,
           tasks: _tasks,
           focusSessions: _focusSessions,
@@ -1279,94 +1264,37 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   Widget _buildBottomBar() {
-    return SafeArea(
-      child: Container(
-        height: 70,
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              height: 70,
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
+    return Container(
+      height: 72,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: const [],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.18),
+                width: 1.2,
               ),
-              child: Stack(
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // Animated liquid indicator
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    left: _getIndicatorPosition(),
-                    top: 8,
-                    bottom: 8,
-                    child: AnimatedBuilder(
-                      animation: _animation,
-                      builder: (context, child) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Container(
-                              width: 60,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.white.withValues(alpha: 0.15),
-                                    Colors.white.withValues(alpha: 0.05),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.2),
-                                  width: 1.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.white.withValues(alpha: 0.1),
-                                    blurRadius: 20,
-                                    spreadRadius: 0,
-                                  ),
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  // Navigation items
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard'),
-                      _buildNavItem(1, Icons.task_alt_rounded, 'Tasks'),
-                      const SizedBox(width: 70), // Increased space for FAB
-                      _buildNavItem(2, Icons.psychology_rounded, 'Focus'),
-                      _buildNavItem(3, Icons.book_rounded, 'Journal'),
-                      _buildNavItem(4, Icons.person_rounded, 'Profile'),
-                    ],
-                  ),
+                  _buildNavItem(0, Icons.grid_view_rounded, 'Dashboard'),
+                  _buildNavItem(1, Icons.check_circle_outline_rounded, 'Tasks'),
+                  const SizedBox(width: 56), // Space for FAB
+                  _buildNavItem(2, Icons.timer_outlined, 'Focus'),
+                  _buildNavItem(3, Icons.menu_book_rounded, 'Journal'),
+                  _buildNavItem(4, Icons.person_outline_rounded, 'Profile'),
                 ],
               ),
             ),
@@ -1376,68 +1304,57 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     );
   }
 
-  double _getIndicatorPosition() {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double navWidth = screenWidth - 32; // Margin left and right
-    final double fabSpace = 70; // Space reserved for FAB
-    final double availableWidth = navWidth - fabSpace;
-    final double itemWidth = availableWidth / 5; // 5 items
-
-    // Adjust for FAB space in the middle
-    if (_selectedIndex < 2) {
-      return 8 + (_selectedIndex * itemWidth);
-    } else {
-      return 8 + fabSpace + ((_selectedIndex - 2) * itemWidth);
-    }
-  }
-
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
-    final color = isSelected
-        ? Colors.white
-        : Colors.white.withValues(alpha: 0.5);
 
     return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _onItemTapped(index),
-          borderRadius: BorderRadius.circular(20),
-          splashColor: Colors.white.withValues(alpha: 0.1),
-          highlightColor: Colors.white.withValues(alpha: 0.05),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedScale(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  scale: isSelected ? 1.15 : 1.0,
-                  child: Icon(icon, size: isSelected ? 27 : 24, color: color),
+      child: GestureDetector(
+        onTap: () => _onItemTapped(index),
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Theme.of(context).primaryColor.withValues(alpha: 0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                duration: const Duration(milliseconds: 200),
+                scale: isSelected ? 1.0 : 0.9,
+                child: Icon(
+                  icon,
+                  size: 24,
+                  color: isSelected
+                      ? Theme.of(context).primaryColor
+                      : Colors.white.withValues(alpha: 0.5),
                 ),
-                const SizedBox(height: 5),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  style: TextStyle(
-                    fontSize: isSelected ? 10.5 : 9.5,
-                    color: color,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    letterSpacing: 0.2,
-                  ),
-                  child: Text(
-                    label,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: isSelected
+                      ? Theme.of(context).primaryColor
+                      : Colors.white.withValues(alpha: 0.5),
+                  letterSpacing: -0.1,
                 ),
-              ],
-            ),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -1445,54 +1362,47 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   Widget? _buildFAB() {
-    // *** THIS IS THE FIX ***
-    // Hide the FAB on screens where it doesn't have a primary action,
-    // like Analytics (5) and Profile (6).
+    // Hide the FAB on screens where it doesn't have a primary action
     if (_selectedIndex == 5 || _selectedIndex == 6) {
       return null;
     }
-    // ***********************
 
-    // if (_selectedIndex == 4) return null; // This check is no longer needed
-    return AnimatedScale(
-      scale: 1.0,
-      duration: const Duration(milliseconds: 200),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 5),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withValues(alpha: 0.8),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
-              blurRadius: 20,
-              spreadRadius: 5,
-            ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 25),
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).primaryColor,
+            Theme.of(context).primaryColor.withValues(alpha: 0.9),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: _onFABPressed,
-            customBorder: const CircleBorder(),
-            splashColor: Colors.white.withValues(alpha: 0.3),
-            child: Container(
-              width: 65,
-              height: 65,
-              decoration: const BoxDecoration(shape: BoxShape.circle),
-              child: const Icon(
-                Icons.add_rounded,
-                size: 32,
-                color: Colors.white,
-              ),
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
+            blurRadius: 20,
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _onFABPressed,
+          customBorder: const CircleBorder(),
+          splashColor: Colors.white.withValues(alpha: 0.3),
+          child: const Center(
+            child: Icon(Icons.add_rounded, size: 32, color: Colors.white),
           ),
         ),
       ),

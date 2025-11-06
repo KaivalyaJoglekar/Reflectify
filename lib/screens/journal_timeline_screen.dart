@@ -157,7 +157,12 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
     final months = groupedEntries.keys.toList();
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        0,
+        20,
+        120,
+      ), // Added bottom padding for navbar
       itemCount: months.length,
       itemBuilder: (context, index) {
         final month = months[index];
