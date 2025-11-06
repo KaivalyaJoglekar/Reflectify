@@ -36,7 +36,7 @@ class TodayTaskCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: color.withOpacity(0.5), width: 1.5),
+            border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

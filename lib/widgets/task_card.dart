@@ -20,7 +20,7 @@ class _TaskCardState extends State<TaskCard> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.primaryColor.withOpacity(0.5),
+          color: theme.primaryColor.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),

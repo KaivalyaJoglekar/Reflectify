@@ -37,7 +37,7 @@ class ActivityChart extends StatelessWidget {
                   ),
                   PieChartSectionData(
                     value: (1 - values[index]) * 100,
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     radius: thickness,
                     showTitle: false,
                   ),

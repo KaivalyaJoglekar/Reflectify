@@ -142,18 +142,18 @@ class _AnimatedToastState extends State<_AnimatedToast>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Colors.black.withOpacity(0.7),
-                      Colors.black.withOpacity(0.5),
+                      Colors.black.withValues(alpha: 0.7),
+                      Colors.black.withValues(alpha: 0.5),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 16,
                       spreadRadius: 2,
                     ),
@@ -166,8 +166,8 @@ class _AnimatedToastState extends State<_AnimatedToast>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            widget.iconColor.withOpacity(0.4),
-                            widget.iconColor.withOpacity(0.2),
+                            widget.iconColor.withValues(alpha: 0.4),
+                            widget.iconColor.withValues(alpha: 0.2),
                           ],
                         ),
                         shape: BoxShape.circle,
@@ -187,7 +187,7 @@ class _AnimatedToastState extends State<_AnimatedToast>
                     ),
                     Icon(
                       Icons.close,
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       size: 18,
                     ),
                   ],

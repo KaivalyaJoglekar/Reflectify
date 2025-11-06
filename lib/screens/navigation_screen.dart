@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:reflectify/models/user_model.dart';
@@ -41,7 +43,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
   }
 
   void _showAddJournalDialog() async {
-    final newEntry = await Navigator.of(context).push(
+    final navigator = Navigator.of(context);
+    final newEntry = await navigator.push(
       MaterialPageRoute(
         // FIXED: Removed selectedDate parameter as AddJournalScreen no longer accepts it.
         builder: (context) => const AddJournalScreen(),
@@ -49,7 +52,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
       ),
     );
 
-    if (newEntry != null && newEntry is JournalEntry) {
+    if (newEntry != null && newEntry is JournalEntry && mounted) {
       CustomToast.show(
         context,
         message: 'Journal entry added!',

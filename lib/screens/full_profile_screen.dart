@@ -326,13 +326,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                       const SizedBox(width: 8),
                       Text(
                         _showWeekly
-                            ? DateFormat('MMM d').format(
-                                    _selectedDate.subtract(
-                                      const Duration(days: 6),
-                                    ),
-                                  ) +
-                                  ' - ' +
-                                  DateFormat('MMM d').format(_selectedDate)
+                            ? '${DateFormat('MMM d').format(_selectedDate.subtract(const Duration(days: 6)))} - ${DateFormat('MMM d').format(_selectedDate)}'
                             : DateFormat('MMM d, yyyy').format(_selectedDate),
                         style: const TextStyle(
                           fontSize: 14,

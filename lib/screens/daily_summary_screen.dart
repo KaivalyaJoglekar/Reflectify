@@ -169,7 +169,7 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),
@@ -209,7 +209,7 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: completionRate / 100,
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(
                 Theme.of(context).primaryColor,
               ),
@@ -238,7 +238,7 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.6)),
+          style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.6)),
         ),
       ],
     );
@@ -251,7 +251,7 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),
@@ -315,7 +315,7 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                     barRods: [
                       BarChartRodData(
                         toY: summary.totalTasks.toDouble(),
-                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                         width: 16,
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(4),
@@ -357,7 +357,7 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),

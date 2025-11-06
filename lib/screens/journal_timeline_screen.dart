@@ -136,7 +136,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                 border: Border.all(
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Colors.white.withOpacity(0.3),
+                      : Colors.white.withValues(alpha: 0.3),
                 ),
               ),
               child: Text(
@@ -180,7 +180,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.2),
+        color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -198,7 +198,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -235,13 +235,13 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    moodColor.withOpacity(0.15),
-                    Colors.black.withOpacity(0.3),
+                    moodColor.withValues(alpha: 0.15),
+                    Colors.black.withValues(alpha: 0.3),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: moodColor.withOpacity(0.4),
+                  color: moodColor.withValues(alpha: 0.4),
                   width: 1.5,
                 ),
               ),
@@ -268,7 +268,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                             date,
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -281,10 +281,10 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: moodColor.withOpacity(0.2),
+                              color: moodColor.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: moodColor.withOpacity(0.4),
+                                color: moodColor.withValues(alpha: 0.4),
                                 width: 1,
                               ),
                             ),
@@ -315,7 +315,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                               entry.isFavorite ? Icons.star : Icons.star_border,
                               color: entry.isFavorite
                                   ? Colors.amber
-                                  : Colors.white.withOpacity(0.5),
+                                  : Colors.white.withValues(alpha: 0.5),
                               size: 20,
                             ),
                           ),
@@ -343,7 +343,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                     entry.content,
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       height: 1.6,
                     ),
                     maxLines: 4,
@@ -363,14 +363,14 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             '#$tag',
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                             ),
                           ),
                         );
@@ -389,12 +389,12 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: moodColor.withOpacity(0.3),
+                  color: moodColor.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                   border: Border.all(color: moodColor, width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: moodColor.withOpacity(0.3),
+                      color: moodColor.withValues(alpha: 0.3),
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -417,14 +417,14 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
           Icon(
             Icons.auto_stories,
             size: 64,
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(
             'No journal entries yet',
             style: TextStyle(
               fontSize: 18,
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
@@ -432,7 +432,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
             'Start writing to track your journey',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
             ),
           ),
         ],
@@ -487,7 +487,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Search by title or content...',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
             prefixIcon: const Icon(Icons.search, color: Colors.white70),
           ),
           onChanged: (value) {

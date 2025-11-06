@@ -43,7 +43,7 @@ class JournalCard extends StatelessWidget {
                 Text(
                   DateFormat('E, d MMM yyyy').format(entry.date),
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -68,7 +68,7 @@ class JournalCard extends StatelessWidget {
             Text(
               entry.content,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 14,
                 height: 1.5,
               ),

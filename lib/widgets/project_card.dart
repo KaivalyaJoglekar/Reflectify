@@ -31,7 +31,7 @@ class ProjectCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor.withOpacity(0.5), width: 1.5),
+        border: Border.all(color: borderColor.withValues(alpha: 0.5), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

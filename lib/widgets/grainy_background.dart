@@ -48,7 +48,7 @@ class GrainPainter extends CustomPainter {
 
     // Draw static grain pattern
     for (final dot in _grainDots) {
-      paint.color = Colors.white.withOpacity(dot.opacity);
+      paint.color = Colors.white.withValues(alpha: dot.opacity);
       canvas.drawCircle(
         Offset(dot.x * size.width, dot.y * size.height),
         0.3, // Smaller dots

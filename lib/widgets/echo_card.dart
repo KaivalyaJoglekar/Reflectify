@@ -23,7 +23,7 @@ class EchoCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 10,
               spreadRadius: 2,
               offset: const Offset(0, 4),

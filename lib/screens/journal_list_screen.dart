@@ -131,8 +131,8 @@ class _JournalListScreenState extends State<JournalListScreen> {
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
-              selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
-              backgroundColor: Colors.black.withOpacity(0.3),
+              selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.8),
+              backgroundColor: Colors.black.withValues(alpha: 0.3),
               shape: StadiumBorder(
                 side: BorderSide(
                   color: isSelected ? Colors.transparent : Colors.white24,

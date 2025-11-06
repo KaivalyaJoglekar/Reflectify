@@ -20,7 +20,7 @@ class MeshGradientBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.2),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.2),
                   Colors.transparent,
                 ],
               ),
@@ -38,7 +38,7 @@ class MeshGradientBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF8A5DF4).withOpacity(0.2),
+                  const Color(0xFF8A5DF4).withValues(alpha: 0.2),
                   Colors.transparent,
                 ],
               ),
@@ -56,7 +56,7 @@ class MeshGradientBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFFD62F6D).withOpacity(0.15),
+                  const Color(0xFFD62F6D).withValues(alpha: 0.15),
                   Colors.transparent,
                 ],
               ),
@@ -74,7 +74,7 @@ class MeshGradientBackground extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF06B6D4).withOpacity(0.18),
+                  const Color(0xFF06B6D4).withValues(alpha: 0.18),
                   Colors.transparent,
                 ],
               ),

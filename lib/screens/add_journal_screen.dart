@@ -92,7 +92,7 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
                       dayOfWeek,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -126,7 +126,7 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
                   decoration: InputDecoration(
                     hintText: 'Title (optional)',
                     hintStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                       fontWeight: FontWeight.normal,
                     ),
                     contentPadding: const EdgeInsets.all(16),
@@ -157,7 +157,7 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
                     hintText:
                         'Jot down your thoughts, feelings, and experiences...\n\nWhat made you smile today?\nWhat challenges did you face?\nWhat are you grateful for?',
                     hintStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       fontSize: 15,
                     ),
                     contentPadding: const EdgeInsets.all(16),
@@ -254,11 +254,11 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.3) : Colors.transparent,
+          color: isSelected ? color.withValues(alpha: 0.3) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: isSelected
               ? Border.all(color: color, width: 2)
-              : Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+              : Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -266,7 +266,7 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
             Icon(
               icon,
               size: 28,
-              color: isSelected ? color : Colors.white.withOpacity(0.5),
+              color: isSelected ? color : Colors.white.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 4),
             Text(
@@ -274,7 +274,7 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? color : Colors.white.withOpacity(0.5),
+                color: isSelected ? color : Colors.white.withValues(alpha: 0.5),
               ),
             ),
           ],

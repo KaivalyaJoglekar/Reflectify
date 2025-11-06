@@ -97,25 +97,67 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
 
   Widget _buildAppBar(BuildContext context) {
     final int currentStreak = StreakCalculator.calculateCurrentStreak();
+    final String initial = widget.user.name.isNotEmpty
+        ? widget.user.name[0].toUpperCase()
+        : 'U';
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
           children: [
-            Text(
-              _getGreeting(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: 16,
-                color: Colors.white70,
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).primaryColor.withValues(alpha: 0.7),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(
+                      context,
+                    ).primaryColor.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  initial,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
-            Text(
-              widget.user.name,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(letterSpacing: 1.1),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _getGreeting(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                    color: Colors.white70,
+                  ),
+                ),
+                Text(
+                  widget.user.name,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(letterSpacing: 1.1),
+                ),
+              ],
             ),
           ],
         ),
@@ -162,7 +204,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return GlassCard(
       padding: const EdgeInsets.all(20),
       borderRadius: 20,
-      borderColor: Theme.of(context).primaryColor.withOpacity(0.5),
+      borderColor: Theme.of(context).primaryColor.withValues(alpha: 0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -175,7 +217,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
             '${_getTodayTasks().where((t) => !t.isCompleted).length} tasks remaining',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -237,7 +279,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return GlassCard(
       padding: const EdgeInsets.all(16),
       borderRadius: 16,
-      borderColor: color.withOpacity(0.4),
+      borderColor: color.withValues(alpha: 0.4),
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -245,7 +287,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
           // as GlassCard now handles it.
           // We keep the inner color from the original design.
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -299,7 +341,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       borderRadius: 16,
-      borderColor: priorityColor.withOpacity(0.5),
+      borderColor: priorityColor.withValues(alpha: 0.5),
       child: Row(
         children: [
           Checkbox(
@@ -330,7 +372,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: priorityColor.withOpacity(0.2),
+                        color: priorityColor.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -347,7 +389,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
                       task.category,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -387,7 +429,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       borderRadius: 16,
-      borderColor: color.withOpacity(0.5),
+      borderColor: color.withValues(alpha: 0.5),
       child: Row(
         children: [
           Icon(
@@ -411,7 +453,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
                   DateFormat('MMM d, yyyy').format(task.deadline!),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ],
@@ -423,7 +465,9 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: (isUrgent ? Colors.red : Colors.blue).withOpacity(0.5),
+                color: (isUrgent ? Colors.red : Colors.blue).withValues(
+                  alpha: 0.5,
+                ),
                 width: 1.5,
               ),
             ),
@@ -450,7 +494,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return GlassCard(
       padding: const EdgeInsets.all(20),
       borderRadius: 20,
-      borderColor: Theme.of(context).primaryColor.withOpacity(0.5),
+      borderColor: Theme.of(context).primaryColor.withValues(alpha: 0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -463,7 +507,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(
                 Theme.of(context).primaryColor,
               ),
@@ -475,7 +519,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
             '$completed of $total tasks completed',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -488,16 +532,16 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     return GlassCard(
       padding: const EdgeInsets.all(24),
       borderRadius: 16,
-      borderColor: Colors.white.withOpacity(0.3),
+      borderColor: Colors.white.withValues(alpha: 0.3),
       child: Center(
         child: Column(
           children: [
-            Icon(icon, size: 48, color: Colors.white.withOpacity(0.3)),
+            Icon(icon, size: 48, color: Colors.white.withValues(alpha: 0.3)),
             const SizedBox(height: 8),
             Text(
               message,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 14,
               ),
             ),

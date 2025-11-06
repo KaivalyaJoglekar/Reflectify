@@ -55,69 +55,239 @@ class _EnhancedCalendarScreenState
   }
 
   void _showTaskOptions(Task task) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
+          border: Border.all(
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[600],
-                borderRadius: BorderRadius.circular(2),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: Icon(
-                task.isCompleted
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      task.title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Time badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.access_time,
+                                size: 14,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                task.time,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Category badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getCategoryColor(
+                              task.category,
+                            ).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            task.category,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: _getCategoryColor(task.category),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Priority badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getPriorityColor(
+                              task.priority,
+                            ).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _getPriorityColor(
+                                task.priority,
+                              ).withValues(alpha: 0.5),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _getPriorityIcon(task.priority),
+                                size: 12,
+                                color: _getPriorityColor(task.priority),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _getPriorityLabel(task.priority),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: _getPriorityColor(task.priority),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
+              _buildOptionTile(
+                icon: task.isCompleted
                     ? Icons.radio_button_unchecked
                     : Icons.check_circle,
-                color: Colors.green,
+                iconColor: Colors.green,
+                title: task.isCompleted
+                    ? 'Mark as Incomplete'
+                    : 'Mark as Complete',
+                onTap: () {
+                  Navigator.pop(context);
+                  if (widget.onTaskToggleComplete != null) {
+                    widget.onTaskToggleComplete!(task);
+                  }
+                },
               ),
-              title: Text(
-                task.isCompleted ? 'Mark as Incomplete' : 'Mark as Complete',
+              _buildOptionTile(
+                icon: Icons.edit_rounded,
+                iconColor: Colors.blue,
+                title: 'Edit Task',
+                onTap: () {
+                  Navigator.pop(context);
+                  if (widget.onTaskEdit != null) {
+                    widget.onTaskEdit!(task);
+                  }
+                },
               ),
-              onTap: () {
-                Navigator.pop(context);
-                if (widget.onTaskToggleComplete != null) {
-                  widget.onTaskToggleComplete!(task);
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit, color: Colors.blue),
-              title: const Text('Edit Task'),
-              onTap: () {
-                Navigator.pop(context);
-                if (widget.onTaskEdit != null) {
-                  widget.onTaskEdit!(task);
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete Task'),
-              onTap: () {
-                Navigator.pop(context);
-                if (widget.onTaskDelete != null) {
-                  widget.onTaskDelete!(task);
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-          ],
+              _buildOptionTile(
+                icon: Icons.delete_rounded,
+                iconColor: Colors.red,
+                title: 'Delete Task',
+                onTap: () {
+                  Navigator.pop(context);
+                  if (widget.onTaskDelete != null) {
+                    widget.onTaskDelete!(task);
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: iconColor, size: 22),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[600]),
+            ],
+          ),
         ),
       ),
     );
@@ -201,7 +371,7 @@ class _EnhancedCalendarScreenState
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),
@@ -233,21 +403,39 @@ class _EnhancedCalendarScreenState
             final tasks = _getTasksForDay(date);
             if (tasks.isEmpty) return null;
 
+            // Check if there's a high priority task
+            final hasHighPriority = tasks.any((task) => task.priority == 1);
+
             return Positioned(
               bottom: 4,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: tasks.take(3).map((task) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 1),
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: _getCategoryColor(task.category),
-                      shape: BoxShape.circle,
+                children: [
+                  // Show priority indicator if there's a high priority task
+                  if (hasHighPriority)
+                    Container(
+                      margin: const EdgeInsets.only(right: 2),
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: _getPriorityColor(1),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 0.5),
+                      ),
                     ),
-                  );
-                }).toList(),
+                  // Show category dots
+                  ...tasks.take(3).map((task) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: _getCategoryColor(task.category),
+                        shape: BoxShape.circle,
+                      ),
+                    );
+                  }),
+                ],
               ),
             );
           },
@@ -281,7 +469,7 @@ class _EnhancedCalendarScreenState
             color: isDark ? Colors.white30 : const Color(0xFFBDBDBD),
           ),
           todayDecoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(
@@ -337,7 +525,7 @@ class _EnhancedCalendarScreenState
                 '$completedCount of $taskCount tasks completed',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -349,7 +537,7 @@ class _EnhancedCalendarScreenState
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Theme.of(context).primaryColor.withOpacity(0.5),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
                   width: 1.5,
                 ),
               ),
@@ -454,7 +642,10 @@ class _EnhancedCalendarScreenState
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: categoryColor.withOpacity(0.5), width: 1.5),
+          border: Border.all(
+            color: categoryColor.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,7 +696,7 @@ class _EnhancedCalendarScreenState
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: task.color.withOpacity(0.2),
+                    color: task.color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -513,211 +704,48 @@ class _EnhancedCalendarScreenState
                     style: TextStyle(fontSize: 12, color: task.color),
                   ),
                 ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _getPriorityColor(
+                      task.priority,
+                    ).withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _getPriorityColor(
+                        task.priority,
+                      ).withValues(alpha: 0.5),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getPriorityIcon(task.priority),
+                        size: 12,
+                        color: _getPriorityColor(task.priority),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _getPriorityLabel(task.priority),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: _getPriorityColor(task.priority),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTasksList(List<Task> tasks) {
-    // Group tasks by category
-    final tasksByCategory = <String, List<Task>>{};
-    for (var task in tasks) {
-      if (!tasksByCategory.containsKey(task.category)) {
-        tasksByCategory[task.category] = [];
-      }
-      tasksByCategory[task.category]!.add(task);
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: tasksByCategory.length,
-      itemBuilder: (context, index) {
-        final category = tasksByCategory.keys.elementAt(index);
-        final categoryTasks = tasksByCategory[category]!;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: _getCategoryColor(category),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    category,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getCategoryColor(category).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      '${categoryTasks.length}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _getCategoryColor(category),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ...categoryTasks.map((task) => _buildTaskCard(task)),
-            const SizedBox(height: 8),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildTaskCard(Task task) {
-    final categoryColor = _getCategoryColor(task.category);
-    final priorityColor = _getPriorityColor(task.priority);
-
-    return GestureDetector(
-      onTap: () => _showTaskOptions(task),
-      onLongPress: () => _showTaskOptions(task),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: categoryColor.withOpacity(0.6), width: 2.0),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              task.isCompleted
-                  ? Icons.check_circle
-                  : Icons.radio_button_unchecked,
-              color: task.isCompleted ? Colors.green : categoryColor,
-              size: 24,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    task.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      decoration: task.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
-                    ),
-                  ),
-                  if (task.description.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      task.description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
-                        color: Colors.white.withOpacity(0.4),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        task.time,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white.withOpacity(0.4),
-                        ),
-                      ),
-                      if (task.deadline != null) ...[
-                        const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: priorityColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            _getPriorityLabel(task.priority),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: priorityColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.event_available,
-            size: 64,
-            color: Colors.white.withOpacity(0.3),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No tasks for this date',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white.withOpacity(0.5),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Tap + to add a task',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.3),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -742,26 +770,39 @@ class _EnhancedCalendarScreenState
   Color _getPriorityColor(int priority) {
     switch (priority) {
       case 1:
-        return Colors.red;
+        return const Color(0xFFFF5252); // Red for high priority
       case 2:
-        return Colors.orange;
+        return const Color(0xFFFF9800); // Orange for medium priority
       case 3:
-        return Colors.blue;
+        return const Color(0xFF4CAF50); // Green for low priority
       default:
         return Colors.grey;
+    }
+  }
+
+  IconData _getPriorityIcon(int priority) {
+    switch (priority) {
+      case 1:
+        return Icons.priority_high;
+      case 2:
+        return Icons.remove;
+      case 3:
+        return Icons.arrow_downward;
+      default:
+        return Icons.remove;
     }
   }
 
   String _getPriorityLabel(int priority) {
     switch (priority) {
       case 1:
-        return 'HIGH';
+        return 'High';
       case 2:
-        return 'MED';
+        return 'Medium';
       case 3:
-        return 'LOW';
+        return 'Low';
       default:
-        return '';
+        return 'None';
     }
   }
 }

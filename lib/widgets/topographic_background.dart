@@ -32,7 +32,7 @@ class AbstractPainter extends CustomPainter {
     final paint = Paint()
       // Lines are a very subtle black to not be distracting
       // ignore: deprecated_member_use
-      ..color = Colors.black.withOpacity(0.08)
+      ..color = Colors.black.withValues(alpha: 0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 

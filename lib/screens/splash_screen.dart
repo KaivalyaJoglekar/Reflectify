@@ -123,15 +123,15 @@ class _SplashScreenState extends State<SplashScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            color.withOpacity(0.95),
-            color.withOpacity(0.55),
-            color.withOpacity(0.0),
+            color.withValues(alpha: 0.95),
+            color.withValues(alpha: 0.55),
+            color.withValues(alpha: 0.0),
           ],
           stops: const [0.0, 0.5, 1.0],
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.45),
+            color: color.withValues(alpha: 0.45),
             blurRadius: 40,
             spreadRadius: 10,
           ),
@@ -153,7 +153,7 @@ class _SplashScreenState extends State<SplashScreen>
 
           // Dark overlay to make auroras visible
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.7)),
+            child: Container(color: Colors.black.withValues(alpha: 0.7)),
           ),
 
           // Animated auroras in center mixing together
@@ -221,7 +221,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white.withOpacity(0.7),
+                    Colors.white.withValues(alpha: 0.7),
                   ),
                 ),
               ),

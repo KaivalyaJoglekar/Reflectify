@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/widgets/project_card.dart';
@@ -162,7 +164,7 @@ class DashboardScreen extends StatelessWidget {
     return GlassCard(
       padding: const EdgeInsets.all(20),
       borderRadius: 24,
-      borderColor: const Color(0xFF8A5DF4).withOpacity(0.5),
+      borderColor: const Color(0xFF8A5DF4).withValues(alpha: 0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

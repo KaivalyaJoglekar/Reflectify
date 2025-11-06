@@ -87,7 +87,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),
@@ -115,7 +115,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           weekendTextStyle: const TextStyle(color: Colors.white70),
           outsideTextStyle: const TextStyle(color: Colors.white30),
           todayDecoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(
@@ -140,13 +140,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.task_alt, size: 64, color: Colors.white.withOpacity(0.3)),
+          Icon(Icons.task_alt, size: 64, color: Colors.white.withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(
             'No tasks for this date',
             style: TextStyle(
               fontSize: 18,
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -155,7 +155,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             'Tap + to add a task',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
             ),
           ),
         ],
@@ -177,7 +177,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFFD62F6D).withOpacity(0.5),
+              color: const Color(0xFFD62F6D).withValues(alpha: 0.5),
               width: 1.5,
             ),
           ),
@@ -225,13 +225,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     Icon(
                       Icons.access_time,
                       size: 14,
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       DateFormat('h:mm a').format(taskDate),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.4),
+                        color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 12,
                       ),
                     ),

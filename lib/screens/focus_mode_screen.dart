@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:ui';
 import 'package:reflectify/models/focus_history_model.dart';
 
 class FocusModeScreen extends StatefulWidget {
@@ -125,45 +124,141 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
   }
 
   void _showCustomTimeDialog() {
-    final controller = TextEditingController();
+    final hoursController = TextEditingController();
+    final minutesController = TextEditingController();
+    final secondsController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1C1C1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Custom Duration',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            labelText: 'Minutes',
-            labelStyle: TextStyle(color: Colors.white70),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white30),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Set your custom focus time',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blue),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: hoursController,
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      labelText: 'Hours',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white30),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  ':',
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: minutesController,
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      labelText: 'Minutes',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white30),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  ':',
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: secondsController,
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      labelText: 'Seconds',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white30),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
+            const SizedBox(height: 12),
+            const Text(
+              'Max: 3 hours',
+              style: TextStyle(color: Colors.white54, fontSize: 12),
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
-              final minutes = int.tryParse(controller.text);
-              if (minutes != null && minutes > 0 && minutes <= 180) {
+              final hours = int.tryParse(hoursController.text) ?? 0;
+              final minutes = int.tryParse(minutesController.text) ?? 0;
+              final seconds = int.tryParse(secondsController.text) ?? 0;
+
+              final totalMinutes = (hours * 60) + minutes;
+              final totalSeconds = (totalMinutes * 60) + seconds;
+
+              // Max 3 hours (180 minutes or 10800 seconds)
+              if (totalSeconds > 0 && totalSeconds <= 10800) {
                 setState(() {
-                  _selectedMinutes = minutes;
+                  _selectedMinutes = totalSeconds ~/ 60;
+                  if (totalSeconds % 60 > 0) {
+                    _selectedMinutes++;
+                  }
+                  // Store exact seconds for precise display
+                  _remainingSeconds = totalSeconds;
                 });
                 Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter a valid time (max 3 hours)'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
             child: const Text('Set'),
           ),
         ],
@@ -172,9 +267,10 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
   }
 
   String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
     final secs = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -200,7 +296,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -280,13 +376,13 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history, size: 80, color: Colors.white.withOpacity(0.3)),
+            Icon(Icons.history, size: 80, color: Colors.white.withValues(alpha: 0.3)),
             const SizedBox(height: 16),
             Text(
               'No focus sessions yet',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 8),
@@ -294,7 +390,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
               'Complete a session to see your history',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
             ),
           ],
@@ -313,16 +409,22 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
   }
 
   Widget _buildHistoryCard(FocusHistory session) {
+    final hours = session.durationMinutes ~/ 60;
+    final mins = session.durationMinutes % 60;
+    final durationLabel = hours > 0
+        ? '${hours}h ${mins}m session'
+        : '${mins}m session';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: session.completed
-              ? Colors.green.withOpacity(0.3)
-              : Colors.orange.withOpacity(0.3),
+              ? Colors.green.withValues(alpha: 0.3)
+              : Colors.orange.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -332,8 +434,8 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: session.completed
-                  ? Colors.green.withOpacity(0.2)
-                  : Colors.orange.withOpacity(0.2),
+                  ? Colors.green.withValues(alpha: 0.2)
+                  : Colors.orange.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -348,7 +450,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${session.durationMinutes} min session',
+                  durationLabel,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -359,7 +461,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                   '${_formatDate(session.startTime)} • ${_formatTimeOnly(session.startTime)}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -463,17 +565,17 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).primaryColor.withOpacity(0.3),
-            Theme.of(context).primaryColor.withOpacity(0.1),
+            Theme.of(context).primaryColor.withValues(alpha: 0.3),
+            Theme.of(context).primaryColor.withValues(alpha: 0.1),
           ],
         ),
         border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           width: 3,
         ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
             blurRadius: 30,
             spreadRadius: 5,
           ),
@@ -486,9 +588,9 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
             Text(
               _isRunning
                   ? _formatTime(_remainingSeconds)
-                  : '$_selectedMinutes:00',
+                  : _formatTime(_selectedMinutes * 60),
               style: const TextStyle(
-                fontSize: 56,
+                fontSize: 48,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'BebasNeue',
                 letterSpacing: 2,
@@ -499,7 +601,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
               _isRunning ? 'Stay Focused' : 'Ready to Focus',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -512,10 +614,15 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
     final allButtons = [
       ..._presetMinutes.map((minutes) {
         final isSelected = minutes == _selectedMinutes;
+        final hours = minutes ~/ 60;
+        final mins = minutes % 60;
+        final timeLabel = hours > 0 ? '${hours}h ${mins}m' : '${mins}m';
+
         return GestureDetector(
           onTap: () {
             setState(() {
               _selectedMinutes = minutes;
+              _remainingSeconds = 0; // Reset display
             });
           },
           child: Container(
@@ -528,12 +635,12 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
               border: Border.all(
                 color: isSelected
                     ? Theme.of(context).primaryColor
-                    : Colors.white.withOpacity(0.3),
+                    : Colors.white.withValues(alpha: 0.3),
                 width: 1.5,
               ),
             ),
             child: Text(
-              '$minutes min',
+              timeLabel,
               style: TextStyle(
                 color: isSelected ? Colors.white : Colors.white70,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -623,11 +730,11 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [color, color.withOpacity(0.7)]),
+          gradient: LinearGradient(colors: [color, color.withValues(alpha: 0.7)]),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.4),
+              color: color.withValues(alpha: 0.4),
               blurRadius: 12,
               spreadRadius: 2,
             ),
