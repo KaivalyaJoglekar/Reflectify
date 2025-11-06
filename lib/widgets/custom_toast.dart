@@ -182,6 +182,7 @@ class _AnimatedToastState extends State<_AnimatedToast>
                           color: Colors.white,
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ),

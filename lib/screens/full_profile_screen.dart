@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/models/task_model.dart';
@@ -7,6 +5,7 @@ import 'package:reflectify/models/focus_session_model.dart';
 import 'package:reflectify/models/journal_entry.dart';
 import 'package:reflectify/screens/login_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
+import 'package:reflectify/widgets/custom_toast.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -68,7 +67,9 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+              backgroundColor: Theme.of(
+                context,
+              ).primaryColor.withValues(alpha: 0.2),
               child: CircleAvatar(
                 radius: 55,
                 backgroundColor: Theme.of(context).primaryColor,
@@ -112,7 +113,10 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
         const SizedBox(height: 8),
         Text(
           widget.user.email,
-          style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.4)),
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white.withValues(alpha: 0.4),
+          ),
         ),
       ],
     );
@@ -274,7 +278,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.2),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -336,7 +340,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                   ),
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(12),
@@ -393,7 +397,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                     horizontalInterval: 1,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         strokeWidth: 1,
                       );
                     },
@@ -430,7 +434,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                                 dayLabel,
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: Colors.white.withOpacity(0.6),
+                                  color: Colors.white.withValues(alpha: 0.6),
                                 ),
                               ),
                             );
@@ -448,7 +452,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                             value.toInt().toString(),
                             style: TextStyle(
                               fontSize: 10,
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                             ),
                           );
                         },
@@ -485,7 +489,9 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                       ),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                        color: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.2),
                       ),
                     ),
                   ],
@@ -521,7 +527,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                     borderRadius: BorderRadius.circular(8),
                     child: LinearProgressIndicator(
                       value: completedToday / totalToday,
-                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundColor: Colors.white.withValues(alpha: 0.1),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         Theme.of(context).primaryColor,
                       ),
@@ -571,7 +577,10 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.6)),
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.white.withValues(alpha: 0.6),
+          ),
         ),
       ],
     );
@@ -591,7 +600,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -617,7 +626,10 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
       ),
       child: child,
     );
@@ -630,7 +642,7 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFFF92A2A).withOpacity(0.2),
+            color: const Color(0xFFF92A2A).withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(Icons.logout, color: Color(0xFFF92A2A), size: 20),
@@ -651,12 +663,12 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
         onTap: () {
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(
+            builder: (dialogContext) => AlertDialog(
               backgroundColor: const Color(0xFF1C1C1E),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
@@ -667,16 +679,46 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
               content: const Text('Are you sure you want to logout?'),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(dialogContext),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (route) => false,
-                    );
+                  onPressed: () async {
+                    // Close the dialog first
+                    Navigator.pop(dialogContext);
+
+                    try {
+                      // Sign out from Firebase
+                      await fb_auth.FirebaseAuth.instance.signOut();
+
+                      // Show success toast (use the original context, not dialog context)
+                      if (!context.mounted) return;
+                      CustomToast.show(
+                        context,
+                        message: 'Logged out successfully. See you soon!',
+                        icon: Icons.logout,
+                        iconColor: Colors.green,
+                      );
+
+                      // Small delay for toast to show
+                      await Future.delayed(const Duration(milliseconds: 800));
+
+                      // Navigate to login screen, clearing all routes
+                      if (!context.mounted) return;
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (route) => false,
+                      );
+                    } catch (e) {
+                      // Show error toast
+                      if (!context.mounted) return;
+                      CustomToast.show(
+                        context,
+                        message: 'Logout failed. Please try again',
+                        icon: Icons.error_outline,
+                        iconColor: Colors.red,
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF92A2A),

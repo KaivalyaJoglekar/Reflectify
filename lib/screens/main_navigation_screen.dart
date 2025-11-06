@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/models/task_model.dart';
 import 'package:reflectify/models/project_model.dart';
-import 'package:reflectify/models/focus_session_model.dart'; // Still needed by DailySummaryScreen
+import 'package:reflectify/models/focus_session_model.dart';
 import 'package:reflectify/models/journal_entry.dart';
 import 'package:reflectify/models/focus_history_model.dart';
 import 'package:reflectify/providers/theme_provider.dart';
@@ -11,7 +11,6 @@ import 'package:reflectify/screens/enhanced_dashboard_screen.dart';
 import 'package:reflectify/screens/enhanced_calendar_screen.dart';
 import 'package:reflectify/screens/focus_mode_screen.dart';
 import 'package:reflectify/screens/journal_timeline_screen.dart';
-// import 'package:reflectify/screens/daily_summary_screen.dart'; // Merged into Profile
 import 'package:reflectify/screens/full_profile_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
 import 'package:reflectify/widgets/custom_toast.dart';
@@ -32,7 +31,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   int _selectedIndex = 0;
   final List<Task> _tasks = [];
   final List<Project> _projects = [];
-  final List<FocusSession> _focusSessions = []; // Kept for DailySummaryScreen
+  final List<FocusSession> _focusSessions = [];
   final List<JournalEntry> _journalEntries = [];
   final List<FocusHistory> _focusHistory = [];
 
@@ -1058,8 +1057,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   void _handleTaskEdit(Task task) {
     _showEditTaskDialog(task);
   }
-
-  // Removed _handleTaskDelete, _handleTaskReorder, and _handleSessionComplete as they're no longer used
 
   @override
   Widget build(BuildContext context) {

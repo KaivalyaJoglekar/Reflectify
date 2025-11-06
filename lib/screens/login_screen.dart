@@ -5,6 +5,7 @@ import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/screens/signup_screen.dart';
 import 'package:reflectify/widgets/bottom_wave_clipper.dart';
 import 'package:reflectify/widgets/app_background.dart';
+import 'package:reflectify/widgets/custom_toast.dart';
 
 // Import Firebase Auth
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
@@ -36,16 +37,62 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Login function
   Future<void> _login() async {
+    // Validate inputs
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // Check if email is empty
+    if (email.isEmpty) {
+      CustomToast.show(
+        context,
+        message: 'Please enter your email address',
+        icon: Icons.email_outlined,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Validate email format
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) {
+      CustomToast.show(
+        context,
+        message: 'Please enter a valid email address',
+        icon: Icons.error_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Check if password is empty
+    if (password.isEmpty) {
+      CustomToast.show(
+        context,
+        message: 'Please enter your password',
+        icon: Icons.lock_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Check password length
+    if (password.length < 6) {
+      CustomToast.show(
+        context,
+        message: 'Password must be at least 6 characters',
+        icon: Icons.error_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
     if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       // Sign in with Firebase
       final credential = await fb_auth.FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
+          .signInWithEmailAndPassword(email: email, password: password);
 
       final fb_auth.User? firebaseUser = credential.user;
 
@@ -57,7 +104,18 @@ class _LoginScreenState extends State<LoginScreen> {
           email: firebaseUser.email!,
         );
 
+        // Show success toast
+        if (mounted) {
+          CustomToast.show(
+            context,
+            message: 'Welcome back, ${appUser.name}!',
+            icon: Icons.check_circle,
+            iconColor: Colors.green,
+          );
+        }
+
         // Navigate to main app
+        await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
@@ -68,13 +126,59 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } on fb_auth.FirebaseAuthException catch (e) {
-      // Show error snackbar
+      // Show specific error messages
+      String errorMessage;
+      IconData errorIcon = Icons.error_outline;
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No account found with this email';
+          errorIcon = Icons.person_off_outlined;
+          break;
+        case 'wrong-password':
+          errorMessage = 'Incorrect password. Please try again';
+          errorIcon = Icons.lock_outline;
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address';
+          errorIcon = Icons.email_outlined;
+          break;
+        case 'user-disabled':
+          errorMessage = 'This account has been disabled';
+          errorIcon = Icons.block;
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many attempts. Please try again later';
+          errorIcon = Icons.timer_outlined;
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Network error. Check your connection';
+          errorIcon = Icons.wifi_off;
+          break;
+        case 'invalid-credential':
+          errorMessage = 'Invalid email or password';
+          errorIcon = Icons.error_outline;
+          break;
+        default:
+          errorMessage = e.message ?? 'Login failed. Please try again';
+      }
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.message ?? 'Login failed. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
+        CustomToast.show(
+          context,
+          message: errorMessage,
+          icon: errorIcon,
+          iconColor: Colors.red,
+        );
+      }
+    } catch (e) {
+      // Handle any other errors
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'An unexpected error occurred',
+          icon: Icons.error_outline,
+          iconColor: Colors.red,
         );
       }
     } finally {

@@ -638,6 +638,9 @@ class _EnhancedCalendarScreenState
     final textSecondary = isDark ? Colors.white70 : const Color(0xFF6B6B6B);
     final categoryColor = _getCategoryColor(task.category);
 
+    // Use green border if completed, otherwise use category color
+    final borderColor = task.isCompleted ? Colors.green : categoryColor;
+
     return GestureDetector(
       onTap: () => _showTaskOptions(task),
       onLongPress: () => _showTaskOptions(task),
@@ -645,11 +648,13 @@ class _EnhancedCalendarScreenState
         margin: const EdgeInsets.only(bottom: 8, left: 60),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.transparent,
+          color: task.isCompleted
+              ? Colors.green.withValues(alpha: 0.05)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: categoryColor.withValues(alpha: 0.5),
-            width: 1.5,
+            color: borderColor.withValues(alpha: task.isCompleted ? 0.6 : 0.5),
+            width: task.isCompleted ? 2.0 : 1.5,
           ),
         ),
         child: Column(

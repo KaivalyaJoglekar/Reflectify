@@ -5,6 +5,7 @@ import 'package:reflectify/screens/main_navigation_screen.dart';
 import 'package:reflectify/models/user_model.dart';
 import 'package:reflectify/widgets/bottom_wave_clipper.dart';
 import 'package:reflectify/widgets/app_background.dart';
+import 'package:reflectify/widgets/custom_toast.dart';
 
 // Import Firebase Auth
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
@@ -38,22 +39,91 @@ class _SignupScreenState extends State<SignupScreen> {
 
   // Signup function
   Future<void> _signup() async {
+    // Validate inputs
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // Check if name is empty
+    if (name.isEmpty) {
+      CustomToast.show(
+        context,
+        message: 'Please enter your name',
+        icon: Icons.person_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Check name length
+    if (name.length < 2) {
+      CustomToast.show(
+        context,
+        message: 'Name must be at least 2 characters',
+        icon: Icons.error_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Check if email is empty
+    if (email.isEmpty) {
+      CustomToast.show(
+        context,
+        message: 'Please enter your email address',
+        icon: Icons.email_outlined,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Validate email format
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) {
+      CustomToast.show(
+        context,
+        message: 'Please enter a valid email address',
+        icon: Icons.error_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Check if password is empty
+    if (password.isEmpty) {
+      CustomToast.show(
+        context,
+        message: 'Please enter a password',
+        icon: Icons.lock_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
+    // Check password length
+    if (password.length < 6) {
+      CustomToast.show(
+        context,
+        message: 'Password must be at least 6 characters',
+        icon: Icons.error_outline,
+        iconColor: Colors.orange,
+      );
+      return;
+    }
+
     if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       // Create user with Firebase
       final credential = await fb_auth.FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       final fb_auth.User? firebaseUser = credential.user;
 
       if (firebaseUser != null) {
         // Update the user's display name
-        await firebaseUser.updateDisplayName(_nameController.text.trim());
+        await firebaseUser.updateDisplayName(name);
         // Reload user to get the updated info
         await firebaseUser.reload();
 
@@ -62,12 +132,23 @@ class _SignupScreenState extends State<SignupScreen> {
 
         // Create app User model
         final appUser = User(
-          name: updatedUser?.displayName ?? 'New User',
+          name: updatedUser?.displayName ?? name,
           username: updatedUser?.email?.split('@').first ?? 'user',
-          email: updatedUser?.email ?? 'no-email',
+          email: updatedUser?.email ?? email,
         );
 
+        // Show success toast
+        if (mounted) {
+          CustomToast.show(
+            context,
+            message: 'Account created successfully! Welcome!',
+            icon: Icons.check_circle,
+            iconColor: Colors.green,
+          );
+        }
+
         // Navigate to main app
+        await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
@@ -78,13 +159,51 @@ class _SignupScreenState extends State<SignupScreen> {
         }
       }
     } on fb_auth.FirebaseAuthException catch (e) {
-      // Show error snackbar
+      // Show specific error messages
+      String errorMessage;
+      IconData errorIcon = Icons.error_outline;
+
+      switch (e.code) {
+        case 'email-already-in-use':
+          errorMessage = 'This email is already registered';
+          errorIcon = Icons.email_outlined;
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address';
+          errorIcon = Icons.error_outline;
+          break;
+        case 'weak-password':
+          errorMessage = 'Password is too weak. Use a stronger password';
+          errorIcon = Icons.lock_outline;
+          break;
+        case 'operation-not-allowed':
+          errorMessage = 'Account creation is currently disabled';
+          errorIcon = Icons.block;
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Network error. Check your connection';
+          errorIcon = Icons.wifi_off;
+          break;
+        default:
+          errorMessage = e.message ?? 'Signup failed. Please try again';
+      }
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.message ?? 'Signup failed. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
+        CustomToast.show(
+          context,
+          message: errorMessage,
+          icon: errorIcon,
+          iconColor: Colors.red,
+        );
+      }
+    } catch (e) {
+      // Handle any other errors
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'An unexpected error occurred',
+          icon: Icons.error_outline,
+          iconColor: Colors.red,
         );
       }
     } finally {
