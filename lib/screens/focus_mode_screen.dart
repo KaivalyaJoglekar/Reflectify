@@ -19,7 +19,9 @@ class FocusModeScreen extends StatefulWidget {
 class _FocusModeScreenState extends State<FocusModeScreen> {
   int _selectedMinutes = 25; // Pomodoro default
   int _remainingSeconds = 0;
+  int _initialSeconds = 0; // Track the initial duration when timer starts
   bool _isRunning = false;
+  bool _isPaused = false; // Track if timer is paused
   Timer? _timer;
   DateTime? _sessionStartTime;
   int _currentTab = 0; // 0 for timer, 1 for history
@@ -35,7 +37,12 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
   void _startTimer() {
     setState(() {
       _isRunning = true;
-      _remainingSeconds = _selectedMinutes * 60;
+      _isPaused = false;
+      // Use custom time if set, otherwise use preset minutes
+      if (_remainingSeconds == 0) {
+        _remainingSeconds = _selectedMinutes * 60;
+      }
+      _initialSeconds = _remainingSeconds; // Store initial duration
       _sessionStartTime = DateTime.now();
     });
 
@@ -44,17 +51,36 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
         if (_remainingSeconds > 0) {
           _remainingSeconds--;
         } else {
-          _stopTimer();
+          _pauseTimer();
           _showCompletionDialog(true);
         }
       });
     });
   }
 
-  void _stopTimer() {
+  void _pauseTimer() {
     _timer?.cancel();
     setState(() {
       _isRunning = false;
+      _isPaused = true; // Mark as paused
+    });
+  }
+
+  void _resumeTimer() {
+    setState(() {
+      _isRunning = true;
+      _isPaused = false;
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingSeconds > 0) {
+          _remainingSeconds--;
+        } else {
+          _pauseTimer();
+          _showCompletionDialog(true);
+        }
+      });
     });
   }
 
@@ -65,9 +91,11 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
 
     // Save session history if it was started
     if (_sessionStartTime != null) {
+      final durationMinutes = (_initialSeconds / 60).ceil();
       final session = FocusHistory(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        durationMinutes: _selectedMinutes,
+        durationMinutes: durationMinutes,
+        durationSeconds: _initialSeconds,
         startTime: _sessionStartTime!,
         endTime: endTime,
         completed: completed,
@@ -77,7 +105,9 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
 
     setState(() {
       _isRunning = false;
+      _isPaused = false;
       _remainingSeconds = 0;
+      _initialSeconds = 0;
       _sessionStartTime = null;
     });
   }
@@ -87,9 +117,11 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
 
     // Save completed session
     if (_sessionStartTime != null && completed) {
+      final durationMinutes = (_initialSeconds / 60).ceil();
       final session = FocusHistory(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        durationMinutes: _selectedMinutes,
+        durationMinutes: durationMinutes,
+        durationSeconds: _initialSeconds,
         startTime: _sessionStartTime!,
         endTime: endTime,
         completed: true,
@@ -124,7 +156,6 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
   }
 
   void _showCustomTimeDialog() {
-    final hoursController = TextEditingController();
     final minutesController = TextEditingController();
     final secondsController = TextEditingController();
 
@@ -146,79 +177,74 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
             ),
             const SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: hoursController,
-                    keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white),
-                    textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      labelText: 'Hours',
-                      labelStyle: TextStyle(color: Colors.white70),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white30),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  ':',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
+                SizedBox(
+                  width: 100,
                   child: TextField(
                     controller: minutesController,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
                     textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Minutes',
-                      labelStyle: TextStyle(color: Colors.white70),
+                      labelStyle: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white30),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white30),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                const Text(
-                  ':',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    ':',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
+                SizedBox(
+                  width: 100,
                   child: TextField(
                     controller: secondsController,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
                     textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Seconds',
-                      labelStyle: TextStyle(color: Colors.white70),
+                      labelStyle: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white30),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white30),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Max: 3 hours',
-              style: TextStyle(color: Colors.white54, fontSize: 12),
             ),
           ],
         ),
@@ -229,28 +255,25 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              final hours = int.tryParse(hoursController.text) ?? 0;
               final minutes = int.tryParse(minutesController.text) ?? 0;
               final seconds = int.tryParse(secondsController.text) ?? 0;
 
-              final totalMinutes = (hours * 60) + minutes;
-              final totalSeconds = (totalMinutes * 60) + seconds;
+              final totalSeconds = (minutes * 60) + seconds;
 
-              // Max 3 hours (180 minutes or 10800 seconds)
-              if (totalSeconds > 0 && totalSeconds <= 10800) {
+              if (totalSeconds > 0) {
                 setState(() {
                   _selectedMinutes = totalSeconds ~/ 60;
                   if (totalSeconds % 60 > 0) {
                     _selectedMinutes++;
                   }
-                  // Store exact seconds for precise display
                   _remainingSeconds = totalSeconds;
+                  _isPaused = false; // Not paused, just custom time set
                 });
                 Navigator.pop(context);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Please enter a valid time (max 3 hours)'),
+                    content: Text('Please enter a valid time'),
                     duration: Duration(seconds: 2),
                   ),
                 );
@@ -259,7 +282,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
             ),
-            child: const Text('Set'),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -423,11 +446,38 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
   }
 
   Widget _buildHistoryCard(FocusHistory session) {
-    final hours = session.durationMinutes ~/ 60;
-    final mins = session.durationMinutes % 60;
-    final durationLabel = hours > 0
-        ? '${hours}h ${mins}m session'
-        : '${mins}m session';
+    // Use durationSeconds if available, otherwise fall back to durationMinutes
+    final totalSeconds =
+        session.durationSeconds ?? (session.durationMinutes * 60);
+    final hours = totalSeconds ~/ 3600;
+    final mins = (totalSeconds % 3600) ~/ 60;
+    final secs = totalSeconds % 60;
+
+    String durationLabel;
+    if (hours > 0) {
+      durationLabel = '${hours}h ${mins}m ${secs}s session';
+    } else if (mins > 0) {
+      durationLabel = secs > 0
+          ? '${mins}m ${secs}s session'
+          : '${mins}m session';
+    } else {
+      durationLabel = '${secs}s session';
+    }
+
+    // Calculate actual focused time
+    final actualDuration = session.endTime.difference(session.startTime);
+    final actualHours = actualDuration.inHours;
+    final actualMins = actualDuration.inMinutes % 60;
+    final actualSecs = actualDuration.inSeconds % 60;
+
+    String actualTimeLabel;
+    if (actualHours > 0) {
+      actualTimeLabel = '${actualHours}h ${actualMins}m ${actualSecs}s';
+    } else if (actualMins > 0) {
+      actualTimeLabel = '${actualMins}m ${actualSecs}s';
+    } else {
+      actualTimeLabel = '${actualSecs}s';
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -472,19 +522,31 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${_formatDate(session.startTime)} • ${_formatTimeOnly(session.startTime)}',
+                  '${_formatDate(session.startTime)} • ${_formatTimeOnly(session.startTime)} - ${_formatTimeOnly(session.endTime)}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white.withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  session.completed ? 'Completed' : 'Stopped early',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: session.completed ? Colors.green : Colors.orange,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      session.completed ? 'Completed' : 'Stopped early',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: session.completed ? Colors.green : Colors.orange,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '• Focused: $actualTimeLabel',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -602,7 +664,11 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
             Text(
               _isRunning
                   ? _formatTime(_remainingSeconds)
-                  : _formatTime(_selectedMinutes * 60),
+                  : _formatTime(
+                      _remainingSeconds > 0
+                          ? _remainingSeconds
+                          : _selectedMinutes * 60,
+                    ),
               style: const TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
@@ -637,6 +703,7 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
             setState(() {
               _selectedMinutes = minutes;
               _remainingSeconds = 0; // Reset display
+              _isPaused = false; // Reset paused state
             });
           },
           child: Container(
@@ -718,14 +785,14 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
           _buildControlButton(
             icon: Icons.pause,
             label: 'Pause',
-            onPressed: _stopTimer,
+            onPressed: _pauseTimer,
             color: Colors.orange,
           ),
         ] else ...[
           _buildControlButton(
             icon: Icons.play_arrow,
-            label: 'Start',
-            onPressed: _startTimer,
+            label: _isPaused ? 'Resume' : 'Start',
+            onPressed: _isPaused ? _resumeTimer : _startTimer,
             color: Theme.of(context).primaryColor,
           ),
         ],

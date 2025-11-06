@@ -1,6 +1,7 @@
 class FocusHistory {
   final String id;
-  final int durationMinutes;
+  final int durationMinutes; // Keep for backward compatibility
+  final int? durationSeconds; // New field for exact duration
   final DateTime startTime;
   final DateTime endTime;
   final bool completed;
@@ -8,6 +9,7 @@ class FocusHistory {
   FocusHistory({
     required this.id,
     required this.durationMinutes,
+    this.durationSeconds,
     required this.startTime,
     required this.endTime,
     required this.completed,
@@ -20,6 +22,7 @@ class FocusHistory {
     return {
       'id': id,
       'durationMinutes': durationMinutes,
+      'durationSeconds': durationSeconds,
       'startTime': startTime.toIso8601String(),
       'endTime': endTime.toIso8601String(),
       'completed': completed,
@@ -30,6 +33,7 @@ class FocusHistory {
     return FocusHistory(
       id: json['id'] as String,
       durationMinutes: json['durationMinutes'] as int,
+      durationSeconds: json['durationSeconds'] as int?,
       startTime: DateTime.parse(json['startTime'] as String),
       endTime: DateTime.parse(json['endTime'] as String),
       completed: json['completed'] as bool,
