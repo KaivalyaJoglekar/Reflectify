@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reflectify/models/journal_entry.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class JournalTimelineScreen extends StatefulWidget {
   final List<JournalEntry> entries;
@@ -19,6 +20,9 @@ class JournalTimelineScreen extends StatefulWidget {
 class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
   String _selectedFilter = 'All';
   final List<String> _filters = ['All', 'Favorites', 'Recent'];
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  bool _showCalendar = true;
 
   List<JournalEntry> get _filteredEntries {
     var entries = List<JournalEntry>.from(widget.entries);
@@ -39,6 +43,22 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
     return entries;
   }
 
+  // Check if a date has journal entries
+  bool _hasEntryOnDate(DateTime date) {
+    return widget.entries.any((entry) =>
+        entry.date.year == date.year &&
+        entry.date.month == date.month &&
+        entry.date.day == date.day);
+  }
+
+  // Get entries for a specific date
+  List<JournalEntry> _getEntriesForDate(DateTime date) {
+    return widget.entries.where((entry) =>
+        entry.date.year == date.year &&
+        entry.date.month == date.month &&
+        entry.date.day == date.day).toList();
+  }
+
   Map<String, List<JournalEntry>> _groupEntriesByMonth() {
     final grouped = <String, List<JournalEntry>>{};
     for (var entry in _filteredEntries) {
@@ -54,24 +74,183 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
   @override
   Widget build(BuildContext context) {
     final groupedEntries = _groupEntriesByMonth();
+    
+    // Only show day entries when calendar filter is active AND a non-today date is selected
+    final showDayView = _showCalendar && !isSameDay(_selectedDay, DateTime.now());
+    final List<JournalEntry> selectedDayEntries = showDayView ? _getEntriesForDate(_selectedDay) : [];
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             _buildHeader(),
             const SizedBox(height: 16),
+            if (_showCalendar) _buildCalendar(),
+            if (_showCalendar) const SizedBox(height: 16),
             _buildFilterChips(),
             const SizedBox(height: 16),
             Expanded(
-              child: widget.entries.isEmpty
-                  ? _buildEmptyState()
-                  : _buildTimeline(groupedEntries),
+              child: showDayView && selectedDayEntries.isNotEmpty
+                  ? _buildDayEntries(selectedDayEntries)
+                  : _filteredEntries.isEmpty
+                      ? _buildEmptyState()
+                      : _buildTimeline(groupedEntries),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCalendar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: TableCalendar(
+        firstDay: DateTime(2020, 1, 1),
+        lastDay: DateTime.now(), // Don't allow future dates
+        focusedDay: _focusedDay,
+        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+        calendarFormat: CalendarFormat.month,
+        availableCalendarFormats: const {
+          CalendarFormat.month: 'Month',
+        },
+        onDaySelected: (selectedDay, focusedDay) {
+          // Don't allow selecting future dates
+          if (selectedDay.isAfter(DateTime.now())) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Cannot create entries for future dates'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          setState(() {
+            _selectedDay = selectedDay;
+            _focusedDay = focusedDay;
+          });
+        },
+        onPageChanged: (focusedDay) {
+          // Don't allow navigating to future months
+          final now = DateTime.now();
+          if (focusedDay.year > now.year || 
+              (focusedDay.year == now.year && focusedDay.month > now.month)) {
+            return;
+          }
+          setState(() {
+            _focusedDay = focusedDay;
+          });
+        },
+        calendarBuilders: CalendarBuilders(
+          markerBuilder: (context, date, events) {
+            // Show yellow dot for dates with entries
+            if (_hasEntryOnDate(date)) {
+              return Positioned(
+                bottom: 1,
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: Colors.amber,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              );
+            }
+            return null;
+          },
+        ),
+        headerStyle: HeaderStyle(
+          formatButtonVisible: false,
+          titleCentered: true,
+          titleTextStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          leftChevronIcon: const Icon(
+            Icons.chevron_left,
+            color: Colors.white,
+          ),
+          rightChevronIcon: const Icon(
+            Icons.chevron_right,
+            color: Colors.white,
+          ),
+        ),
+        calendarStyle: CalendarStyle(
+          defaultTextStyle: const TextStyle(color: Colors.white),
+          weekendTextStyle: const TextStyle(color: Colors.white70),
+          outsideTextStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+          disabledTextStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
+          todayDecoration: BoxDecoration(
+            color: Theme.of(context).primaryColor.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          selectedDecoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            shape: BoxShape.circle,
+          ),
+        ),
+        daysOfWeekStyle: DaysOfWeekStyle(
+          weekdayStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+          weekendStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDayEntries(List<JournalEntry> entries) {
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        0,
+        20,
+        MediaQuery.of(context).padding.bottom + 120,
+      ),
+      itemCount: entries.length + 1, // +1 for the header
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _selectedDay = DateTime.now();
+                        _focusedDay = DateTime.now();
+                      });
+                    },
+                    icon: const Icon(Icons.today, size: 16),
+                    label: const Text('Today'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          );
+        }
+        return _buildTimelineEntry(entries[index - 1]);
+      },
     );
   }
 
@@ -99,9 +278,21 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
               ),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => _showSearchDialog(),
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(_showCalendar ? Icons.calendar_view_month : Icons.calendar_today),
+                onPressed: () {
+                  setState(() {
+                    _showCalendar = !_showCalendar;
+                  });
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () => _showSearchDialog(),
+              ),
+            ],
           ),
         ],
       ),
@@ -123,6 +314,9 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
             onTap: () {
               setState(() {
                 _selectedFilter = filter;
+                // Reset to today when changing filters
+                _selectedDay = DateTime.now();
+                _focusedDay = DateTime.now();
               });
             },
             child: Container(
@@ -157,12 +351,12 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
     final months = groupedEntries.keys.toList();
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         20,
         0,
         20,
-        120,
-      ), // Added bottom padding for navbar
+        MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+      ),
       itemCount: months.length,
       itemBuilder: (context, index) {
         final month = months[index];
@@ -227,7 +421,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
     final date = DateFormat('MMMM d, yyyy').format(entry.date);
 
     return GestureDetector(
-      onTap: () => widget.onEntryTap(entry),
+      onTap: () => _showEntryOptions(entry),
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
         child: Stack(
@@ -503,6 +697,109 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEntryOptions(JournalEntry entry) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1C1C1E),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(
+            color: Theme.of(context).primaryColor.withOpacity(0.5),
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.visibility, color: Colors.blue),
+              title: const Text('View Entry'),
+              onTap: () {
+                Navigator.pop(context);
+                widget.onEntryTap(entry);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.orange),
+              title: const Text('Edit Entry'),
+              onTap: () {
+                Navigator.pop(context);
+                _editEntry(entry);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                entry.isFavorite ? Icons.star : Icons.star_border,
+                color: Colors.amber,
+              ),
+              title: Text(entry.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'),
+              onTap: () {
+                setState(() {
+                  entry.isFavorite = !entry.isFavorite;
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete Entry'),
+              onTap: () {
+                Navigator.pop(context);
+                _confirmDelete(entry);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _editEntry(JournalEntry entry) {
+    Navigator.pushNamed(
+      context,
+      '/add_journal',
+      arguments: entry, // Pass the entry to edit
+    ).then((value) {
+      if (value == true) {
+        setState(() {
+          // Refresh the list
+        });
+      }
+    });
+  }
+
+  void _confirmDelete(JournalEntry entry) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1C1C1E),
+        title: const Text('Delete Entry'),
+        content: const Text('Are you sure you want to delete this journal entry?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                widget.entries.remove(entry);
+              });
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Entry deleted')),
+              );
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

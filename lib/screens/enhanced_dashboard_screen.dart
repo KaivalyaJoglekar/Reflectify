@@ -15,6 +15,8 @@ class EnhancedDashboardScreen extends StatefulWidget {
   final VoidCallback onAddTask;
   final VoidCallback onViewCalendar;
   final VoidCallback onFocusMode;
+  final VoidCallback onProfileTap;
+  final VoidCallback onAddJournal; // NEW: Journal callback
 
   const EnhancedDashboardScreen({
     super.key,
@@ -25,6 +27,8 @@ class EnhancedDashboardScreen extends StatefulWidget {
     required this.onAddTask,
     required this.onViewCalendar,
     required this.onFocusMode,
+    required this.onProfileTap,
+    required this.onAddJournal,
   });
 
   @override
@@ -43,13 +47,14 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
     // Replace Stack with AppBackground
     return AppBackground(
       child: SafeArea(
+        bottom: false, // Handle bottom padding manually
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(
+          padding: EdgeInsets.fromLTRB(
             20,
             20,
             20,
-            120,
-          ), // Added extra bottom padding for navbar
+            MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+          ),
           children: [
             _buildAppBar(context),
             const SizedBox(height: 24),
@@ -111,36 +116,39 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
       children: [
         Row(
           children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).primaryColor.withValues(alpha: 0.7),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(
-                      context,
-                    ).primaryColor.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    spreadRadius: 2,
+            GestureDetector(
+              onTap: widget.onProfileTap,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      Theme.of(context).primaryColor.withValues(alpha: 0.7),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -168,28 +176,19 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
         ),
         Row(
           children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.local_fire_department,
-                  color: Color(0xFFFF6B35),
-                  size: 24,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '$currentStreak',
-                  style: const TextStyle(
-                    color: Color(0xFFFF6B35),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
+            const Icon(
+              Icons.local_fire_department,
+              color: Color(0xFFFF6B35),
+              size: 24,
             ),
-            const SizedBox(width: 12),
-            IconButton(
-              icon: const Icon(Icons.settings, size: 28, color: Colors.white),
-              onPressed: () {},
+            const SizedBox(width: 4),
+            Text(
+              '$currentStreak',
+              style: const TextStyle(
+                color: Color(0xFFFF6B35),
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
           ],
         ),
@@ -243,10 +242,10 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
           children: [
             Expanded(
               child: _buildQuickActionCard(
-                'Add Task',
-                Icons.add_task,
+                'Journal',
+                Icons.menu_book,
                 const Color(0xFF8A5DF4),
-                widget.onAddTask,
+                widget.onAddJournal,
               ),
             ),
             const SizedBox(width: 12),

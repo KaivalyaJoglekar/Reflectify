@@ -38,13 +38,14 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
       backgroundColor: Colors.transparent,
       body: AppBackground(
         child: SafeArea(
+          bottom: false, // Handle bottom padding manually
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
+            padding: EdgeInsets.fromLTRB(
               20,
               20,
               20,
-              120,
-            ), // Added bottom padding for navbar
+              MediaQuery.of(context).padding.bottom + 24, // Add padding for Android nav buttons
+            ),
             children: [
               _buildProfileHeader(context),
               const SizedBox(height: 32),

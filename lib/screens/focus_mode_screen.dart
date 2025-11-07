@@ -379,12 +379,12 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
 
   Widget _buildTimerTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         20,
         20,
         20,
-        120,
-      ), // Added bottom padding for navbar
+        MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -431,12 +431,12 @@ class _FocusModeScreenState extends State<FocusModeScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         20,
         0,
         20,
-        120,
-      ), // Added bottom padding for navbar
+        MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+      ),
       itemCount: widget.history.length,
       itemBuilder: (context, index) {
         final session = widget.history[widget.history.length - 1 - index];

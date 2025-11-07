@@ -14,6 +14,7 @@ class EnhancedCalendarScreen extends ConsumerStatefulWidget {
   final Function(Task)? onTaskEdit;
   final Function(Task)? onTaskDelete;
   final Function(Task)? onTaskToggleComplete;
+  final bool? expandCalendar; // NEW: Optional parameter to expand calendar
 
   const EnhancedCalendarScreen({
     super.key,
@@ -23,6 +24,7 @@ class EnhancedCalendarScreen extends ConsumerStatefulWidget {
     this.onTaskEdit,
     this.onTaskDelete,
     this.onTaskToggleComplete,
+    this.expandCalendar,
   });
 
   @override
@@ -35,6 +37,26 @@ class _EnhancedCalendarScreenState
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
+
+  @override
+  void initState() {
+    super.initState();
+    // Expand calendar if requested
+    if (widget.expandCalendar == true) {
+      _calendarFormat = CalendarFormat.month;
+    }
+  }
+
+  @override
+  void didUpdateWidget(EnhancedCalendarScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Expand calendar if requested
+    if (widget.expandCalendar == true && _calendarFormat != CalendarFormat.month) {
+      setState(() {
+        _calendarFormat = CalendarFormat.month;
+      });
+    }
+  }
 
   Map<DateTime, List<Task>> _groupTasksByDate() {
     Map<DateTime, List<Task>> grouped = {};
@@ -560,12 +582,12 @@ class _EnhancedCalendarScreenState
     final isDark = themeMode == ThemeMode.dark;
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         20,
         0,
         20,
-        120,
-      ), // Added bottom padding for navbar
+        MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+      ),
       itemCount: 24,
       itemBuilder: (context, hour) {
         final timeString = '${hour.toString().padLeft(2, '0')}:00';

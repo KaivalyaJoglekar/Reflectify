@@ -34,11 +34,34 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   final List<FocusSession> _focusSessions = [];
   final List<JournalEntry> _journalEntries = [];
   final List<FocusHistory> _focusHistory = [];
+  bool _expandCalendar = false; // NEW: Track if calendar should be expanded
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _expandCalendar = false; // Reset when changing tabs
     });
+  }
+
+  void _navigateToCalendarExpanded() {
+    setState(() {
+      _selectedIndex = 1; // Navigate to Tasks/Calendar screen
+      _expandCalendar = true; // Expand the calendar
+    });
+  }
+
+  void _navigateToProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FullProfileScreen(
+          user: widget.user,
+          tasks: _tasks,
+          focusSessions: _focusSessions,
+          journalEntries: _journalEntries,
+        ),
+      ),
+    );
   }
 
   void _onFABPressed() {
@@ -53,8 +76,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         break;
       case 3: // Journal - Add Entry
         _showAddJournalDialog();
-        break;
-      case 4: // Profile - Not used
         break;
       default:
         _showAddTaskDialog();
@@ -523,9 +544,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                                 selectedStartTime.minute,
                               );
 
-                              // Format time as "start - end"
+                              // Format time as "start - end" with explicit AM/PM
+                              String formatTimeOfDay(TimeOfDay time) {
+                                final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+                                final minute = time.minute.toString().padLeft(2, '0');
+                                final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+                                return '$hour:$minute $period';
+                              }
+                              
                               final timeString =
-                                  '${selectedStartTime.format(context)} - ${selectedEndTime.format(context)}';
+                                  '${formatTimeOfDay(selectedStartTime)} - ${formatTimeOfDay(selectedEndTime)}';
 
                               // FIXED: Create a Task object that matches the model
                               final newTask = Task(
@@ -1060,7 +1088,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Screen list with 5 tabs: Dashboard, Tasks, Focus, Journal, Profile (with Analytics)
+    // Screen list with 4 tabs: Dashboard, Tasks, Focus, Journal (Profile removed from navbar)
     final screens = <Widget>[
       // 0: Enhanced Dashboard
       RepaintBoundary(
@@ -1073,15 +1101,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
           projects: _projects,
           onTaskComplete: _handleTaskComplete,
           onAddTask: _showAddTaskDialog,
-          onViewCalendar: () => setState(() => _selectedIndex = 1),
+          onViewCalendar: _navigateToCalendarExpanded,
           onFocusMode: _navigateToFocusMode,
+          onProfileTap: _navigateToProfile,
+          onAddJournal: _showAddJournalDialog,
         ),
       ),
       // 1: Tasks (Calendar with Timeline)
       RepaintBoundary(
         child: EnhancedCalendarScreen(
           key: ValueKey(
-            _tasks.length + _tasks.where((t) => t.isCompleted).length,
+            _tasks.length + _tasks.where((t) => t.isCompleted).length + (_expandCalendar ? 1 : 0),
           ),
           tasks: _tasks,
           onDateSelected: (date) {},
@@ -1089,6 +1119,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
           onTaskEdit: _handleTaskEdit,
           onTaskDelete: _handleTaskDelete,
           onTaskToggleComplete: _handleTaskToggleComplete,
+          expandCalendar: _expandCalendar, // Pass the expand flag
         ),
       ),
       // 2: Focus Mode
@@ -1105,26 +1136,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
           onEntryTap: (entry) {},
         ),
       ),
-      // 4: Profile (with Analytics merged in)
-      RepaintBoundary(
-        child: FullProfileScreen(
-          key: ValueKey(
-            _tasks.length + _tasks.where((t) => t.isCompleted).length,
-          ),
-          user: widget.user,
-          tasks: _tasks,
-          focusSessions: _focusSessions,
-          journalEntries: _journalEntries,
-        ),
-      ),
     ];
 
     // ... rest of your build method ...
     return AppBackground(
       child: Scaffold(
         extendBody: true,
+        extendBodyBehindAppBar: false,
         backgroundColor: Colors.transparent,
-        body: IndexedStack(index: _selectedIndex, children: screens),
+        body: SafeArea(
+          bottom: false, // Don't apply SafeArea to bottom to handle it manually
+          child: IndexedStack(index: _selectedIndex, children: screens),
+        ),
         drawer: _buildDrawer(),
         bottomNavigationBar: _buildBottomBar(),
         floatingActionButton: _buildFAB(),
@@ -1263,7 +1286,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   Widget _buildBottomBar() {
     return Container(
       height: 72,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      margin: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        MediaQuery.of(context).padding.bottom + 8, // Add bottom padding for nav buttons
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         boxShadow: const [],
@@ -1291,7 +1319,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                   const SizedBox(width: 56), // Space for FAB
                   _buildNavItem(2, Icons.timer_outlined, 'Focus'),
                   _buildNavItem(3, Icons.menu_book_rounded, 'Journal'),
-                  _buildNavItem(4, Icons.person_outline_rounded, 'Profile'),
                 ],
               ),
             ),
@@ -1359,8 +1386,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   Widget? _buildFAB() {
-    // Hide the FAB on screens where it doesn't have a primary action
-    if (_selectedIndex == 5 || _selectedIndex == 6) {
+    // Hide the FAB on Focus Mode (index 2) and any other screens where it's not needed
+    if (_selectedIndex == 2) {
       return null;
     }
 
