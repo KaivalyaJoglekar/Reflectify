@@ -17,6 +17,8 @@ import 'package:reflectify/widgets/custom_toast.dart';
 import 'package:reflectify/screens/add_journal_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:firebase_database/firebase_database.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   final User user;
@@ -35,6 +37,102 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   final List<JournalEntry> _journalEntries = [];
   final List<FocusHistory> _focusHistory = [];
   bool _expandCalendar = false; // NEW: Track if calendar should be expanded
+
+  // Firebase
+  late DatabaseReference _tasksRef;
+  late String _userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFirebase();
+    _loadTasksFromFirebase();
+  }
+
+  void _initializeFirebase() {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      _userId = currentUser.uid;
+      _tasksRef = FirebaseDatabase.instance.ref('users/$_userId/tasks');
+    }
+  }
+
+  Future<void> _loadTasksFromFirebase() async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      final snapshot = await _tasksRef.get();
+      if (snapshot.exists) {
+        final tasksData = snapshot.value as Map<dynamic, dynamic>;
+        final loadedTasks = <Task>[];
+
+        tasksData.forEach((key, value) {
+          try {
+            final task = Task.fromJson(value as Map<dynamic, dynamic>);
+            loadedTasks.add(task);
+          } catch (e) {
+            debugPrint('Error loading task: $e');
+          }
+        });
+
+        setState(() {
+          _tasks.clear();
+          _tasks.addAll(loadedTasks);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading tasks from Firebase: $e');
+    }
+  }
+
+  Future<void> _saveTaskToFirebase(Task task) async {
+    try {
+      await _tasksRef.child(task.id).set(task.toJson());
+    } catch (e) {
+      debugPrint('Error saving task to Firebase: $e');
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'Failed to save task',
+          icon: Icons.error,
+          iconColor: Colors.red,
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteTaskFromFirebase(String taskId) async {
+    try {
+      await _tasksRef.child(taskId).remove();
+    } catch (e) {
+      debugPrint('Error deleting task from Firebase: $e');
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'Failed to delete task',
+          icon: Icons.error,
+          iconColor: Colors.red,
+        );
+      }
+    }
+  }
+
+  Future<void> _updateTaskInFirebase(Task task) async {
+    try {
+      await _tasksRef.child(task.id).update(task.toJson());
+    } catch (e) {
+      debugPrint('Error updating task in Firebase: $e');
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'Failed to update task',
+          icon: Icons.error,
+          iconColor: Colors.red,
+        );
+      }
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -546,12 +644,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
                               // Format time as "start - end" with explicit AM/PM
                               String formatTimeOfDay(TimeOfDay time) {
-                                final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-                                final minute = time.minute.toString().padLeft(2, '0');
-                                final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+                                final hour = time.hourOfPeriod == 0
+                                    ? 12
+                                    : time.hourOfPeriod;
+                                final minute = time.minute.toString().padLeft(
+                                  2,
+                                  '0',
+                                );
+                                final period = time.period == DayPeriod.am
+                                    ? 'AM'
+                                    : 'PM';
                                 return '$hour:$minute $period';
                               }
-                              
+
                               final timeString =
                                   '${formatTimeOfDay(selectedStartTime)} - ${formatTimeOfDay(selectedEndTime)}';
 
@@ -1111,7 +1216,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       RepaintBoundary(
         child: EnhancedCalendarScreen(
           key: ValueKey(
-            _tasks.length + _tasks.where((t) => t.isCompleted).length + (_expandCalendar ? 1 : 0),
+            _tasks.length +
+                _tasks.where((t) => t.isCompleted).length +
+                (_expandCalendar ? 1 : 0),
           ),
           tasks: _tasks,
           onDateSelected: (date) {},
@@ -1290,7 +1397,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         16,
         0,
         16,
-        MediaQuery.of(context).padding.bottom + 8, // Add bottom padding for nav buttons
+        MediaQuery.of(context).padding.bottom +
+            8, // Add bottom padding for nav buttons
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),

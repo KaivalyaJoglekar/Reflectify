@@ -51,7 +51,8 @@ class _EnhancedCalendarScreenState
   void didUpdateWidget(EnhancedCalendarScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Expand calendar if requested
-    if (widget.expandCalendar == true && _calendarFormat != CalendarFormat.month) {
+    if (widget.expandCalendar == true &&
+        _calendarFormat != CalendarFormat.month) {
       setState(() {
         _calendarFormat = CalendarFormat.month;
       });
@@ -586,14 +587,33 @@ class _EnhancedCalendarScreenState
         20,
         0,
         20,
-        MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+        MediaQuery.of(context).padding.bottom +
+            120, // Dynamic padding for navbar + nav buttons
       ),
       itemCount: 24,
       itemBuilder: (context, hour) {
         final timeString = '${hour.toString().padLeft(2, '0')}:00';
         final tasksAtHour = widget.tasks.where((task) {
           try {
-            final taskHour = int.parse(task.time.split(':')[0]);
+            // Parse time considering AM/PM format
+            final timeParts = task.time
+                .split(' - ')[0]
+                .trim(); // Get start time
+            final isPM = timeParts.toUpperCase().contains('PM');
+            final isAM = timeParts.toUpperCase().contains('AM');
+
+            // Extract hour from "9:00 AM" or "9:00 PM" format
+            final hourStr = timeParts.split(':')[0].trim();
+            int taskHour = int.parse(hourStr);
+
+            // Convert to 24-hour format
+            if (isPM && taskHour != 12) {
+              taskHour +=
+                  12; // Convert PM to 24-hour (1 PM = 13, 2 PM = 14, etc.)
+            } else if (isAM && taskHour == 12) {
+              taskHour = 0; // Convert 12 AM to 0 (midnight)
+            }
+
             final matchesDate = DateUtils.isSameDay(task.date, _selectedDay);
             return taskHour == hour && matchesDate;
           } catch (e) {

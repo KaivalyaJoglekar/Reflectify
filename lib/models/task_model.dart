@@ -78,6 +78,52 @@ class Task {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'time': time,
+      'isCompleted': isCompleted,
+      'color': color.value,
+      'projectName': projectName,
+      'taskCount': taskCount,
+      'date': date.toIso8601String(),
+      'description': description,
+      'category': category,
+      'priority': priority,
+      'deadline': deadline?.toIso8601String(),
+      'tags': tags,
+      'orderIndex': orderIndex,
+      'hasReminder': hasReminder,
+      'reminderTime': reminderTime?.toIso8601String(),
+    };
+  }
+
+  factory Task.fromJson(Map<dynamic, dynamic> json) {
+    return Task(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      time: json['time'] as String,
+      isCompleted: json['isCompleted'] as bool? ?? false,
+      color: Color(json['color'] as int),
+      projectName: json['projectName'] as String,
+      taskCount: json['taskCount'] as int,
+      date: DateTime.parse(json['date'] as String),
+      description: json['description'] as String? ?? '',
+      category: json['category'] as String? ?? 'Personal',
+      priority: json['priority'] as int? ?? 2,
+      deadline: json['deadline'] != null
+          ? DateTime.parse(json['deadline'] as String)
+          : null,
+      tags: (json['tags'] as List<dynamic>?)?.cast<String>() ?? [],
+      orderIndex: json['orderIndex'] as int? ?? 0,
+      hasReminder: json['hasReminder'] as bool? ?? false,
+      reminderTime: json['reminderTime'] != null
+          ? DateTime.parse(json['reminderTime'] as String)
+          : null,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
