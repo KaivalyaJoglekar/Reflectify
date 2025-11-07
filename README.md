@@ -240,55 +240,74 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1  # App icon generation
 ```
 
-## 📁 Project Structure
+## � Project Structure
 
 ```
 lib/
-├── main.dart                          # App entry point
+├── main.dart                          # Entry point with Firebase init
 ├── firebase_options.dart              # Firebase configuration
-├── models/                            # Data models
-│   ├── user_model.dart               # User data structure
-│   ├── task_model.dart               # Task with priority & deadline
-│   ├── project_model.dart            # Project structure
-│   ├── journal_entry.dart            # Journal entry model
-│   ├── focus_session_model.dart      # Focus session data
-│   └── focus_history_model.dart      # Focus history tracking
-├── screens/                           # App screens
-│   ├── login_screen.dart             # Authentication
-│   ├── main_navigation_screen.dart   # Bottom nav & FAB logic
-│   ├── enhanced_dashboard_screen.dart # Main dashboard
-│   ├── enhanced_calendar_screen.dart  # Calendar + timeline
-│   ├── focus_mode_screen.dart        # Focus timer
-│   ├── journal_timeline_screen.dart  # Journal entries
-│   ├── add_journal_screen.dart       # New journal entry
-│   └── full_profile_screen.dart      # Profile & analytics
-├── widgets/                           # Reusable components
-│   ├── app_background.dart           # Animated aurora background
-│   ├── glass_card.dart               # Glassmorphism container
-│   └── custom_toast.dart             # Toast notifications
-├── providers/                         # State management
-│   └── theme_provider.dart           # Theme mode provider
-└── utils/                             # Utility functions
-    └── streak_calculator.dart        # Streak calculation logic
+├── models/
+│   ├── task_model.dart               # Task model with Firebase serialization
+│   ├── journal_entry.dart            # Journal model with toJson/fromJson
+│   └── focus_session.dart            # Focus session model
+├── screens/
+│   ├── splash_screen.dart            # Momento logo + aurora splash (5s)
+│   ├── auth/
+│   │   ├── login_screen.dart         # Firebase Auth login
+│   │   └── signup_screen.dart        # Firebase Auth signup
+│   ├── main_navigation_screen.dart   # Nav wrapper + Firebase CRUD ops
+│   ├── dashboard_screen.dart         # Home with stats from Firebase
+│   ├── task_list_screen.dart         # Task management with calendar
+│   ├── add_edit_task_screen.dart     # Task form with time validation
+│   ├── focus_mode_screen.dart        # Pomodoro timer with history
+│   ├── journal_timeline_screen.dart  # Firebase-synced journals
+│   ├── add_journal_screen.dart       # Journal entry form with mood
+│   └── profile_screen.dart           # Analytics charts + Firebase stats
+├── widgets/
+│   ├── aurora_background.dart        # 40-second gradient animations
+│   ├── glass_card.dart              # Glassmorphism card widget
+│   ├── liquid_navbar.dart           # 4-tab animated navigation
+│   ├── priority_badge.dart          # Color-coded priority badges
+│   ├── calendar_priority_marker.dart # Calendar priority indicators
+│   └── empty_state.dart             # Helpful empty state messages
+├── utils/
+│   └── custom_toast.dart            # Beautiful toast notifications
+└── providers/
+    └── theme_provider.dart          # Riverpod theme management
+
+assets/
+└── momento_logo.jpg                  # App branding logo
+
+android/
+├── app/
+│   ├── google-services.json          # Firebase Android config
+│   └── src/main/res/
+│       ├── values/styles.xml         # Black splash theme
+│       └── drawable/
+│           └── launch_background.xml # Black splash background
+
+ios/
+└── Runner/
+    └── GoogleService-Info.plist      # Firebase iOS config
 ```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- **Flutter SDK**: Version 3.0 or higher
-  ```bash
-  flutter --version
-  ```
-- **Dart SDK**: Version 3.0 or higher
-- **IDE**: VS Code, Android Studio, or IntelliJ IDEA
-- **Firebase Project**: For authentication (optional for local testing)
+Before you begin, ensure you have the following installed:
+
+- **Flutter SDK 3.9+**: [Installation Guide](https://flutter.dev/docs/get-started/install)
+- **Dart SDK 3.0+**: Comes with Flutter
+- **Android Studio** or **VS Code** with Flutter extensions
+- **Git**: For version control
+- **Firebase Account**: [Create one here](https://firebase.google.com)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/KaivalyaJoglekar/Reflectify.git
+   git clone https://github.com/yourusername/reflectify.git
    cd reflectify
    ```
 
@@ -297,27 +316,123 @@ lib/
    flutter pub get
    ```
 
-3. **Firebase Setup** (Optional)
-   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
-   - Add iOS and Android apps
-   - Download `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
-   - Place files in respective directories
-   - Enable Email/Password authentication in Firebase Console
+3. **Firebase Setup** (REQUIRED)
 
-4. **Run the app**
+   a. **Create a Firebase Project**:
+      - Go to [Firebase Console](https://console.firebase.google.com)
+      - Click "Add project" and follow the wizard
+      - Enable Google Analytics (optional)
+
+   b. **Enable Firebase Authentication**:
+      - In Firebase Console, go to **Authentication**
+      - Click "Get Started"
+      - Enable **Email/Password** sign-in method
+      - Click "Save"
+
+   c. **Enable Firebase Realtime Database**:
+      - In Firebase Console, go to **Realtime Database**
+      - Click "Create Database"
+      - Choose a database location (e.g., `us-central1`)
+      - Start in **test mode** (for now)
+      - Click "Enable"
+
+   d. **Set Security Rules**:
+      - In Realtime Database, go to **Rules** tab
+      - Replace the rules with:
+      ```json
+      {
+        "rules": {
+          "users": {
+            "$uid": {
+              ".read": "$uid === auth.uid",
+              ".write": "$uid === auth.uid"
+            }
+          }
+        }
+      }
+      ```
+      - Click "Publish"
+
+   e. **Add Firebase to Flutter**:
+      
+      **For Android**:
+      - In Firebase Console, click the Android icon
+      - Register app with package name: `com.example.reflectify` (or your package name)
+      - Download `google-services.json`
+      - Place it in `android/app/` directory
+      - Firebase will auto-configure your `build.gradle` files
+
+      **For iOS**:
+      - In Firebase Console, click the iOS icon
+      - Register app with bundle ID from `ios/Runner.xcodeproj`
+      - Download `GoogleService-Info.plist`
+      - Place it in `ios/Runner/` directory using Xcode
+
+   f. **Configure FlutterFire CLI** (Easiest Method):
+      ```bash
+      # Install FlutterFire CLI
+      dart pub global activate flutterfire_cli
+
+      # Configure Firebase for your project
+      flutterfire configure
+
+      # Select your Firebase project
+      # Choose platforms (Android, iOS, macOS, etc.)
+      # This will generate firebase_options.dart automatically
+      ```
+
+4. **Verify Firebase Configuration**
+   - Check that `firebase_options.dart` exists in `lib/`
+   - Verify `google-services.json` exists in `android/app/`
+   - Verify `GoogleService-Info.plist` exists in `ios/Runner/`
+
+5. **Run the app**
    ```bash
-   # List available devices
-   flutter devices
-   
-   # Run on connected device
+   # Connect a device or start an emulator, then:
    flutter run
-   
-   # Run on specific device
-   flutter run -d <device_id>
-   
-   # Run in release mode
-   flutter run --release
+
+   # Or specify a device
+   flutter run -d chrome      # Web
+   flutter run -d android     # Android
+   flutter run -d ios         # iOS (macOS only)
    ```
+
+### First Launch
+
+1. **Splash Screen**: 5-second animated Momento logo
+2. **Sign Up**: Create an account with email/password
+3. **Login**: Sign in to access your dashboard
+4. **Add Your First Task**: Tap the "+" FAB on Dashboard or Tasks tab
+5. **Start a Focus Session**: Navigate to Focus tab and choose duration
+6. **Write a Journal Entry**: Go to Journal tab and record your thoughts
+7. **Check Analytics**: View your stats in the Profile section
+
+### Troubleshooting
+
+**Firebase Connection Issues**:
+```bash
+# Clear Flutter cache
+flutter clean
+flutter pub get
+
+# Rebuild the app
+flutter run
+```
+
+**Database Permission Denied**:
+- Verify Firebase security rules are set correctly
+- Ensure user is logged in (check Firebase Auth console)
+- Check Firebase Console > Realtime Database > Data tab for user structure
+
+**Build Errors**:
+```bash
+# Update dependencies
+flutter pub upgrade
+
+# Repair Flutter installation
+flutter doctor
+flutter doctor --android-licenses  # If needed
+```
 
 ### Build for Production
 
@@ -356,6 +471,106 @@ flutter build ios --release
 - **Font**: System default (San Francisco on iOS, Roboto on Android)
 
 ## 🔧 Configuration
+
+### Firebase Realtime Database Structure
+
+```json
+{
+  "users": {
+    "<user_uid>": {
+      "tasks": {
+        "<task_uuid>": {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "title": "Complete project report",
+          "description": "Finish the quarterly report",
+          "startTime": "2024-01-15T09:00:00.000Z",
+          "endTime": "2024-01-15T10:30:00.000Z",
+          "category": "Work",
+          "priority": "high",
+          "color": 4294198070,
+          "isCompleted": false
+        }
+      },
+      "journals": {
+        "<journal_uuid>": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "title": "Productive Monday",
+          "content": "Started the week strong...",
+          "date": "2024-01-15T08:00:00.000Z",
+          "mood": "happy",
+          "tags": ["productivity", "morning"],
+          "isFavorite": true
+        }
+      }
+    }
+  }
+}
+```
+
+### Firebase Security Rules
+
+**Realtime Database Rules**:
+```json
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    }
+  }
+}
+```
+
+This ensures:
+- Each user can only read/write their own data
+- Data is isolated by user UID
+- Authentication required for all operations
+
+### Task Priority & Categories
+
+**Priority Levels**:
+- 🔴 **High**: Red (`Colors.red`)
+- 🟡 **Medium**: Orange (`Colors.orange`)
+- 🟢 **Low**: Green (`Colors.green`)
+
+**Categories**:
+- 💼 **Work**: Blue (`Colors.blue`)
+- 👤 **Personal**: Green (`Colors.green`)
+- 📁 **Projects**: Purple (`Colors.purple`)
+- 📚 **Study**: Orange (`Colors.orange`)
+- ❤️ **Health**: Pink (`Colors.pink`)
+
+### Mood Tracking Options
+
+Available mood states for journal entries:
+- 😊 **Happy** | 😔 **Sad** | 😐 **Neutral** | 🤩 **Excited**
+- 😰 **Anxious** | 😌 **Calm** | 😫 **Tired** | 😡 **Angry**
+
+### Focus Session Durations
+
+Preset Pomodoro timers:
+- ⏱️ **15 minutes**: Quick focus burst
+- ⏱️ **25 minutes**: Classic Pomodoro
+- ⏱️ **45 minutes**: Deep work session
+- ⏱️ **60 minutes**: Extended focus
+- ⚙️ **Custom**: Set your own duration
+
+### App Icon & Splash
+
+**App Icon**:
+- Source: `assets/momento_logo.jpg`
+- Size: 1024x1024 minimum
+- Shape: Circular with black background
+- Generated via `flutter_launcher_icons`
+
+**Splash Screen**:
+- Duration: 5 seconds
+- Logo: Circular (120x120) with aurora glow
+- Text: Gradient "MOMENTO" above loader
+- Background: Black (#000000)
+- Animation: Fade-in transitions
 
 ### Theme Mode
 Toggle between light and dark mode (currently dark mode optimized):
