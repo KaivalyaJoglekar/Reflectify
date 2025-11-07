@@ -256,7 +256,10 @@ class _AddJournalScreenState extends State<AddJournalScreen> {
           borderRadius: BorderRadius.circular(12),
           border: isSelected
               ? Border.all(color: color, width: 2)
-              : Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+              : Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 1,
+                ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

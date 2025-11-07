@@ -1,12 +1,12 @@
-# Reflectify ✨
+# Momento (Reflectify) ✨
 
 <div align="center">
 
 **Reflect. Focus. Achieve.**
 
-A comprehensive productivity and self-reflection app that combines task management, focus sessions, journaling, and analytics in one beautiful interface.
+A comprehensive productivity and self-reflection app that combines task management, focus sessions, journaling, and analytics - all with real-time Firebase sync.
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?style=for-the-badge&logo=flutter)](https://flutter.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-3.9+-02569B?style=for-the-badge&logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?style=for-the-badge&logo=dart)](https://dart.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
 
@@ -16,32 +16,56 @@ A comprehensive productivity and self-reflection app that combines task manageme
 
 ## 🌟 Overview
 
-Reflectify is a modern all-in-one productivity companion that helps you organize your day, stay focused, reflect on your journey, and track your progress. Built with Flutter and featuring a stunning glassmorphism UI with animated backgrounds, Reflectify makes productivity beautiful.
+Momento (Reflectify) is a modern all-in-one productivity companion that helps you organize your day, stay focused, reflect on your journey, and track your progress. Built with Flutter and featuring a stunning glassmorphism UI with animated aurora backgrounds, Momento makes productivity beautiful while keeping your data safe with Firebase Realtime Database.
 
 ## ✨ Key Features
 
-### 📊 **Enhanced Dashboard**
-- **Personalized Greeting**: Dynamic greetings based on time of day with user avatar
+### � **Firebase Integration**
+- **Real-time Data Sync**: All tasks and journals automatically synced to Firebase
+- **User Isolation**: Each user's data stored securely under their unique UID
+- **Offline Support**: Data cached locally and synced when online
+- **Secure Authentication**: Firebase Auth with email/password
+- **Data Structure**: 
+  ```
+  users/
+    <user_uid>/
+      tasks/
+        <task_id>: { title, date, priority, ... }
+      journals/
+        <journal_id>: { title, content, mood, ... }
+  ```
+
+### �📊 **Enhanced Dashboard**
+- **Personalized Greeting**: Dynamic greetings based on time of day with user initial avatar
 - **Today's Overview**: Quick glance at remaining tasks for the day
-- **Quick Actions**: Fast access to Add Task, Calendar, and Focus Mode
+- **Quick Actions**: Fast access to Add Task, Calendar, Focus Mode, and Journal
 - **Top 3 Priorities**: Intelligent priority-based task display with color-coded badges
 - **Upcoming Deadlines**: Visual deadline tracking with urgency indicators
 - **Progress Overview**: Real-time completion tracking with animated progress bars
 - **Streak Counter**: Fire icon showing your current productivity streak
+- **Recent Journal**: Quick access to your latest journal entries
 
 ### ✅ **Advanced Task Management**
+- **Firebase-Synced Tasks**: Create, edit, delete tasks with instant Firebase sync
 - **Smart Calendar View**: TableCalendar integration with priority indicators
 - **24-Hour Timeline**: Hourly breakdown of your daily schedule
 - **Priority System**: 3-tier priority levels (High/Medium/Low) with color coding
-- **Category Organization**: Organize tasks by Work, Personal, Projects, Study, Health
+- **Category Organization**: Work, Personal, Projects, Study, Health
 - **Rich Task Details**: 
   - Title and description
-  - Start and end time selection
+  - Start and end time with AM/PM picker
   - Date picker with validation
   - Category and priority assignment
-  - Time and category badges
-- **Task Actions**: Complete, edit, and delete with confirmation dialogs
-- **Visual Feedback**: Color-coded priority indicators on calendar dates
+  - UUID-based task IDs for Firebase
+- **Task Actions**: 
+  - Complete/incomplete toggle (synced to Firebase)
+  - Edit with pre-filled form
+  - Delete with confirmation
+  - All changes immediately reflected in Firebase
+- **Visual Feedback**: 
+  - Color-coded priority indicators on calendar dates
+  - Custom toast notifications for all actions
+  - Loading states during Firebase operations
 
 ### 🎯 **Focus Mode**
 - **Pomodoro Timer**: Customizable focus sessions (15m, 25m, 45m, 1h)
@@ -53,28 +77,36 @@ Reflectify is a modern all-in-one productivity companion that helps you organize
 - **Visual Timer**: Large circular timer with countdown display
 - **Session History**: View all past focus sessions with completion status
 - **Tab Interface**: Switch between Timer and History views
+- **Beautiful UI**: Aurora background effects during focus sessions
 
-### 📝 **Journal Timeline**
+### 📝 **Journal Timeline with Firebase**
+- **Cloud-Synced Journals**: All entries automatically saved to Firebase
 - **Rich Text Entries**: Write detailed journal entries with timestamps
-- **Mood Tracking**: Track your emotional state with each entry
-- **Favorites System**: Mark important entries for quick access
+- **Mood Tracking**: Track emotional state (happy, sad, neutral, excited, etc.)
+- **Favorites System**: 
+  - Mark important entries (synced to Firebase)
+  - Toggle favorite status with star icon
+  - Filter to show only favorites
+- **Calendar Integration**: Visual calendar showing days with journal entries
 - **Timeline View**: Month-grouped chronological display
 - **Filter Options**: 
   - All entries
   - Favorites only
   - Recent entries (last 20)
-- **Entry Details**: 
+- **Entry Management**:
+  - Create new entries with mood selector
+  - Edit existing entries (coming soon)
+  - Delete with confirmation (synced to Firebase)
   - Date and time stamps
-  - Mood indicators
   - Full content display
-  - Favorite toggle
 
 ### 📈 **Analytics & Profile**
 - **Comprehensive Stats**:
-  - Total journal entries count
-  - Tasks completed counter
+  - Total journal entries count (from Firebase)
+  - Tasks completed counter (from Firebase)
   - Longest streak calculator
-  - Member since date (from Firebase)
+  - Member since date (from Firebase Auth)
+  - User email from authenticated account
 - **Interactive Charts**:
   - Weekly view: 7-day line chart of completed tasks
   - Daily view: Task completion rate and progress
@@ -83,22 +115,30 @@ Reflectify is a modern all-in-one productivity companion that helps you organize
 - **Visual Insights**: 
   - Color-coded charts with theme integration
   - Smooth animations and transitions
-  - Real-time data updates
+  - Real-time data updates from Firebase
 - **User Profile**:
-  - Avatar with user initial
-  - Username and email display
-  - Editable profile (with edit icon)
+  - Avatar with user initial (from email)
+  - Username from email
+  - Display name and email
+  - Logout with confirmation dialog
 
 ### 🎨 **Modern UI/UX**
-- **Glassmorphism Design**: Frosted glass effects throughout the app
+- **Splash Screen**:
+  - Circular Momento logo with aurora glow
+  - Gradient "MOMENTO" text
+  - Black background (no white flash)
+  - Smooth 5-second animation
+  - Auto-navigation based on auth state
+- **App Icon**: Custom circular Momento logo
+- **Glassmorphism Design**: Frosted glass effects throughout
 - **Animated Aurora Background**: Smooth 40-second gradient animations
 - **Liquid Navigation Bar**: 
   - Animated glass indicator that slides between tabs
   - White ripple effects on tap
-  - Proper spacing with centered FAB
-  - 5-tab layout: Dashboard, Tasks, Focus, Journal, Profile
-- **Gradient FAB**: Floating action button with context-aware actions
-- **Glass Cards**: Consistent glass card design across all screens
+  - 4-tab layout: Dashboard, Tasks, Focus, Journal
+  - Profile accessible from dashboard
+- **Gradient FAB**: Context-aware floating action button
+- **Glass Cards**: Consistent design across all screens
 - **Color Theming**: 
   - Purple primary color (#8A5DF4)
   - Color-coded categories and priorities
@@ -109,35 +149,46 @@ Reflectify is a modern all-in-one productivity companion that helps you organize
   - Fade and slide effects
 
 ### 🔐 **Authentication & Security**
-- **Firebase Authentication**: Secure email/password login
-- **User Management**: Profile data stored securely
-- **Logout Confirmation**: Prevent accidental logouts with dialog
+- **Firebase Authentication**: 
+  - Email/password login and signup
+  - Secure session management
+  - Password reset functionality
+- **User Management**: 
+  - Profile data stored in Firebase
+  - User-specific data isolation
+  - Automatic UID-based data organization
 - **Session Persistence**: Stay logged in across app restarts
+- **Logout Confirmation**: Prevent accidental logouts with dialog
+- **Security Rules**: Firebase rules ensure users only access their own data
 
 ### 🎯 **Smart Features**
-- **RepaintBoundary Optimization**: Isolated screen repaints for better performance
+- **Real-time Sync**: All data changes instantly synced to Firebase
+- **Error Handling**: User-friendly error messages for Firebase operations
+- **RepaintBoundary Optimization**: Isolated screen repaints
 - **Const Constructors**: Memory-efficient widget building
-- **Riverpod State Management**: Theme mode and app state management
-- **Custom Toast Notifications**: Beautiful feedback messages
+- **Riverpod State Management**: Theme mode and app state
+- **Custom Toast Notifications**: Beautiful feedback for all actions
 - **Empty State Handling**: Helpful messages when no data exists
 - **Input Validation**: 
   - Time validation (end time after start time)
   - Required field checks
   - Date range constraints
+  - Firebase-safe ID generation (UUID)
 
 ## 🛠️ Tech Stack
 
 ### **Framework & Language**
-- **Flutter 3.x**: Cross-platform UI framework
-- **Dart 3.x**: Programming language
+- **Flutter 3.9+**: Cross-platform UI framework
+- **Dart 3.0+**: Programming language
 - **Material Design 3**: Modern design system
 
 ### **Backend & Database**
-- **Firebase Authentication**: User authentication
-- **Firebase Realtime Database**: Data storage (configured but can be enabled)
+- **Firebase Authentication**: User authentication and management
+- **Firebase Realtime Database**: Real-time data storage and sync
+- **Firebase Security Rules**: User-specific data isolation
 
 ### **State Management**
-- **Riverpod**: Modern state management for theme and app state
+- **Riverpod 3.0+**: Modern state management
 
 ### **UI Packages**
 ```yaml
@@ -145,29 +196,48 @@ dependencies:
   flutter:
     sdk: flutter
   
-  # Firebase
-  firebase_core: ^latest
-  firebase_auth: ^latest
-  firebase_database: ^latest
+  # Firebase (ACTIVE)
+  firebase_core: ^4.2.0
+  firebase_auth: ^6.1.1
+  firebase_database: ^12.0.3
   
   # State Management
-  flutter_riverpod: ^latest
+  flutter_riverpod: ^3.0.3
+  riverpod: ^3.0.3
+  provider: ^6.1.5+1
   
   # UI Components
-  table_calendar: ^latest      # Calendar widget
-  fl_chart: ^latest            # Analytics charts
-  glass_kit: ^latest           # Glassmorphism effects
+  table_calendar: ^3.2.0         # Calendar widget
+  fl_chart: ^1.1.1              # Analytics charts
+  glass_kit: ^4.0.2             # Glassmorphism effects
+  flutter_slidable: ^4.0.3      # Swipe actions
+  percent_indicator: ^4.2.3     # Progress indicators
   
   # Utilities
-  intl: ^latest                # Date/time formatting
-  uuid: ^latest                # Unique ID generation
+  intl: ^0.20.2                 # Date/time formatting
+  uuid: ^4.5.1                  # Firebase-safe UUID generation
+  shared_preferences: ^2.3.4    # Local storage
   
-  # Notifications (configured)
-  flutter_local_notifications: ^latest
-  geolocator: ^latest
-  image_picker: ^latest
-  package_info_plus: ^latest
-  shared_preferences: ^latest
+  # Notifications & Location
+  flutter_local_notifications: ^19.5.0
+  geolocator: ^14.0.2
+  timezone: ^0.10.1
+  
+  # Media
+  image_picker: ^1.2.0
+  
+  # Info
+  package_info_plus: ^8.3.1
+  
+  # Other
+  http: ^1.2.2
+  markdown: ^7.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1  # App icon generation
 ```
 
 ## 📁 Project Structure
