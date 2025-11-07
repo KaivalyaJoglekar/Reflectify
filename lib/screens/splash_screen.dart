@@ -202,6 +202,31 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ),
                       ),
+
+                      // Momento Logo in center (visible over aurora) - Circular
+                      Opacity(
+                        opacity: _auroraOpacity.value,
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                blurRadius: 20,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/momento_logo.jpg',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -209,7 +234,39 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          // Loading indicator at bottom (kept as-is)
+          // Gradient "MOMENTO" text above loading indicator
+          Positioned(
+            bottom: 120,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: FadeTransition(
+                opacity: _auroraOpacity,
+                child: ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [
+                      Color(0xFF6C5CE7), // purple
+                      Color(0xFF4D7BFF), // blue
+                      Color(0xFF00D9FF), // cyan
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: const Text(
+                    'MOMENTO',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 4,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Loading indicator at bottom
           Positioned(
             bottom: 60,
             left: 0,

@@ -37,6 +37,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
 
 
 flutter:
@@ -45,6 +46,7 @@ flutter:
   assets:
     - assets/grid.jpg
     - assets/bg_mad.jpg
+    - assets/momento_logo.jpg
 
   fonts:
     - family: BebasNeue
@@ -54,3 +56,13 @@ flutter:
     - family: Lato
       fonts:
         - asset: fonts/Lato-Regular.ttf
+
+# App Icon Configuration
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/momento_logo.jpg"
+  remove_alpha_ios: true
+  background_color: "#000000"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/momento_logo.jpg"
