@@ -6,8 +6,6 @@ import 'package:reflectify/screens/signup_screen.dart';
 import 'package:reflectify/widgets/bottom_wave_clipper.dart';
 import 'package:reflectify/widgets/app_background.dart';
 import 'package:reflectify/widgets/custom_toast.dart';
-
-// Import Firebase Auth
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 
 class LoginScreen extends StatefulWidget {

@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reflectify/screens/splash_screen.dart';
 import 'package:reflectify/providers/theme_provider.dart';
-
-// Import Firebase Core and options
 import 'package:firebase_core/firebase_core.dart';
 import 'package:reflectify/firebase_options.dart';
 
 void main() async {
-  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  // Wrap the app in a ProviderScope
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const ProviderScope(child: JournalApp()));
 }
 

@@ -1,13 +1,9 @@
-// ignore_for_file: unnecessary_underscores, deprecated_member_use
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:reflectify/screens/login_screen.dart';
-
-// Import Firebase Auth and app User model
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:reflectify/models/user_model.dart';
-import 'package:reflectify/screens/main_navigation_screen.dart'; // Assuming this is the correct main screen
+import 'package:reflectify/screens/main_navigation_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -29,7 +25,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Splash screen duration set to 5 seconds.
     _controller = AnimationController(
       duration: const Duration(seconds: 5),
       vsync: this,
@@ -63,16 +58,13 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // UPDATED: Navigate based on auth state after animation.
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (mounted) {
-          // Check Firebase Auth state
           fb_auth.User? firebaseUser =
               fb_auth.FirebaseAuth.instance.currentUser;
 
           if (firebaseUser == null) {
-            // User is not logged in, go to LoginScreen
             Navigator.of(context).pushReplacement(
               PageRouteBuilder(
                 pageBuilder: (_, __, ___) => const LoginScreen(),
@@ -83,10 +75,8 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             );
           } else {
-            // User is logged in, create app User model and go to MainNavigationScreen
             final appUser = User(
               name: firebaseUser.displayName ?? 'Reflectify User',
-              // Use email prefix as a fallback username
               username: firebaseUser.email?.split('@').first ?? 'user',
               email: firebaseUser.email ?? 'no-email',
             );

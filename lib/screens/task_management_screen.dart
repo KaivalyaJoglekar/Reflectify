@@ -38,60 +38,80 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
       return task.date.year == _selectedDate.year &&
           task.date.month == _selectedDate.month &&
           task.date.day == _selectedDate.day;
-    }).toList()
-      ..sort((a, b) {
-        final timeA = _parseTime(a.time);
-        final timeB = _parseTime(b.time);
-        return timeA.compareTo(timeB);
-      });
+    }).toList()..sort((a, b) {
+      final timeA = _parseTime(a.time);
+      final timeB = _parseTime(b.time);
+      return timeA.compareTo(timeB);
+    });
   }
 
   DateTime _parseTime(String time) {
     try {
       // Handle both "h:mm AM/PM" and "h:mm AM/PM - h:mm AM/PM" formats
       final parts = time.split(' - ')[0].trim();
-      
+
       // Clean up the time string and extract components
       // Handle formats like "10:48 PM", "10:48PM", "10:48 pm"
       final cleanTime = parts.replaceAll(RegExp(r'\s+'), ' ').trim();
-      
+
       // Try to extract AM/PM from the string
       String period = '';
       String timeWithoutPeriod = cleanTime;
-      
+
       if (cleanTime.toUpperCase().contains('AM')) {
         period = 'AM';
-        timeWithoutPeriod = cleanTime.replaceAll(RegExp(r'[aA][mM]'), '').trim();
+        timeWithoutPeriod = cleanTime
+            .replaceAll(RegExp(r'[aA][mM]'), '')
+            .trim();
       } else if (cleanTime.toUpperCase().contains('PM')) {
         period = 'PM';
-        timeWithoutPeriod = cleanTime.replaceAll(RegExp(r'[pP][mM]'), '').trim();
+        timeWithoutPeriod = cleanTime
+            .replaceAll(RegExp(r'[pP][mM]'), '')
+            .trim();
       }
-      
+
       // Now split the time part
       final timeParts = timeWithoutPeriod.split(':');
       if (timeParts.length < 2) {
-        return DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0);
+        return DateTime(
+          _selectedDate.year,
+          _selectedDate.month,
+          _selectedDate.day,
+          0,
+          0,
+        );
       }
-      
+
       int hour = int.parse(timeParts[0].trim());
       // Extract only digits from minute part (in case there's still some text)
       final minuteStr = timeParts[1].replaceAll(RegExp(r'[^0-9]'), '');
       final minute = int.parse(minuteStr.isEmpty ? '0' : minuteStr);
-      
+
       // Convert to 24-hour format
       if (period == 'PM' && hour != 12) {
         hour += 12;
       } else if (period == 'AM' && hour == 12) {
         hour = 0;
       }
-      
-      return DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, hour, minute);
+
+      return DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        hour,
+        minute,
+      );
     } catch (e) {
-      print('Error parsing time "$time": $e');
-      return DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0);
+      // Silently handle time parsing errors
+      return DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        0,
+        0,
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +160,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
   Widget _buildWeekCalendar() {
     final today = DateTime.now();
     final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
-    
+
     return Column(
       children: [
         Padding(
@@ -163,10 +183,12 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
             itemCount: 7,
             itemBuilder: (context, index) {
               final date = startOfWeek.add(Duration(days: index));
-              final isSelected = date.year == _selectedDate.year &&
+              final isSelected =
+                  date.year == _selectedDate.year &&
                   date.month == _selectedDate.month &&
                   date.day == _selectedDate.day;
-              final isToday = date.year == today.year &&
+              final isToday =
+                  date.year == today.year &&
                   date.month == today.month &&
                   date.day == today.day;
 
@@ -264,10 +286,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
               margin: const EdgeInsets.only(left: 8),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Colors.transparent,
-                  ],
+                  colors: [Theme.of(context).primaryColor, Colors.transparent],
                 ),
               ),
             ),
@@ -296,7 +315,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
               ),
               // Tasks overlay
               if (tasksForDay.isNotEmpty)
-                ...tasksForDay.map((task) => _buildTaskCard(task)).toList()
+                ...tasksForDay.map((task) => _buildTaskCard(task))
               else
                 Positioned(
                   top: 200,
@@ -332,10 +351,10 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
     final hourLabel = hour == 0
         ? '12 am'
         : hour < 12
-            ? '$hour am'
-            : hour == 12
-                ? '12 pm'
-                : '${hour - 12} pm';
+        ? '$hour am'
+        : hour == 12
+        ? '12 pm'
+        : '${hour - 12} pm';
 
     return Container(
       height: 80,
@@ -378,7 +397,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
     final colorScheme = _getPriorityColor(task.priority);
     final taskStartTime = _parseTime(task.time);
     final topPosition = _calculateTopPosition(taskStartTime);
-    
+
     return Positioned(
       top: topPosition,
       left: 60,
@@ -417,10 +436,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
                 height: _calculateTaskHeight(task),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      colorScheme,
-                      colorScheme.withOpacity(0.6),
-                    ],
+                    colors: [colorScheme, colorScheme.withOpacity(0.6)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -428,7 +444,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               // Task card
               Expanded(
                 child: GestureDetector(
@@ -437,7 +453,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
                     height: _calculateTaskHeight(task),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: task.isCompleted 
+                      color: task.isCompleted
                           ? Colors.white.withOpacity(0.05)
                           : colorScheme.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
@@ -460,11 +476,11 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: task.isCompleted 
-                                      ? Colors.white38 
+                                  color: task.isCompleted
+                                      ? Colors.white38
                                       : Colors.white,
-                                  decoration: task.isCompleted 
-                                      ? TextDecoration.lineThrough 
+                                  decoration: task.isCompleted
+                                      ? TextDecoration.lineThrough
                                       : null,
                                 ),
                                 maxLines: 2,
@@ -478,12 +494,12 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
                               height: 20,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: task.isCompleted 
-                                    ? colorScheme 
+                                color: task.isCompleted
+                                    ? colorScheme
                                     : Colors.transparent,
                                 border: Border.all(
-                                  color: task.isCompleted 
-                                      ? colorScheme 
+                                  color: task.isCompleted
+                                      ? colorScheme
                                       : Colors.white.withOpacity(0.3),
                                   width: 2,
                                 ),
@@ -503,19 +519,20 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
                           task.time,
                           style: TextStyle(
                             fontSize: 12,
-                            color: task.isCompleted 
-                                ? Colors.white24 
+                            color: task.isCompleted
+                                ? Colors.white24
                                 : Colors.white60,
                           ),
                         ),
-                        if (task.description.isNotEmpty && _calculateTaskHeight(task) > 80) ...[
+                        if (task.description.isNotEmpty &&
+                            _calculateTaskHeight(task) > 80) ...[
                           const SizedBox(height: 6),
                           Text(
                             task.description,
                             style: TextStyle(
                               fontSize: 11,
-                              color: task.isCompleted 
-                                  ? Colors.white24 
+                              color: task.isCompleted
+                                  ? Colors.white24
                                   : Colors.white.withOpacity(0.5),
                             ),
                             maxLines: 2,
@@ -549,11 +566,14 @@ class _TaskManagementScreenState extends State<TaskManagementScreen> {
         final end = _parseTime(parts[1].trim());
         final duration = end.difference(start).inMinutes;
         if (duration > 0) {
-          return (duration / 60 * 80).clamp(60.0, 240.0); // Min 60, max 240 (3 hours)
+          return (duration / 60 * 80).clamp(
+            60.0,
+            240.0,
+          ); // Min 60, max 240 (3 hours)
         }
       }
     } catch (e) {
-      print('Error calculating task height for "${task.time}": $e');
+      // Silently handle task height calculation errors
     }
     return 80.0; // Default height (1 hour)
   }

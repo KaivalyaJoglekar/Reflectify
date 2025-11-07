@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:reflectify/widgets/app_background.dart';
 import 'package:reflectify/widgets/glass_card.dart';
