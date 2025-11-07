@@ -19,6 +19,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_database/firebase_database.dart';
+import 'package:uuid/uuid.dart';
+
+const _uuid = Uuid();
 
 class MainNavigationScreen extends StatefulWidget {
   final User user;
@@ -40,6 +43,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
   // Firebase
   late DatabaseReference _tasksRef;
+  late DatabaseReference _journalsRef;
   late String _userId;
 
   @override
@@ -47,6 +51,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     super.initState();
     _initializeFirebase();
     _loadTasksFromFirebase();
+    _loadJournalsFromFirebase();
   }
 
   void _initializeFirebase() {
@@ -54,6 +59,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     if (currentUser != null) {
       _userId = currentUser.uid;
       _tasksRef = FirebaseDatabase.instance.ref('users/$_userId/tasks');
+      _journalsRef = FirebaseDatabase.instance.ref('users/$_userId/journals');
     }
   }
 
@@ -87,14 +93,21 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   Future<void> _saveTaskToFirebase(Task task) async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      debugPrint('Cannot save task: No user logged in');
+      return;
+    }
+
     try {
       await _tasksRef.child(task.id).set(task.toJson());
+      debugPrint('Task saved successfully to Firebase: ${task.id}');
     } catch (e) {
       debugPrint('Error saving task to Firebase: $e');
       if (mounted) {
         CustomToast.show(
           context,
-          message: 'Failed to save task',
+          message: 'Failed to save task. Check database permissions.',
           icon: Icons.error,
           iconColor: Colors.red,
         );
@@ -103,8 +116,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   Future<void> _deleteTaskFromFirebase(String taskId) async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      debugPrint('Cannot delete task: No user logged in');
+      return;
+    }
+
     try {
       await _tasksRef.child(taskId).remove();
+      debugPrint('Task deleted successfully from Firebase: $taskId');
     } catch (e) {
       debugPrint('Error deleting task from Firebase: $e');
       if (mounted) {
@@ -119,14 +139,121 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   Future<void> _updateTaskInFirebase(Task task) async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      debugPrint('Cannot update task: No user logged in');
+      return;
+    }
+
     try {
       await _tasksRef.child(task.id).update(task.toJson());
+      debugPrint('Task updated successfully in Firebase: ${task.id}');
     } catch (e) {
       debugPrint('Error updating task in Firebase: $e');
       if (mounted) {
         CustomToast.show(
           context,
           message: 'Failed to update task',
+          icon: Icons.error,
+          iconColor: Colors.red,
+        );
+      }
+    }
+  }
+
+  // --- Journal Firebase Methods ---
+
+  Future<void> _loadJournalsFromFirebase() async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      final snapshot = await _journalsRef.get();
+      if (snapshot.exists) {
+        final journalsData = snapshot.value as Map<dynamic, dynamic>;
+        final loadedJournals = <JournalEntry>[];
+
+        journalsData.forEach((key, value) {
+          try {
+            final entry = JournalEntry.fromJson(value as Map<dynamic, dynamic>);
+            loadedJournals.add(entry);
+          } catch (e) {
+            debugPrint('Error loading journal entry: $e');
+          }
+        });
+
+        setState(() {
+          _journalEntries.clear();
+          _journalEntries.addAll(loadedJournals);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading journals from Firebase: $e');
+    }
+  }
+
+  Future<void> _saveJournalToFirebase(JournalEntry entry) async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      debugPrint('Cannot save journal: No user logged in');
+      return;
+    }
+
+    try {
+      await _journalsRef.child(entry.id).set(entry.toJson());
+      debugPrint('Journal saved successfully to Firebase: ${entry.id}');
+    } catch (e) {
+      debugPrint('Error saving journal entry to Firebase: $e');
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'Failed to save journal entry',
+          icon: Icons.error,
+          iconColor: Colors.red,
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteJournalFromFirebase(String entryId) async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      debugPrint('Cannot delete journal: No user logged in');
+      return;
+    }
+
+    try {
+      await _journalsRef.child(entryId).remove();
+      debugPrint('Journal deleted successfully from Firebase: $entryId');
+    } catch (e) {
+      debugPrint('Error deleting journal entry from Firebase: $e');
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'Failed to delete journal entry',
+          icon: Icons.error,
+          iconColor: Colors.red,
+        );
+      }
+    }
+  }
+
+  Future<void> _updateJournalInFirebase(JournalEntry entry) async {
+    final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      debugPrint('Cannot update journal: No user logged in');
+      return;
+    }
+
+    try {
+      await _journalsRef.child(entry.id).update(entry.toJson());
+      debugPrint('Journal updated successfully in Firebase: ${entry.id}');
+    } catch (e) {
+      debugPrint('Error updating journal entry in Firebase: $e');
+      if (mounted) {
+        CustomToast.show(
+          context,
+          message: 'Failed to update journal entry',
           icon: Icons.error,
           iconColor: Colors.red,
         );
@@ -662,7 +789,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
                               // FIXED: Create a Task object that matches the model
                               final newTask = Task(
-                                id: UniqueKey().toString(), // Add a unique ID
+                                id: _uuid.v4(), // Generate Firebase-safe UUID
                                 title: titleController.text,
                                 time:
                                     timeString, // Format: "9:00 AM - 10:00 AM"
@@ -684,6 +811,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                               setState(() {
                                 _tasks.add(newTask);
                               });
+
+                              // Save to Firebase
+                              _saveTaskToFirebase(newTask);
 
                               Navigator.pop(context);
                               CustomToast.show(
@@ -1034,6 +1164,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                                 }
                               });
 
+                              // Update in Firebase
+                              _updateTaskInFirebase(updatedTask);
+
                               Navigator.pop(context);
                               CustomToast.show(
                                 context,
@@ -1097,6 +1230,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       setState(() {
         _journalEntries.add(newEntry);
       });
+
+      // Save to Firebase
+      _saveJournalToFirebase(newEntry);
+
       if (mounted) {
         CustomToast.show(
           context,
@@ -1113,6 +1250,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       final index = _tasks.indexWhere((t) => t.id == task.id);
       if (index != -1) {
         _tasks[index] = task.copyWith(isCompleted: !task.isCompleted);
+        // Update in Firebase
+        _updateTaskInFirebase(_tasks[index]);
       }
     });
   }
@@ -1123,6 +1262,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       if (index != -1) {
         final wasCompleted = task.isCompleted;
         _tasks[index] = task.copyWith(isCompleted: !task.isCompleted);
+
+        // Update in Firebase
+        _updateTaskInFirebase(_tasks[index]);
+
         CustomToast.show(
           context,
           message: wasCompleted
@@ -1169,6 +1312,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
               setState(() {
                 _tasks.removeWhere((t) => t.id == task.id);
               });
+
+              // Delete from Firebase
+              _deleteTaskFromFirebase(task.id);
+
               CustomToast.show(
                 context,
                 message: 'Task deleted',
@@ -1241,6 +1388,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         child: JournalTimelineScreen(
           entries: _journalEntries,
           onEntryTap: (entry) {},
+          onEntryUpdate: _updateJournalInFirebase,
+          onEntryDelete: _deleteJournalFromFirebase,
         ),
       ),
     ];

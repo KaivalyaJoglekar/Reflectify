@@ -49,4 +49,40 @@ class JournalEntry {
       updatedAt: updatedAt ?? DateTime.now(),
     );
   }
+
+  // Convert to JSON for Firebase
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'content': content,
+      'date': date.toIso8601String(),
+      'tags': tags,
+      'mood': mood,
+      'isFavorite': isFavorite,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  // Create from JSON for Firebase
+  factory JournalEntry.fromJson(Map<dynamic, dynamic> json) {
+    return JournalEntry(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      content: json['content'] as String,
+      date: DateTime.parse(json['date'] as String),
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          [],
+      mood: json['mood'] as String? ?? 'neutral',
+      isFavorite: json['isFavorite'] as bool? ?? false,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : DateTime.now(),
+    );
+  }
 }

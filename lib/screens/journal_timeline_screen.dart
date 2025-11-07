@@ -6,11 +6,17 @@ import 'package:table_calendar/table_calendar.dart';
 class JournalTimelineScreen extends StatefulWidget {
   final List<JournalEntry> entries;
   final Function(JournalEntry) onEntryTap;
+  final Function(JournalEntry)? onEntryEdit;
+  final Function(String)? onEntryDelete;
+  final Function(JournalEntry)? onEntryUpdate;
 
   const JournalTimelineScreen({
     super.key,
     required this.entries,
     required this.onEntryTap,
+    this.onEntryEdit,
+    this.onEntryDelete,
+    this.onEntryUpdate,
   });
 
   @override
@@ -45,18 +51,24 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
 
   // Check if a date has journal entries
   bool _hasEntryOnDate(DateTime date) {
-    return widget.entries.any((entry) =>
-        entry.date.year == date.year &&
-        entry.date.month == date.month &&
-        entry.date.day == date.day);
+    return widget.entries.any(
+      (entry) =>
+          entry.date.year == date.year &&
+          entry.date.month == date.month &&
+          entry.date.day == date.day,
+    );
   }
 
   // Get entries for a specific date
   List<JournalEntry> _getEntriesForDate(DateTime date) {
-    return widget.entries.where((entry) =>
-        entry.date.year == date.year &&
-        entry.date.month == date.month &&
-        entry.date.day == date.day).toList();
+    return widget.entries
+        .where(
+          (entry) =>
+              entry.date.year == date.year &&
+              entry.date.month == date.month &&
+              entry.date.day == date.day,
+        )
+        .toList();
   }
 
   Map<String, List<JournalEntry>> _groupEntriesByMonth() {
@@ -74,10 +86,13 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
   @override
   Widget build(BuildContext context) {
     final groupedEntries = _groupEntriesByMonth();
-    
+
     // Only show day entries when calendar filter is active AND a non-today date is selected
-    final showDayView = _showCalendar && !isSameDay(_selectedDay, DateTime.now());
-    final List<JournalEntry> selectedDayEntries = showDayView ? _getEntriesForDate(_selectedDay) : [];
+    final showDayView =
+        _showCalendar && !isSameDay(_selectedDay, DateTime.now());
+    final List<JournalEntry> selectedDayEntries = showDayView
+        ? _getEntriesForDate(_selectedDay)
+        : [];
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -95,8 +110,8 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
               child: showDayView && selectedDayEntries.isNotEmpty
                   ? _buildDayEntries(selectedDayEntries)
                   : _filteredEntries.isEmpty
-                      ? _buildEmptyState()
-                      : _buildTimeline(groupedEntries),
+                  ? _buildEmptyState()
+                  : _buildTimeline(groupedEntries),
             ),
           ],
         ),
@@ -121,9 +136,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
         focusedDay: _focusedDay,
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
         calendarFormat: CalendarFormat.month,
-        availableCalendarFormats: const {
-          CalendarFormat.month: 'Month',
-        },
+        availableCalendarFormats: const {CalendarFormat.month: 'Month'},
         onDaySelected: (selectedDay, focusedDay) {
           // Don't allow selecting future dates
           if (selectedDay.isAfter(DateTime.now())) {
@@ -143,7 +156,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
         onPageChanged: (focusedDay) {
           // Don't allow navigating to future months
           final now = DateTime.now();
-          if (focusedDay.year > now.year || 
+          if (focusedDay.year > now.year ||
               (focusedDay.year == now.year && focusedDay.month > now.month)) {
             return;
           }
@@ -178,10 +191,7 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
-          leftChevronIcon: const Icon(
-            Icons.chevron_left,
-            color: Colors.white,
-          ),
+          leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.white),
           rightChevronIcon: const Icon(
             Icons.chevron_right,
             color: Colors.white,
@@ -281,7 +291,11 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
           Row(
             children: [
               IconButton(
-                icon: Icon(_showCalendar ? Icons.calendar_view_month : Icons.calendar_today),
+                icon: Icon(
+                  _showCalendar
+                      ? Icons.calendar_view_month
+                      : Icons.calendar_today,
+                ),
                 onPressed: () {
                   setState(() {
                     _showCalendar = !_showCalendar;
@@ -355,7 +369,8 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
         20,
         0,
         20,
-        MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+        MediaQuery.of(context).padding.bottom +
+            120, // Dynamic padding for navbar + nav buttons
       ),
       itemCount: months.length,
       itemBuilder: (context, index) {
@@ -509,6 +524,10 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                               setState(() {
                                 entry.isFavorite = !entry.isFavorite;
                               });
+                              // Update in Firebase
+                              if (widget.onEntryUpdate != null) {
+                                widget.onEntryUpdate!(entry);
+                              }
                             },
                             child: Icon(
                               entry.isFavorite ? Icons.star : Icons.star_border,
@@ -741,11 +760,17 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
                 entry.isFavorite ? Icons.star : Icons.star_border,
                 color: Colors.amber,
               ),
-              title: Text(entry.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'),
+              title: Text(
+                entry.isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
+              ),
               onTap: () {
                 setState(() {
                   entry.isFavorite = !entry.isFavorite;
                 });
+                // Update in Firebase
+                if (widget.onEntryUpdate != null) {
+                  widget.onEntryUpdate!(entry);
+                }
                 Navigator.pop(context);
               },
             ),
@@ -783,7 +808,9 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1C1C1E),
         title: const Text('Delete Entry'),
-        content: const Text('Are you sure you want to delete this journal entry?'),
+        content: const Text(
+          'Are you sure you want to delete this journal entry?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -794,10 +821,14 @@ class _JournalTimelineScreenState extends State<JournalTimelineScreen> {
               setState(() {
                 widget.entries.remove(entry);
               });
+              // Delete from Firebase
+              if (widget.onEntryDelete != null) {
+                widget.onEntryDelete!(entry.id);
+              }
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Entry deleted')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Entry deleted')));
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
