@@ -3,7 +3,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:reflectify/models/task_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:reflectify/providers/theme_provider.dart';
 
 class EnhancedCalendarScreen extends ConsumerStatefulWidget {
   final List<Task> tasks;
@@ -76,16 +75,13 @@ class _EnhancedCalendarScreenState
   }
 
   void _showTaskOptions(Task task) {
-    final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark;
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
+          color: const Color(0xFF1C1C1E),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
@@ -383,9 +379,6 @@ class _EnhancedCalendarScreenState
   }
 
   Widget _buildCalendar() {
-    final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark;
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -465,30 +458,21 @@ class _EnhancedCalendarScreenState
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          titleTextStyle: TextStyle(
-            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+          titleTextStyle: const TextStyle(
+            color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
-          leftChevronIcon: Icon(
-            Icons.chevron_left,
-            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
-          ),
-          rightChevronIcon: Icon(
+          leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.white),
+          rightChevronIcon: const Icon(
             Icons.chevron_right,
-            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+            color: Colors.white,
           ),
         ),
         calendarStyle: CalendarStyle(
-          defaultTextStyle: TextStyle(
-            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
-          ),
-          weekendTextStyle: TextStyle(
-            color: isDark ? Colors.white70 : const Color(0xFF6B6B6B),
-          ),
-          outsideTextStyle: TextStyle(
-            color: isDark ? Colors.white30 : const Color(0xFFBDBDBD),
-          ),
+          defaultTextStyle: const TextStyle(color: Colors.white),
+          weekendTextStyle: const TextStyle(color: Colors.white70),
+          outsideTextStyle: const TextStyle(color: Colors.white30),
           todayDecoration: BoxDecoration(
             color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
             shape: BoxShape.circle,
@@ -506,13 +490,13 @@ class _EnhancedCalendarScreenState
             shape: BoxShape.circle,
           ),
         ),
-        daysOfWeekStyle: DaysOfWeekStyle(
+        daysOfWeekStyle: const DaysOfWeekStyle(
           weekdayStyle: TextStyle(
-            color: isDark ? Colors.white70 : const Color(0xFF6B6B6B),
+            color: Colors.white70,
             fontWeight: FontWeight.w600,
           ),
           weekendStyle: TextStyle(
-            color: isDark ? Colors.white70 : const Color(0xFF6B6B6B),
+            color: Colors.white70,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -577,9 +561,6 @@ class _EnhancedCalendarScreenState
   }
 
   Widget _build24HourTimeline() {
-    final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark;
-
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(
         20,
@@ -634,29 +615,16 @@ class _EnhancedCalendarScreenState
                         child: Text(
                           timeString,
                           style: TextStyle(
-                            color: isDark
-                                ? Colors.grey[500]
-                                : const Color(0xFF9E9E9E),
+                            color: Colors.grey[500],
                             fontSize: 13,
                           ),
                         ),
                       ),
-                      Container(
-                        width: 15,
-                        height: 1,
-                        color: isDark
-                            ? Colors.grey[700]
-                            : const Color(0xFFE0E0E0),
-                      ),
+                      Container(width: 15, height: 1, color: Colors.grey[700]),
                     ],
                   ),
                   Expanded(
-                    child: Container(
-                      height: 1,
-                      color: isDark
-                          ? Colors.grey[900]
-                          : const Color(0xFFEEEEEE),
-                    ),
+                    child: Container(height: 1, color: Colors.grey[900]),
                   ),
                 ],
               ),
@@ -672,10 +640,8 @@ class _EnhancedCalendarScreenState
   }
 
   Widget _buildTimelineTaskCard(Task task) {
-    final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark;
-    final textColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
-    final textSecondary = isDark ? Colors.white70 : const Color(0xFF6B6B6B);
+    const textColor = Colors.white;
+    const textSecondary = Colors.white70;
     final categoryColor = _getCategoryColor(task.category);
 
     // Use green border if completed, otherwise use category color

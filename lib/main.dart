@@ -18,13 +18,10 @@ class JournalApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-
     return MaterialApp(
-      title: 'Reflectify',
+      title: 'Momento',
       debugShowCheckedModeBanner: false,
-      themeMode: themeMode,
-      theme: lightTheme,
+      themeMode: ThemeMode.dark,
       darkTheme: darkTheme,
       home: const SplashScreen(),
     );

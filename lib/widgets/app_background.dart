@@ -22,8 +22,6 @@ class _AppBackgroundState extends State<AppBackground>
   late Animation<double> _aurora4X;
   late Animation<double> _aurora4Y;
 
-  // Removed the duplicate declarations for aurora 3 and 4
-
   @override
   void initState() {
     super.initState();

@@ -6,7 +6,6 @@ import 'package:reflectify/models/project_model.dart';
 import 'package:reflectify/models/focus_session_model.dart';
 import 'package:reflectify/models/journal_entry.dart';
 import 'package:reflectify/models/focus_history_model.dart';
-import 'package:reflectify/providers/theme_provider.dart';
 import 'package:reflectify/screens/enhanced_dashboard_screen.dart';
 import 'package:reflectify/screens/enhanced_calendar_screen.dart';
 import 'package:reflectify/screens/focus_mode_screen.dart';
@@ -15,7 +14,6 @@ import 'package:reflectify/screens/full_profile_screen.dart';
 import 'package:reflectify/widgets/app_background.dart';
 import 'package:reflectify/widgets/custom_toast.dart';
 import 'package:reflectify/screens/add_journal_screen.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_database/firebase_database.dart';
@@ -1482,31 +1480,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                 context,
                 message: 'Settings coming soon!',
                 icon: Icons.settings,
-              );
-            },
-          ),
-          Consumer(
-            builder: (context, ref, child) {
-              final themeMode = ref.watch(themeModeProvider);
-              return ListTile(
-                leading: Icon(
-                  themeMode == ThemeMode.dark
-                      ? Icons.light_mode
-                      : Icons.dark_mode,
-                  color: Colors.white70,
-                ),
-                title: Text(
-                  themeMode == ThemeMode.dark ? 'Light Theme' : 'Dark Theme',
-                ),
-                onTap: () {
-                  // Toggle theme by updating the state directly
-                  ref
-                      .read(themeModeProvider.notifier)
-                      .state = themeMode == ThemeMode.dark
-                      ? ThemeMode.light
-                      : ThemeMode.dark;
-                  Navigator.pop(context);
-                },
               );
             },
           ),
