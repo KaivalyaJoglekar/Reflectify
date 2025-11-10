@@ -323,6 +323,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descController = TextEditingController();
     DateTime selectedDate = DateTime.now(); // Default to today
+    DateTime selectedEndDate = DateTime.now(); // Default to today
     TimeOfDay selectedStartTime = TimeOfDay.now();
     TimeOfDay selectedEndTime = TimeOfDay(
       hour: (TimeOfDay.now().hour + 1) % 24,
@@ -528,6 +529,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                       ],
                     ),
                     const SizedBox(height: 16),
+                    // Date Row - Start Date and End Date
                     Row(
                       children: [
                         Expanded(
@@ -552,6 +554,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                               if (picked != null) {
                                 setDialogState(() {
                                   selectedDate = picked;
+                                  // Auto-adjust end date if it's before start date
+                                  if (selectedEndDate.isBefore(picked)) {
+                                    selectedEndDate = picked;
+                                  }
                                 });
                               }
                             },
@@ -566,16 +572,111 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
-                                    Icons.calendar_today,
-                                    color: Colors.white70,
-                                    size: 16,
+                                  const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today,
+                                        color: Colors.white70,
+                                        size: 16,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'Start Date',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
                                     DateFormat(
                                       'MMM d, yyyy',
                                     ).format(selectedDate),
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () async {
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: selectedEndDate,
+                                firstDate: selectedDate,
+                                lastDate: DateTime(2030),
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: ColorScheme.dark(
+                                        primary: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (picked != null) {
+                                if (picked.isAfter(
+                                  selectedDate.subtract(
+                                    const Duration(days: 1),
+                                  ),
+                                )) {
+                                  setDialogState(() {
+                                    selectedEndDate = picked;
+                                  });
+                                } else {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'End date must be on or after start date',
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.event,
+                                        color: Colors.white70,
+                                        size: 16,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'End Date',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    DateFormat(
+                                      'MMM d, yyyy',
+                                    ).format(selectedEndDate),
                                     style: const TextStyle(fontSize: 13),
                                   ),
                                 ],
@@ -785,6 +886,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                               final timeString =
                                   '${formatTimeOfDay(selectedStartTime)} - ${formatTimeOfDay(selectedEndTime)}';
 
+                              // Create deadline from end date
+                              final deadlineDateTime = DateTime(
+                                selectedEndDate.year,
+                                selectedEndDate.month,
+                                selectedEndDate.day,
+                                selectedEndTime.hour,
+                                selectedEndTime.minute,
+                              );
+
                               // FIXED: Create a Task object that matches the model
                               final newTask = Task(
                                 id: _uuid.v4(), // Generate Firebase-safe UUID
@@ -800,7 +910,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                                     1, // Add required taskCount parameter
                                 date: taskDateTime,
                                 description: descController.text,
-                                deadline: taskDateTime, // Use the same for now
+                                deadline:
+                                    deadlineDateTime, // Use end date + end time as deadline
                                 priority: selectedPriority,
                                 category: selectedCategory,
                                 isCompleted: false, // Default to false

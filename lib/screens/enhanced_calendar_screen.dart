@@ -59,11 +59,34 @@ class _EnhancedCalendarScreenState
   Map<DateTime, List<Task>> _groupTasksByDate() {
     Map<DateTime, List<Task>> grouped = {};
     for (var task in widget.tasks) {
-      final date = DateTime(task.date.year, task.date.month, task.date.day);
-      if (!grouped.containsKey(date)) {
-        grouped[date] = [];
+      // Add task on its start date
+      final startDate = DateTime(
+        task.date.year,
+        task.date.month,
+        task.date.day,
+      );
+      if (!grouped.containsKey(startDate)) {
+        grouped[startDate] = [];
       }
-      grouped[date]!.add(task);
+      grouped[startDate]!.add(task);
+
+      // Also add task on its deadline/end date if it exists and is different
+      if (task.deadline != null) {
+        final endDate = DateTime(
+          task.deadline!.year,
+          task.deadline!.month,
+          task.deadline!.day,
+        );
+        if (endDate != startDate) {
+          if (!grouped.containsKey(endDate)) {
+            grouped[endDate] = [];
+          }
+          // Only add if not already present (avoid duplicates)
+          if (!grouped[endDate]!.any((t) => t.id == task.id)) {
+            grouped[endDate]!.add(task);
+          }
+        }
+      }
     }
     return grouped;
   }
@@ -720,6 +743,37 @@ class _EnhancedCalendarScreenState
                     style: TextStyle(fontSize: 12, color: task.color),
                   ),
                 ),
+                if (task.deadline != null) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.orange.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.event, size: 12, color: Colors.orange),
+                        const SizedBox(width: 4),
+                        Text(
+                          DateFormat('MMM d').format(task.deadline!),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(

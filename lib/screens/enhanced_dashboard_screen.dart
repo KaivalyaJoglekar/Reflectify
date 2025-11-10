@@ -37,6 +37,297 @@ class EnhancedDashboardScreen extends StatefulWidget {
 }
 
 class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
+  void _showTodayTasksDialog(List<Task> todayTasks) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+          ),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1C1C1E),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Today\'s Tasks',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme.of(
+                            context,
+                          ).primaryColor.withValues(alpha: 0.5),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        '${todayTasks.length} total',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Task List
+              Flexible(
+                child: todayTasks.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.task_alt,
+                              size: 64,
+                              color: Colors.white.withValues(alpha: 0.3),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No tasks for today',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white.withValues(alpha: 0.5),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.all(16),
+                        itemCount: todayTasks.length,
+                        itemBuilder: (context, index) {
+                          final task = todayTasks[index];
+                          return _buildTaskDialogCard(task);
+                        },
+                      ),
+              ),
+              // Close Button
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTaskDialogCard(Task task) {
+    final categoryColor = _getCategoryColor(task.category);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: task.isCompleted
+            ? Colors.green.withValues(alpha: 0.1)
+            : Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: task.isCompleted
+              ? Colors.green.withValues(alpha: 0.5)
+              : categoryColor.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              // Checkbox
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onTaskComplete(task);
+                },
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: task.isCompleted
+                          ? Colors.green
+                          : Colors.white.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                    color: task.isCompleted ? Colors.green : Colors.transparent,
+                  ),
+                  child: task.isCompleted
+                      ? const Icon(Icons.check, size: 16, color: Colors.white)
+                      : null,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Task Title
+              Expanded(
+                child: Text(
+                  task.title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    decoration: task.isCompleted
+                        ? TextDecoration.lineThrough
+                        : null,
+                    color: task.isCompleted
+                        ? Colors.white.withValues(alpha: 0.5)
+                        : Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Task Details
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              // Time Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.access_time, size: 12, color: Colors.blue),
+                    const SizedBox(width: 4),
+                    Text(
+                      task.time,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Category Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: categoryColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  task.category,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: categoryColor,
+                  ),
+                ),
+              ),
+              // Priority Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _getPriorityColor(
+                    task.priority,
+                  ).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _getPriorityLabel(task.priority),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: _getPriorityColor(task.priority),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'work':
+        return const Color(0xFF6366F1);
+      case 'personal':
+        return const Color(0xFF8B5CF6);
+      case 'health':
+        return const Color(0xFF10B981);
+      case 'education':
+        return const Color(0xFFF59E0B);
+      case 'finance':
+        return const Color(0xFF3B82F6);
+      case 'social':
+        return const Color(0xFFEC4899);
+      default:
+        return const Color(0xFF6B7280);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final today = DateTime.now();
@@ -53,7 +344,8 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
             20,
             20,
             20,
-            MediaQuery.of(context).padding.bottom + 120, // Dynamic padding for navbar + nav buttons
+            MediaQuery.of(context).padding.bottom +
+                120, // Dynamic padding for navbar + nav buttons
           ),
           children: [
             _buildAppBar(context),
@@ -94,15 +386,9 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
   }
 
   List<Task> _getUpcomingDeadlines() {
-    final now = DateTime.now();
-    final tasksWithDeadlines = widget.tasks
-        .where((task) => task.deadline != null && !task.isCompleted)
-        .toList();
-    tasksWithDeadlines.sort((a, b) => a.deadline!.compareTo(b.deadline!));
-    return tasksWithDeadlines
-        .where((task) => task.deadline!.isAfter(now))
-        .take(5)
-        .toList();
+    return widget.tasks.where((task) => !task.isCompleted).toList()
+      ..sort((a, b) => a.priority.compareTo(b.priority))
+      ..take(5);
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -204,24 +490,62 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
   }
 
   Widget _buildTodayHeader(DateTime today) {
+    final todayTasks = _getTodayTasks();
+    final remainingTasks = todayTasks.where((t) => !t.isCompleted).length;
+
     // Replace Container with GlassCard
     return GlassCard(
       padding: const EdgeInsets.all(20),
       borderRadius: 20,
       borderColor: Theme.of(context).primaryColor.withValues(alpha: 0.5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            DateFormat('EEEE, MMMM d').format(today),
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat('EEEE, MMMM d').format(today),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$remainingTasks tasks remaining',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            '${_getTodayTasks().where((t) => !t.isCompleted).length} tasks remaining',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withValues(alpha: 0.7),
+          GestureDetector(
+            onTap: () => _showTodayTasksDialog(todayTasks),
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.6),
+                  width: 2,
+                ),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+              ),
+              child: Center(
+                child: Text(
+                  '${todayTasks.length}',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -416,7 +740,7 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
         ),
         const SizedBox(height: 12),
         if (deadlines.isEmpty)
-          _buildEmptyState('No upcoming deadlines', Icons.event_available)
+          _buildEmptyState('No pending tasks', Icons.event_available)
         else
           ...deadlines.map((task) => _buildDeadlineCard(task)),
       ],
@@ -424,9 +748,23 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
   }
 
   Widget _buildDeadlineCard(Task task) {
-    final daysUntil = task.deadline!.difference(DateTime.now()).inDays;
-    final isUrgent = daysUntil <= 3;
-    final color = isUrgent ? Colors.red : Theme.of(context).primaryColor;
+    final isHighPriority = task.priority == 1;
+    final color = isHighPriority ? Colors.red : Theme.of(context).primaryColor;
+
+    // Calculate days until deadline
+    int? daysUntil;
+    bool isOverdue = false;
+    if (task.deadline != null) {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final deadlineDate = DateTime(
+        task.deadline!.year,
+        task.deadline!.month,
+        task.deadline!.day,
+      );
+      daysUntil = deadlineDate.difference(today).inDays;
+      isOverdue = daysUntil < 0;
+    }
 
     // Replace Container with GlassCard
     return GlassCard(
@@ -437,8 +775,8 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
       child: Row(
         children: [
           Icon(
-            isUrgent ? Icons.warning_amber : Icons.event,
-            color: isUrgent ? Colors.red : Colors.white70,
+            isHighPriority ? Icons.warning_amber : Icons.event,
+            color: isHighPriority ? Colors.red : Colors.white70,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -454,7 +792,9 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  DateFormat('MMM d, yyyy').format(task.deadline!),
+                  task.deadline != null
+                      ? 'Due: ${DateFormat('MMM d, yyyy').format(task.deadline!)}'
+                      : DateFormat('MMM d, yyyy').format(task.date),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.white.withValues(alpha: 0.5),
@@ -463,27 +803,89 @@ class _EnhancedDashboardScreenState extends State<EnhancedDashboardScreen> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: (isUrgent ? Colors.red : Colors.blue).withValues(
-                  alpha: 0.5,
+          if (daysUntil != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: isOverdue
+                    ? Colors.red.withValues(alpha: 0.2)
+                    : daysUntil <= 3
+                    ? Colors.orange.withValues(alpha: 0.2)
+                    : Colors.blue.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isOverdue
+                      ? Colors.red.withValues(alpha: 0.5)
+                      : daysUntil <= 3
+                      ? Colors.orange.withValues(alpha: 0.5)
+                      : Colors.blue.withValues(alpha: 0.5),
+                  width: 1.5,
                 ),
-                width: 1.5,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isOverdue
+                        ? Icons.error
+                        : daysUntil <= 3
+                        ? Icons.timer
+                        : Icons.calendar_today,
+                    size: 14,
+                    color: isOverdue
+                        ? Colors.red
+                        : daysUntil <= 3
+                        ? Colors.orange
+                        : Colors.blue,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    isOverdue
+                        ? '${daysUntil.abs()}d ago'
+                        : daysUntil == 0
+                        ? 'Today'
+                        : daysUntil == 1
+                        ? 'Tomorrow'
+                        : '${daysUntil}d',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isOverdue
+                          ? Colors.red
+                          : daysUntil <= 3
+                          ? Colors.orange
+                          : Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: (isHighPriority ? Colors.red : Colors.blue).withValues(
+                    alpha: 0.5,
+                  ),
+                  width: 1.5,
+                ),
+              ),
+              child: Text(
+                task.priority == 1
+                    ? 'HIGH'
+                    : task.priority == 2
+                    ? 'MED'
+                    : 'LOW',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: isHighPriority ? Colors.red : Colors.blue,
+                ),
               ),
             ),
-            child: Text(
-              '${daysUntil}d',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: isUrgent ? Colors.red : Colors.blue,
-              ),
-            ),
-          ),
         ],
       ),
     );

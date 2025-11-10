@@ -44,7 +44,8 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
               20,
               20,
               20,
-              MediaQuery.of(context).padding.bottom + 24, // Add padding for Android nav buttons
+              MediaQuery.of(context).padding.bottom +
+                  24, // Add padding for Android nav buttons
             ),
             children: [
               _buildProfileHeader(context),
@@ -228,6 +229,12 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
       );
       spots.add(FlSpot(i.toDouble(), dayTasks.length.toDouble()));
     }
+
+    // Ensure we have at least one non-zero spot for chart visibility
+    if (spots.every((spot) => spot.y == 0)) {
+      spots[0] = const FlSpot(0, 0);
+    }
+
     return spots;
   }
 
@@ -448,12 +455,18 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
+                        interval: 1,
                         getTitlesWidget: (value, meta) {
-                          return Text(
-                            value.toInt().toString(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.white.withValues(alpha: 0.6),
+                          // Only show whole numbers
+                          if (value % 1 != 0) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Text(
+                              value.toInt().toString(),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.white.withValues(alpha: 0.6),
+                              ),
                             ),
                           );
                         },
@@ -464,12 +477,12 @@ class _FullProfileScreenState extends State<FullProfileScreen> {
                   minX: 0,
                   maxX: 6,
                   minY: 0,
-                  maxY:
-                      (weeklySpots
-                                  .map((e) => e.y)
-                                  .reduce((a, b) => a > b ? a : b) +
-                              2)
-                          .toDouble(),
+                  maxY: () {
+                    final maxValue = weeklySpots
+                        .map((e) => e.y)
+                        .reduce((a, b) => a > b ? a : b);
+                    return (maxValue == 0 ? 2.0 : maxValue + 2.0);
+                  }(),
                   lineBarsData: [
                     LineChartBarData(
                       spots: weeklySpots,

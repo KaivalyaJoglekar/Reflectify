@@ -35,12 +35,27 @@ Momento (Reflectify) is a modern all-in-one productivity companion that helps yo
         <journal_id>: { title, content, mood, ... }
   ```
 
-### �📊 **Enhanced Dashboard**
+### 📊 **Enhanced Dashboard**
 - **Personalized Greeting**: Dynamic greetings based on time of day with user initial avatar
-- **Today's Overview**: Quick glance at remaining tasks for the day
-- **Quick Actions**: Fast access to Add Task, Calendar, Focus Mode, and Journal
+- **Today's Overview**: Header card showing current date with clickable task count badge
+  - **Interactive Task Badge**: Click the circular badge to view all tasks for today
+  - **Task Count Display**: Shows total number of tasks scheduled
+  - **Modal View**: Beautiful dialog showing all today's tasks with:
+    - Complete/incomplete checkbox toggles
+    - Time, category, and priority badges
+    - Task title and details
+    - Color-coded borders based on category
+    - Close button for easy dismissal
+- **Quick Actions**: Fast access to Journal, Calendar, and Focus Mode
 - **Top 3 Priorities**: Intelligent priority-based task display with color-coded badges
-- **Upcoming Deadlines**: Visual deadline tracking with urgency indicators
+- **Upcoming Deadlines**: Visual deadline tracking with days remaining
+  - **Smart Countdown**: Shows "Today", "Tomorrow", or "Xd" format
+  - **Color-coded Urgency**: 
+    - 🔴 Red: Overdue tasks ("Xd ago")
+    - 🟠 Orange: Urgent (≤3 days remaining)
+    - 🔵 Blue: Coming up (>3 days remaining)
+  - **Priority Fallback**: Shows HIGH/MED/LOW badge if no deadline exists
+  - **Visual Icons**: Error, timer, or calendar icons based on urgency
 - **Progress Overview**: Real-time completion tracking with animated progress bars
 - **Streak Counter**: Fire icon showing your current productivity streak
 - **Recent Journal**: Quick access to your latest journal entries
@@ -53,19 +68,28 @@ Momento (Reflectify) is a modern all-in-one productivity companion that helps yo
 - **Category Organization**: Work, Personal, Projects, Study, Health
 - **Rich Task Details**: 
   - Title and description
-  - Start and end time with AM/PM picker
-  - Date picker with validation
+  - Start date and end date (deadline) pickers
+  - Start time and end time with AM/PM picker
+  - Time validation (end time must be after start time)
+  - Date validation (end date must be on or after start date)
   - Category and priority assignment
-  - UUID-based task IDs for Firebase
+  - UUID-based task IDs for Firebase compatibility
+- **Deadline Management**:
+  - Tasks appear on both start date and end date in calendar/timeline
+  - Deadline badge shown on timeline cards (orange badge with "MMM d" format)
+  - Automatic deadline calculation from end date + end time
+  - Days until deadline displayed in Upcoming Deadlines section
 - **Task Actions**: 
   - Complete/incomplete toggle (synced to Firebase)
-  - Edit with pre-filled form
+  - Edit with pre-filled form maintaining all data
   - Delete with confirmation
   - All changes immediately reflected in Firebase
 - **Visual Feedback**: 
   - Color-coded priority indicators on calendar dates
   - Custom toast notifications for all actions
   - Loading states during Firebase operations
+  - Green border for completed tasks
+  - Deadline badges on timeline task cards
 
 ### 🎯 **Focus Mode**
 - **Pomodoro Timer**: Customizable focus sessions (15m, 25m, 45m, 1h)
@@ -112,10 +136,13 @@ Momento (Reflectify) is a modern all-in-one productivity companion that helps yo
   - Daily view: Task completion rate and progress
   - Date navigation with picker
   - Toggle between weekly and daily views
+  - **Fixed Y-axis**: Displays whole numbers (0, 1, 2, 3...) with proper intervals
+  - **Zero-value handling**: Shows default scale when no data exists
 - **Visual Insights**: 
   - Color-coded charts with theme integration
   - Smooth animations and transitions
   - Real-time data updates from Firebase
+  - Clean axis labels with proper spacing
 - **User Profile**:
   - Avatar with user initial (from email)
   - Username from email
@@ -124,29 +151,37 @@ Momento (Reflectify) is a modern all-in-one productivity companion that helps yo
 
 ### 🎨 **Modern UI/UX**
 - **Splash Screen**:
-  - Circular Momento logo with aurora glow
-  - Gradient "MOMENTO" text
+  - Circular Momento logo with aurora glow effects
+  - Animated gradient "MOMENTO" text with fade and scale effect
+  - Fast reveal animation (300ms) - starts at 1.0s, completes at 1.3s
   - Black background (no white flash)
-  - Smooth 5-second animation
-  - Auto-navigation based on auth state
-- **App Icon**: Custom circular Momento logo
+  - Smooth 5-second total duration
+  - Auto-navigation based on Firebase auth state
+  - Purple and cyan glow shadows on text
+  - Animated auroras in background (subtle motion)
+- **App Icon**: 
+  - Custom circular Momento logo
+  - 25% adaptive padding to prevent cutoff on various devices
+  - Black background with centered logo
+  - Generated via flutter_launcher_icons
 - **Glassmorphism Design**: Frosted glass effects throughout
 - **Animated Aurora Background**: Smooth 40-second gradient animations
 - **Liquid Navigation Bar**: 
   - Animated glass indicator that slides between tabs
   - White ripple effects on tap
   - 4-tab layout: Dashboard, Tasks, Focus, Journal
-  - Profile accessible from dashboard
+  - Profile accessible from dashboard avatar
 - **Gradient FAB**: Context-aware floating action button
 - **Glass Cards**: Consistent design across all screens
 - **Color Theming**: 
   - Purple primary color (#8A5DF4)
   - Color-coded categories and priorities
-  - Dark mode optimized
+  - Dark mode optimized (light mode completely removed)
 - **Smooth Animations**:
   - 300ms tab transitions
   - Scale animations on selection
   - Fade and slide effects
+  - Elastic bounce on text reveal
 
 ### 🔐 **Authentication & Security**
 - **Firebase Authentication**: 
@@ -247,44 +282,43 @@ lib/
 ├── main.dart                          # Entry point with Firebase init
 ├── firebase_options.dart              # Firebase configuration
 ├── models/
-│   ├── task_model.dart               # Task model with Firebase serialization
+│   ├── task_model.dart               # Task model with Firebase serialization + deadline
 │   ├── journal_entry.dart            # Journal model with toJson/fromJson
+│   ├── user_model.dart               # User model
+│   ├── project_model.dart            # Project model
 │   └── focus_session.dart            # Focus session model
 ├── screens/
-│   ├── splash_screen.dart            # Momento logo + aurora splash (5s)
-│   ├── auth/
-│   │   ├── login_screen.dart         # Firebase Auth login
-│   │   └── signup_screen.dart        # Firebase Auth signup
-│   ├── main_navigation_screen.dart   # Nav wrapper + Firebase CRUD ops
-│   ├── dashboard_screen.dart         # Home with stats from Firebase
-│   ├── task_list_screen.dart         # Task management with calendar
-│   ├── add_edit_task_screen.dart     # Task form with time validation
+│   ├── splash_screen.dart            # Momento logo + aurora splash (5s, fast text)
+│   ├── login_screen.dart             # Firebase Auth login
+│   ├── signup_screen.dart            # Firebase Auth signup
+│   ├── main_navigation_screen.dart   # Nav wrapper + Firebase CRUD + task dialog
+│   ├── enhanced_dashboard_screen.dart # Dashboard with clickable task badge + deadlines
+│   ├── enhanced_calendar_screen.dart  # Calendar + 24h timeline with deadline badges
 │   ├── focus_mode_screen.dart        # Pomodoro timer with history
-│   ├── journal_timeline_screen.dart  # Firebase-synced journals
-│   ├── add_journal_screen.dart       # Journal entry form with mood
-│   └── profile_screen.dart           # Analytics charts + Firebase stats
+│   ├── journal_timeline_screen.dart  # Firebase-synced journals with favorites
+│   └── full_profile_screen.dart      # Analytics charts with fixed Y-axis
 ├── widgets/
-│   ├── aurora_background.dart        # 40-second gradient animations
+│   ├── app_background.dart           # 40-second gradient aurora animations
 │   ├── glass_card.dart              # Glassmorphism card widget
-│   ├── liquid_navbar.dart           # 4-tab animated navigation
-│   ├── priority_badge.dart          # Color-coded priority badges
-│   ├── calendar_priority_marker.dart # Calendar priority indicators
-│   └── empty_state.dart             # Helpful empty state messages
-├── utils/
+│   ├── custom_bottom_navbar.dart    # 4-tab animated navigation bar
 │   └── custom_toast.dart            # Beautiful toast notifications
+├── utils/
+│   └── streak_calculator.dart       # Productivity streak calculations
 └── providers/
-    └── theme_provider.dart          # Riverpod theme management
+    └── theme_provider.dart          # Dark theme only (light mode removed)
 
 assets/
-└── momento_logo.jpg                  # App branding logo
+└── momento_logo.jpg                  # App branding logo (circular)
+└── grid.jpg                          # Background grid for splash
 
 android/
 ├── app/
 │   ├── google-services.json          # Firebase Android config
 │   └── src/main/res/
-│       ├── values/styles.xml         # Black splash theme
+│       ├── values/
+│       │   └── styles.xml            # Black splash theme (Theme.Black)
 │       └── drawable/
-│           └── launch_background.xml # Black splash background
+│           └── launch_background.xml # Black splash with centered logo
 
 ios/
 └── Runner/
@@ -483,10 +517,13 @@ flutter build ios --release
           "id": "550e8400-e29b-41d4-a716-446655440000",
           "title": "Complete project report",
           "description": "Finish the quarterly report",
+          "date": "2024-01-15T00:00:00.000Z",
+          "time": "9:00 AM - 10:30 AM",
           "startTime": "2024-01-15T09:00:00.000Z",
           "endTime": "2024-01-15T10:30:00.000Z",
+          "deadline": "2024-01-15T17:00:00.000Z",
           "category": "Work",
-          "priority": "high",
+          "priority": 1,
           "color": 4294198070,
           "isCompleted": false
         }
@@ -531,9 +568,14 @@ This ensures:
 ### Task Priority & Categories
 
 **Priority Levels**:
-- 🔴 **High**: Red (`Colors.red`)
-- 🟡 **Medium**: Orange (`Colors.orange`)
-- 🟢 **Low**: Green (`Colors.green`)
+- 🔴 **High (1)**: Red (`Colors.red`)
+- 🟡 **Medium (2)**: Orange (`Colors.orange`)
+- 🟢 **Low (3)**: Green (`Colors.green`)
+
+**Priority Display**:
+- Numbers stored in Firebase (1, 2, 3)
+- Displayed as HIGH, MED, LOW in UI
+- Color-coded badges throughout the app
 
 **Categories**:
 - 💼 **Work**: Blue (`Colors.blue`)
@@ -604,14 +646,21 @@ Contributions are what make the open-source community amazing! Any contributions
 5. Open a Pull Request
 
 ### Contribution Ideas
-- [ ] Add task notifications
-- [ ] Implement data export/import
-- [ ] Add more chart types in analytics
+- [ ] Add task notifications with reminders
+- [ ] Implement data export/import (JSON/CSV)
+- [ ] Add more chart types in analytics (pie, bar charts)
 - [ ] Create widget for home screen
-- [ ] Add dark/light theme toggle in UI
 - [ ] Implement task categories customization
-- [ ] Add focus mode sound effects
-- [ ] Create onboarding tutorial
+- [ ] Add focus mode sound effects/music
+- [ ] Create onboarding tutorial for new users
+- [ ] Add task recurrence/repeat functionality
+- [ ] Implement subtasks feature
+- [ ] Add collaboration/sharing features
+- [ ] Dark/light theme toggle in UI (currently dark only)
+- [ ] Add tags system for better organization
+- [ ] Implement search functionality
+- [ ] Add task attachments support
+- [ ] Create backup/restore functionality
 
 ## 📄 License
 

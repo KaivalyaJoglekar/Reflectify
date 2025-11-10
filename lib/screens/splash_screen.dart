@@ -20,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _aurora2X;
   late Animation<double> _aurora2Y;
   late Animation<double> _auroraOpacity;
+  late Animation<double> _textRevealAnimation;
 
   @override
   void initState() {
@@ -55,6 +56,14 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
+    );
+
+    // Fast text reveal animation - quicker and snappier
+    _textRevealAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.2, 0.5, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -224,34 +233,46 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          // Gradient "MOMENTO" text above loading indicator
+          // Gradient "MOMENTO" text with fast fade and scale effect
           Positioned(
             bottom: 120,
             left: 0,
             right: 0,
             child: Center(
-              child: FadeTransition(
-                opacity: _auroraOpacity,
-                child: ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [
-                      Color(0xFF6C5CE7), // purple
-                      Color(0xFF4D7BFF), // blue
-                      Color(0xFF00D9FF), // cyan
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds),
-                  child: const Text(
-                    'MOMENTO',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 4,
-                      color: Colors.white,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _textRevealAnimation.value,
+                    child: Opacity(
+                      opacity: _textRevealAnimation.value,
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            Color(0xFF6C5CE7), // purple
+                            Color(0xFF4D7BFF), // blue
+                            Color(0xFF00D9FF), // cyan
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: const Text(
+                          'MOMENTO',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 4,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(color: Color(0xFF6C5CE7), blurRadius: 20),
+                              Shadow(color: Color(0xFF00D9FF), blurRadius: 15),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),
